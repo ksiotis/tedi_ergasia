@@ -14,7 +14,7 @@ import Art from './components/Art';
 
 export default {
 	components: {
-		TopArt: Art,
+		Art: Art,
 		Navbar: Navbar,
 		Footer: Footer,
 	},

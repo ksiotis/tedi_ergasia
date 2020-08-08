@@ -1,7 +1,7 @@
 <template>
 	<div class="my-topart d-flex">
 		<div class="flex-grow-1 mr-auto">
-			<img class="art" src="src\assets\house_icon.svg" />
+			<img class="art" src="../assets/homies_logo.svg" />
 		</div>
 		<!-- <div class="languages d-flex flex-row align-self-center">
 			<div class="d-flex language">
@@ -50,21 +50,22 @@ export default {
 
 <style scoped>
 .my-topart {
-	color: #004a87;
-	background-color: #a4d6ee;
+	color: #153D41;
+	background-color: #E1DAD2;
 	height: 80px;
 }
 
 .art {
 	height: 100%;
+    margin-left: 100px;
 }
 
 button {
 	background: white;
-	border-radius: 3px;
+	border-radius: 90px;
 	border: none;
-	color: #004a87;
-	font-weight: bold;
+	color: #153D41;
+	font-weight: normal;
 	cursor: pointer;
 	padding: 0 20px;
 	height: 47px;
