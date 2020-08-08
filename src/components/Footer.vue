@@ -63,10 +63,10 @@ a {
 	cursor: pointer;
 }
 
-/* a:hover{
+a:hover{
     color:white;
     cursor: pointer;
-} */
+}
 
 .socialicon {
 	font-size: 32px;
