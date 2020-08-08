@@ -1,18 +1,15 @@
 <template>
 	<div class="my-footer d-flex justify-content-between">
 		<div class="d-flex flex-column mb-3">
-			<h5 class="title mb-2">Χάρτες</h5>
-			<a class="t my-2">Χάρτης Μετρό</a>
-			<a class="t my-2">Χάρτης Λεωφορείων</a>
-			<a class="t my-2">Χάρτης Τραμ</a>
-			<a class="t my-2">Χάρτης Τρόλεϊ</a>
+			<h5 class="title mb-2">Διαμονή</h5>
+			<a class="t my-2">Χώροι διαμονής</a>
+			<a class="t my-2">Εμπειρίες</a>
 		</div>
 		<div class="d-flex flex-column mb-3">
 			<h5 class="title mb-2">Επικοινωνία</h5>
-			<a class="t my-2">Απολεσθέντα</a>
 			<a class="t my-2">Τηλέφωνο Επικοινωνίας</a>
 			<a class="t my-2">Φόρμα Παραπόνων</a>
-			<a class="t my-2">E-mail: support@oasa.gr</a>
+			<a class="t my-2">E-mail: homies@info.gr</a>
 		</div>
 		<div class="d-flex flex-column mb-3">
 			<h5 class="phone mb-2">
@@ -39,9 +36,10 @@ export default {
 </script>
 
 <style scoped>
+
 .my-footer {
 	color: white;
-	background-color: #042e51;
+	background-color: #0C2431;
 	padding: 72px 100px;
 }
 
@@ -54,7 +52,8 @@ export default {
 	font-size: 36px;
 }
 
-a {
+a{
+    color: white;
 	cursor: pointer;
 }
 
@@ -65,5 +64,4 @@ a {
 .t:hover {
 	text-decoration: underline;
 }
-/* commit comment */
 </style>
