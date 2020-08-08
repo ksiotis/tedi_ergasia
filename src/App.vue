@@ -14,9 +14,9 @@ import Art from './components/Art';
 
 export default {
 	components: {
-		Art: Art,
-		Navbar: Navbar,
-		Footer: Footer,
+		Art,
+		Navbar,
+		Footer,
 	},
 };
 </script>

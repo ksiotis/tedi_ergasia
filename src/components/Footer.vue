@@ -12,16 +12,22 @@
 			<a class="t my-2">E-mail: homies@info.gr</a>
 		</div>
 		<div class="d-flex flex-column mb-3">
-			<h5 class="phone mb-2">
-				<i class="ion-md-call" />
+            <h5 class="phone mb-2">
+			    <span class="iconify" data-icon="ion-call-outline"></span>
 				11 111
 			</h5>
-			<h5 class="title mb-2">Social Media</h5>
-			<a class="mt-2">
-				<i class="mr-4 socialicon ion-logo-youtube" />
-				<i class="mr-4 socialicon ion-logo-facebook" />
-				<i class="mr-4 socialicon ion-logo-twitter" />
-			</a>
+			<h5 class="mb-2">Social Media</h5>
+			<div class="d-flex">
+				<a class="mt-2">
+					<i class="mr-4 iconify socialicon" data-icon="ion-logo-youtube" />
+				</a>
+				<a class="mt-2">
+					<i class="mr-4 iconify socialicon" data-icon="ion-logo-facebook" />
+				</a>
+				<a class="mt-2">
+					<i class="mr-4 iconify socialicon" data-icon="ion-logo-twitter" />
+				</a>
+			</div>
 		</div>
 	</div>
 </template>
@@ -43,25 +49,36 @@ export default {
 	padding: 72px 100px;
 }
 
-.title {
+/* .title {
 	font-weight: bold;
-}
+} */
 
 .phone {
 	font-weight: bold;
 	font-size: 36px;
 }
 
-a{
+a {
     color: white;
 	cursor: pointer;
 }
 
-.socialicon {
-	font-size: 28px;
+a:hover{
+    color:white;
+    cursor: pointer;
 }
 
+.socialicon {
+	font-size: 32px;
+}
+
+
 .t:hover {
+    color: white;
 	text-decoration: underline;
+}
+
+.phone{
+    color:white;
 }
 </style>

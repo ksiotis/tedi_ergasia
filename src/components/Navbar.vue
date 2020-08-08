@@ -11,7 +11,8 @@
 				v-on:click="$router.push(buttonInfo.page).catch(() => {})"
 				class="d-flex align-items-center"
 			>
-				<i aria-hidden="true" class="icon mr-2" v-bind:class="buttonInfo.icon" />
+			<!-- <span class="iconify" data-icon="ion:globe-outline"></span> -->
+				<i aria-hidden="true" class="iconify mr-2" v-bind:data-icon="buttonInfo.icon" />
 				<span>{{ buttonInfo.text }}</span>
 			</button>
 		</div>
@@ -24,19 +25,19 @@ export default {
 		return {
 			routes: [
 				{
-					page: '/home',
+					page: '/covid',
 					text: 'Covid-19',
-					icon: 'ion-md-paper',
+					icon: 'ion-medkit-outline',
 				},
 				{
-					page: '/home',
+					page: '/stay',
 					text: 'Διαμονή',
-					icon: 'ion-md-card',
+					icon: 'ion-home-outline',
 				},
 				{
-					page: '/home',
+					page: '/contact',
 					text: 'Επικοινωνία',
-					icon: 'ion-md-calendar',
+					icon: 'ion-call-outline',
 				},
 			],
 		};
@@ -75,9 +76,9 @@ button:active {
 }
 
 button.current {
-	background-color: #194A50;
+	background-color: #ffffff;
 	color: #194A50;
-	font-weight: bold;
+	font-weight: normal;
 }
 
 .logo {
@@ -85,7 +86,7 @@ button.current {
 	padding: 14px 0;
 }
 
-.icon {
+.iconify {
 	font-size: 24px;
 }
 </style>

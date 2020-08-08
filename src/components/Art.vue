@@ -1,23 +1,23 @@
 <template>
 	<div class="my-topart d-flex">
-		<div class="flex-grow-1 mr-auto">
+        
+        <div class="flex-grow-1 mr-auto">
 			<img class="art" src="../assets/homies_logo.svg" />
 		</div>
-		<!-- <div class="languages d-flex flex-row align-self-center">
-			<div class="d-flex language">
-				<img class="icon" src="../assets/images/GR.png" />
-				<a>GR</a>
+
+		<div class="d-flex align-self-center align-items-center">
+			<div class="language">
+				<span class="iconify " data-icon="ion-globe-outline"></span>
 			</div>
-			<div class="d-flex language">
-				<img class="icon" src="../assets/images/EN.png" />
-				<a>EN</a>
+			
+			<div class="mr-5">
+				<a class="ltext ">ΕΛ</a>
 			</div>
-		</div> -->
-		<div class="align-self-center">
+
 			<button
 				v-if="!user"
 				class="d-flex align-items-center"
-				@click="$router.push('/login').catch(() => {})"
+				v-on:click="$router.push('/login').catch(() => {})"
 			>
 				<i class="ion-ios-log-in" />
 				Σύνδεση / Εγγραφή
@@ -25,7 +25,7 @@
 			<button
 				v-else
 				class="d-flex align-items-center"
-				@click="$router.push('/profile').catch(() => {})"
+				v-on:click="$router.push('/profile').catch(() => {})"
 			>
 				<i class="ion-ios-log-in" />
 				{{user.fullName}} / Προφίλ
@@ -49,6 +49,7 @@ export default {
 </script>
 
 <style scoped>
+
 .my-topart {
 	color: #153D41;
 	background-color: #E1DAD2;
@@ -57,7 +58,7 @@ export default {
 
 .art {
 	height: 100%;
-    margin-left: 100px;
+    margin-left: 96.5px;
 }
 
 button {
@@ -74,14 +75,6 @@ button {
 
 a {
 	cursor: pointer;
-}
-
-.languages {
-	margin-right: 37px;
-}
-
-.language {
-	padding: 0 15px;
 }
 
 .ion-ios-log-in {
@@ -102,15 +95,24 @@ button:active {
 	background-color: #004a87;
 }
 
-.language:hover {
-	color: white;
-	text-decoration: underline;
+.iconify{
+    height: 32px;
+    width: 32px;
+    margin-right: -15px;
+    color: #153D41;
 }
 
-.icon {
-	cursor: pointer;
-	width: 25px;
-	height: 25px;
-	margin-right: 7px;
+.language{
+    margin-right: 20px;
 }
+
+.ltext{
+    color: #153D41;
+    font-weight: normal;
+}
+
+.ltext:hover{
+    color: white;
+}
+
 </style>
