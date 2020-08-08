@@ -1,17 +1,15 @@
 <template>
-	<div class="my-navbar d-flex flex-row justify-content-between">
-        <div>
-            <a v-on:click="$router.push('/').catch(() => {})">
-                <img class="logo" src="../assets/homies_text.svg" />
-            </a>
-        </div>
+	<div class="my-navbar d-flex justify-content-between">
+        <a v-on:click="$router.push('/').catch(() => {})">
+            <img class="logo" src="../assets/homies_text.svg" />
+        </a>
 		<div class="d-flex">
 			<button
 				v-for="(buttonInfo, index) in routes"
 				v-bind:key="index"
 				v-bind:class="{ current: $route.path === buttonInfo.page }"
 				v-on:click="$router.push(buttonInfo.page).catch(() => {})"
-				class="d-flex align-items-end"
+				class="d-flex align-items-center"
 			>
 				<i aria-hidden="true" class="icon mr-2" v-bind:class="buttonInfo.icon" />
 				<span>{{ buttonInfo.text }}</span>
