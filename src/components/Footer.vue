@@ -14,7 +14,7 @@
 		<div class="d-flex flex-column mb-3">
             <h5 class="phone mb-2">
 			    <span class="iconify" data-icon="ion-call-outline"></span>
-				11 111
+				(+30) 2101234567
 			</h5>
 			<h5 class="mb-2">Social Media</h5>
 			<div class="d-flex">
@@ -55,7 +55,7 @@ export default {
 
 .phone {
 	font-weight: bold;
-	font-size: 36px;
+	font-size: 30px;
 }
 
 a {
