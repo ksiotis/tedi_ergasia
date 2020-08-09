@@ -3,16 +3,15 @@
         <div class="background d-flex justify-content-center">
             <div class="searchbar d-flex justify-content-center">
                 
-<!--                 
-                <b-input-group class="inputbox">
-                    <b-form-input v-model="search" placeholder="Enter your name"></b-form-input>
-                    <b-input-group-prepend>
-                        <span class="iconify " data-icon="ion-globe-outline"></span>
-                    </b-input-group-prepend>
-                </b-input-group> -->
-                
-                <input class="inputbox searchelement" v-model="search" placeholder="Εισάγεται τοποθεσία...">
-                <input class="inputbox searchelement" v-model="search" placeholder="Εισάγεται ημερομηνίες...">
+                <input name="txtName" id="txtName" class="inputbox searchelement" placeholder="Εισάγεται τοποθεσία...">
+                <span class="iconify inputicon" data-icon="ion-locate"></span>
+
+
+                <input name="txtName" id="txtName" class="inputbox searchelement" placeholder="Εισάγεται ημερομηνίες...">
+                <span class="iconify inputicon" data-icon="ion-calendar"></span>
+
+
+             
                 <select class="inputbox searchelement" v-model="selected">
                     <option value="undefined" disabled>Άτομα..</option>
                     <option class = "selecttext">1</option>
@@ -22,8 +21,9 @@
                     <option class = "selecttext">5</option>
                     <option class = "selecttext">6</option>
                 </select>
-                <button class = "searchbutton searchelement">
+                <button class = "searchbutton searchelement d-flex align-items-center">
                     <i>Αναζήτηση</i>
+                    <span class="iconify searchicons" data-icon="ion-search"></span>
                 </button>
             </div>
         </div>
@@ -69,15 +69,32 @@ export default {
 
 .inputbox{
     background: rgba(239, 239, 239, 0.25);
-    border-radius: 3px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
     
     border: none;
     outline: none;
 
     height: 40px;
-    margin-top: 25px;
 
     color:white;
+    margin-top: 25px;
+}
+
+.inputicon{
+    background: rgba(239, 239, 239, 0.25);
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+
+    font-size: 40px;
+    color: white;
+    margin-top: 25px;
+
+    float: right;
+    position: relative;
+
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
 .selecttext{
@@ -92,11 +109,8 @@ export default {
     border-bottom-right-radius: 90px;
     border-top-right-radius: 90px;
     margin-top: 15px;
-}
 
-
-button {
-	background: none;
+    background: none;
 	color: white;
     background-color: #D37556;
 	cursor: pointer;
@@ -107,36 +121,17 @@ button {
     height: 70%;
 }
 
-button:focus {
-    border: none;
-    outline: none;
-
-}
-button:hover {
-	background-color: #9C533B;
-    border: none;
-    outline: none;
+.searchbutton:hover{
+    background-color: #9C533B;   
 }
 
-button:active {
-	background-color: #9C533B;
-    border: none;
-    outline: none;
+.searchicons{
+    margin-left: 20px;
+    font-size: 24px;
 }
-
-button.current {
-	background-color: #ffffff;
-	color: #194A50;
-	font-weight: normal;
-    border: none;
-    outline: none;
-}
-
-
 
 .searchelement{
-    margin-left: 7px;
-    margin-right: 7px;
+    margin-left: 14px;
     padding: 0 20px;
 }
 </style>
