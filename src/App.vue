@@ -28,6 +28,11 @@ export default {
 	font-family: 'Roboto', sans-serif;
 }
 
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #194A50 #E1DAD2;
+}
+
 .b-btn {
 	border-radius: 3px;
 }
@@ -44,4 +49,5 @@ export default {
 	user-select: none; /* Non-prefixed version, currently
                         supported by Chrome, Opera and Firefox */
 }
+
 </style>
