@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import About from '../views/Home.vue'
 import Support from '../views/Support.vue'
+import Results from '../views/Results.vue'
 
 Vue.use(VueRouter)
 
@@ -22,6 +23,11 @@ Vue.use(VueRouter)
       path: '/support',
       name: 'Support',
       component: Support
+    },
+    {
+        path: '/results',
+        name: 'Results',
+        component: Results
     }
   ]
 

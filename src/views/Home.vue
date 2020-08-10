@@ -21,10 +21,11 @@
                     <option class = "selecttext">5</option>
                     <option class = "selecttext">6</option>
                 </select>
-                <button class = "searchbutton searchelement d-flex align-items-center">
-                    <i>Αναζήτηση</i>
+                
+                <b-link class = "searchbutton searchelement d-flex align-items-center" to="/results">
+                    Αναζήτηση
                     <span class="iconify searchicons" data-icon="ion-search"></span>
-                </button>
+                </b-link>
             </div>
         </div>
     </div>
@@ -122,7 +123,9 @@ export default {
 }
 
 .searchbutton:hover{
-    background-color: #9C533B;   
+    background-color: #9C533B;
+    color: white;
+    text-decoration: none;   
 }
 
 .searchicons{
