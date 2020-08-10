@@ -49,7 +49,7 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 .background{
     background-color: gray;
     height: 900px;
