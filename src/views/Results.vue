@@ -13,7 +13,7 @@
             </div>
             <!-- row with persons and sort as option -->
             <div class="d-flex justify-content-between">               
-                <select class="forminputbox" v-model="selected">
+                <select class="forminputbox" v-model="selected1">
                     <option value="undefined" disabled>Άτομα..</option>
                     <option class = "selecttext">1</option>
                     <option class = "selecttext">2</option>
@@ -26,7 +26,7 @@
                     <p style="color: white;">Προβολή:</p>
                     <div>
                         <b-form-select 
-                            v-model="selected"
+                            v-model="selected2"
                             :options="options"
                             class="mb-3 forminputbox"
                             value-field="item"
@@ -81,7 +81,7 @@
   export default {
     data() {
       return {
-        selected: 'A',
+        selected2: 'A',
         options: [
           { item: 'A', name: 'Φθίνουσα τιμή' },
           { item: 'B', name: 'Αύξουσα τιμή' },
