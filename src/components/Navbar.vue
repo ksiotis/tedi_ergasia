@@ -35,7 +35,7 @@ export default {
 					icon: 'ion-home-outline',
 				},
 				{
-					page: '/contact',
+					page: '/support',
 					text: 'Επικοινωνία',
 					icon: 'ion-call-outline',
 				},

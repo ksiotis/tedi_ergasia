@@ -22,6 +22,17 @@ export default {
 </script>
 
 <style>
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap');
+#app {
+	font-family: 'Roboto', sans-serif;
+}
+
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #194A50 #E1DAD2;
+}
+
 .b-btn {
 	border-radius: 3px;
 }
@@ -39,27 +50,4 @@ export default {
                         supported by Chrome, Opera and Firefox */
 }
 
-::-webkit-input-placeholder {
-    color: white;
-    font-style: normal;
-    font-weight: normal;
-}
-
-:-moz-placeholder { /* Firefox 18- */
-    color: white;
-    font-style: normal;
-    font-weight: normal;
-}
-
-::-moz-placeholder {  /* Firefox 19+ */
-    color: white;
-    font-style: normal;
-    font-weight: normal;
-}
-
-:-ms-input-placeholder {  
-    color: white;
-    font-style: normal;
-    font-weight: normal;
-}
 </style>

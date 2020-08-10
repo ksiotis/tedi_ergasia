@@ -1,25 +1,22 @@
 <template>
 	<div class="my-topart d-flex">
-        
-        <div class="flex-grow-1 mr-auto">
-			<img class="art" src="../assets/homies_logo.svg" />
+		
+		<div class="flex-grow-1 mr-auto d-flex">
+			<img class="art align-self-end" src="../assets/homies_logo.svg" />
 		</div>
 
-		<div class="d-flex align-self-center align-items-center">
-			<div class="language">
-				<span class="iconify " data-icon="ion-globe-outline"></span>
-			</div>
-			
-			<div class="mr-5">
-				<a class="ltext ">ΕΛ</a>
-			</div>
+		<div class="d-flex align-self-center align-items-center mr-5">
+			<a class="language d-flex align-items-center">
+				<span class="iconify" data-icon="ion-globe-outline"></span>
+				<span class="ltext">ΕΛ</span>
+			</a>
 
 			<button
 				v-if="!user"
 				class="d-flex align-items-center"
 				v-on:click="$router.push('/login').catch(() => {})"
 			>
-				<i class="ion-ios-log-in" />
+				<i class="iconify mr-1" data-icon="ion-person-circle-outline" />
 				Σύνδεση / Εγγραφή
 			</button>
 			<button
@@ -57,8 +54,9 @@ export default {
 }
 
 .art {
-	height: 100%;
-    margin-left: 96.5px;
+	height: 95%;
+	margin-left: 100px;
+	margin-bottom: -1px;
 }
 
 button {
@@ -79,7 +77,6 @@ a {
 
 .ion-ios-log-in {
 	font-size: 30px;
-	margin-right: 7px;
 }
 
 button:focus {
@@ -95,24 +92,31 @@ button:active {
 	background-color: #004a87;
 }
 
-.iconify{
-    height: 32px;
-    width: 32px;
-    margin-right: -15px;
-    color: #153D41;
+.iconify {
+	height: 32px;
+	width: 32px;
+	color: #153D41;
 }
 
-.language{
-    margin-right: 20px;
+.language {
+	margin-right: 50px;
+	height: 100%;
 }
 
-.ltext{
-    color: #153D41;
-    font-weight: normal;
+.language:hover {
+	text-decoration: none;
 }
 
-.ltext:hover{
-    color: white;
+.ltext {
+	color: #153D41;
+	font-weight: normal;
+	text-decoration: none;
+	margin-left: 5px;
 }
+
+.language:hover .ltext {
+	color: white;
+}
+
 
 </style>
