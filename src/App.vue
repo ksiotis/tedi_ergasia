@@ -50,4 +50,27 @@ export default {
                         supported by Chrome, Opera and Firefox */
 }
 
+::-webkit-input-placeholder {
+    color: white;
+    font-style: normal;
+    font-weight: normal;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+    color: white;
+    font-style: normal;
+    font-weight: normal;
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+    color: white;
+    font-style: normal;
+    font-weight: normal;
+}
+
+:-ms-input-placeholder {  
+    color: white;
+    font-style: normal;
+    font-weight: normal;
+}
 </style>
