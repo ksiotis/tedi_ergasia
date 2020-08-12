@@ -5,6 +5,7 @@ import Home from '../views/Home.vue'
 import About from '../views/Home.vue'
 import Support from '../views/Support.vue'
 import Results from '../views/Results.vue'
+import Register from '../views/Register.vue'
 
 Vue.use(VueRouter)
 
@@ -28,6 +29,11 @@ Vue.use(VueRouter)
         path: '/results',
         name: 'Results',
         component: Results
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: Register
     }
   ]
 

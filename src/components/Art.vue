@@ -31,7 +31,7 @@
 
 					<span id="to-register" class="mr-auto mt-3">
 						Δεν έχω λογαριασμό.
-						<a id="register-link" v-on:click="$router.push('/register').catch(() => {})" href="">Εγγραφή</a>
+						<a id="register-link" v-on:click="close(); $router.push('/register').catch(() => {});">Εγγραφή</a>
 					</span>
 
 					<a @click="close()">
@@ -42,8 +42,8 @@
 			</template>
 
 			<b-form @submit="onSubmit" class="mt-3">
-				<b-form-input id="modal-input-top" v-model="form.username" placeholder="Όνομα Χρήστη" size="lg"></b-form-input>
-				<b-form-input id="modal-input-bot" v-model="form.password" type="password" placeholder="Κωδικός Πρόσβασης" size="lg"></b-form-input>
+				<b-form-input id="modal-input-top" v-model="form.username" placeholder="Όνομα Χρήστη" size="lg" required="test"></b-form-input>
+				<b-form-input id="modal-input-bot" v-model="form.password" type="password" placeholder="Κωδικός Πρόσβασης" size="lg" required></b-form-input>
 				<b-button id="login-btn" type="submit" class="widen mt-5">Είσοδος</b-button>
 			</b-form>
 
@@ -170,6 +170,10 @@ button:active {
 
 #register-link {
 	color: #D37556;
+}
+
+#register-link:hover {
+	text-decoration: underline;
 }
 
 .links-container a {
