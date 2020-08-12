@@ -8,6 +8,7 @@
             </div>
             <!-- row with date input -->
             <HotelDatePicker 
+                id = "datepicker"
                 class="dateinputbox"
                 format="DD/MM/YYYY"
                 >

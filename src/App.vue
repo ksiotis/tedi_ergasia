@@ -106,4 +106,19 @@ export default {
 option{
     color: #194A50;
 }
+
+.datepicker__month-day--selected{
+    background-color: #8DACB0;
+}
+.datepicker__month-day--first-day-selected{
+    background-color: #4E7378;
+}
+
+.datepicker__month-day--last-day-selected{
+    background-color: #4E7378;
+}
+
+#datepicker svg{
+    filter: brightness(100%) saturate(0%);
+}
 </style>

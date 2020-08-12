@@ -6,7 +6,8 @@
                 <input name="txtName" id="txtName" class="inputbox searchelement" placeholder="Εισάγεται τοποθεσία...">
                 <span class="iconify inputicon" data-icon="ion-locate"></span>
 
-                <HotelDatePicker 
+                <HotelDatePicker
+                    id = "datepicker" 
                     class="dateinputbox"
                     format="DD/MM/YYYY"
                 >
