@@ -11,12 +11,15 @@
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Art from './components/Art';
+import HotelDatePicker from 'vue-hotel-datepicker'
+
 
 export default {
 	components: {
 		Art,
 		Navbar,
-		Footer,
+        Footer,
+        HotelDatePicker,
 	},
 };
 </script>

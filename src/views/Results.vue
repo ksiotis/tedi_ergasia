@@ -7,10 +7,18 @@
                 <i class="iconify formicon" data-icon="ion-locate"></i>
             </div>
             <!-- row with date input -->
+
+            <HotelDatePicker 
+                class="dateinputbox"
+                format="DD/MM/YYYY"
+                >
+            </HotelDatePicker>
+<!--             
             <div class="forminputbox">
                 <input  class="forminput" placeholder="Εισάγετε ημερομηνίες...">
                 <i class="iconify formicon" data-icon="ion-calendar"></i>
             </div>
+             -->
             <!-- row with persons and sort as option -->
             <div class="d-flex justify-content-between">               
                 <select class="forminputbox" v-model="selected1">
@@ -78,7 +86,14 @@
 </template>
 
 <script>
-  export default {
+import HotelDatePicker from 'vue-hotel-datepicker'
+
+
+export default {
+    components: {
+        HotelDatePicker,
+    },
+
     data() {
       return {
         selected2: 'A',
@@ -114,6 +129,24 @@
     color:white;
     margin-top: 25px;
 
+}
+
+.datepicker__input{
+    color:white;
+    border: none;
+    outline: none;
+}
+.dateinputbox{
+    background: rgba(239, 239, 239, 0.25);
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    
+    height: 40px;
+    border: none;
+    outline: none;
+
+    color:white;
+    margin-top: 25px;
 }
 
 .forminput{
