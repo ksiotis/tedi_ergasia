@@ -76,4 +76,32 @@ export default {
     font-style: normal;
     font-weight: normal;
 }
+
+/* for the datepicker componenet */
+.datepicker__input{
+    color:white;
+    /* border: none;
+    outline: none; */
+}
+
+.datepicker__input:active{
+    border: none;
+    outline: none;
+    height: 40px;
+    position: relative;
+}
+
+.datepicker__dummy-wrapper{
+    border: none;
+    outline: none;
+}
+
+.datepicker__input:hover{
+    cursor: pointer;
+    font-weight: bold;
+}
+
+option{
+    color: #194A50;
+}
 </style>

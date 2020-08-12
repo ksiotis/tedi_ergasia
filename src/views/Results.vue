@@ -107,7 +107,6 @@ export default {
 </script>
 
 <style scoped>
-
 .filterform{
     background-color: #194A50;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -131,11 +130,6 @@ export default {
 
 }
 
-.datepicker__input{
-    color:white;
-    border: none;
-    outline: none;
-}
 .dateinputbox{
     background: rgba(239, 239, 239, 0.25);
     border-top-left-radius: 3px;
@@ -203,5 +197,4 @@ p{
     color: white;
     text-decoration: none;   
 }
-
 </style>
