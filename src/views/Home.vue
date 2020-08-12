@@ -6,9 +6,13 @@
                 <input name="txtName" id="txtName" class="inputbox searchelement" placeholder="Εισάγεται τοποθεσία...">
                 <span class="iconify inputicon" data-icon="ion-locate"></span>
 
-
-                <input name="txtName" id="txtName" class="inputbox searchelement" placeholder="Εισάγεται ημερομηνίες...">
-                <span class="iconify inputicon" data-icon="ion-calendar"></span>
+                <HotelDatePicker 
+                    class="dateinputbox"
+                    format="DD/MM/YYYY"
+                >
+                </HotelDatePicker>
+                <!-- <input name="txtName" id="txtName" class="inputbox searchelement" placeholder="Εισάγεται ημερομηνίες...">
+                <span class="iconify inputicon" data-icon="ion-calendar"></span> -->
 
 
              
@@ -32,11 +36,12 @@
 </template>
 
 <script>
-
+import HotelDatePicker from 'vue-hotel-datepicker'
 
 export default {
-    
-
+    components: {
+        HotelDatePicker,
+    },
     data() {
 		return {
 		
@@ -64,7 +69,7 @@ export default {
     background-color: #194A50;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 90px;
-
+    padding: 0 30px;
     margin-top: 75px;
 }
 
@@ -136,5 +141,16 @@ export default {
 .searchelement{
     margin-left: 14px;
     padding: 0 20px;
+}
+
+.dateinputbox{
+    background: rgba(239, 239, 239, 0.25);
+    height: 40px;
+    border: none;
+    outline: none;
+
+    color:white;
+    margin-top: 25px;
+    margin-left: 14px;
 }
 </style>

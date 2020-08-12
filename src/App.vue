@@ -94,6 +94,8 @@ export default {
 .datepicker__dummy-wrapper{
     border: none;
     outline: none;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
 }
 
 .datepicker__input:hover{

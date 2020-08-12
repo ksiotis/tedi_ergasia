@@ -7,18 +7,11 @@
                 <i class="iconify formicon" data-icon="ion-locate"></i>
             </div>
             <!-- row with date input -->
-
             <HotelDatePicker 
                 class="dateinputbox"
                 format="DD/MM/YYYY"
                 >
             </HotelDatePicker>
-<!--             
-            <div class="forminputbox">
-                <input  class="forminput" placeholder="Εισάγετε ημερομηνίες...">
-                <i class="iconify formicon" data-icon="ion-calendar"></i>
-            </div>
-             -->
             <!-- row with persons and sort as option -->
             <div class="d-flex justify-content-between">               
                 <select class="forminputbox" v-model="selected1">
