@@ -1,9 +1,9 @@
 <template>
 	<div class="d-flex justify-content-start">
-        <div class="filterform d-flex justify-content-start flex-column">
+        <form class="filterform d-flex justify-content-start flex-column">
             <!-- row with location input -->
             <div class="forminputbox">
-                <input  class="forminput" placeholder="Εισάγετε τοποθεσία...">
+                <input  class="forminput" placeholder="Εισάγετε τοποθεσία..." v-model="searchForm.location">
                 <i class="iconify formicon" data-icon="ion-locate"></i>
             </div>
             <!-- row with date input -->
@@ -11,18 +11,22 @@
                 id = "datepicker"
                 class="dateinputbox"
                 format="DD/MM/YYYY"
-                >
+                v-bind="{startDate: this.searchForm.date1}"
+            >
             </HotelDatePicker>
             <!-- row with persons and sort as option -->
             <div class="d-flex justify-content-between">               
-                <select class="forminputbox" v-model="selected1">
-                    <option value="undefined" disabled>Άτομα..</option>
-                    <option class = "selecttext">1</option>
-                    <option class = "selecttext">2</option>
-                    <option class = "selecttext">3</option>
-                    <option class = "selecttext">4</option>
-                    <option class = "selecttext">5</option>
-                    <option class = "selecttext">6</option>
+                <select 
+                    class="forminputbox" 
+                    v-model="searchForm.persons"
+                >
+                    <option value="" disabled>Άτομα..</option>
+                    <option class = "selecttext" value="1">1</option>
+                    <option class = "selecttext" value="2">2</option>
+                    <option class = "selecttext" value="3">3</option>
+                    <option class = "selecttext" value="4">4</option>
+                    <option class = "selecttext" value="5">5</option>
+                    <option class = "selecttext" value="6">6</option>
                 </select>
                 <div class="d-flex">
                     <p style="color: white;">Προβολή:</p>
@@ -75,7 +79,7 @@
                     <span class="iconify searchicons" data-icon="ion-search"></span>
                 </b-link>
             </div>
-        </div>
+        </form>
     </div>
 </template>
 
@@ -90,14 +94,37 @@ export default {
 
     data() {
       return {
+        searchForm: {
+				location: '',
+                date1: '',
+                date2: '',
+				persons: '',
+		},
+
         selected2: 'A',
         options: [
           { item: 'A', name: 'Φθίνουσα τιμή' },
           { item: 'B', name: 'Αύξουσα τιμή' },
         ]
+
       }
+    },
+
+    created() {
+
+        if(this.$route.query.location!=null){
+            this.searchForm.location = this.$route.query.location;
+        }
+        
+        this.searchForm.date1 = new Date(this.$route.query.date1)
+        this.searchForm.date2 = new Date(this.$route.query.date2)
+
+        this.searchForm.persons = this.$route.query.persons;
+        
     }
-  }
+
+    
+}
 </script>
 
 <style scoped>

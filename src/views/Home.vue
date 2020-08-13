@@ -1,37 +1,49 @@
 <template>
     <div>
         <div class="background d-flex justify-content-center">
-            <div class="searchbar d-flex justify-content-center">
+            <form class="searchbar d-flex justify-content-center">
                 
-                <input name="txtName" id="txtName" class="inputbox searchelement" placeholder="Εισάγεται τοποθεσία...">
+                <input 
+                    name="txtName" 
+                    id="txtName" 
+                    class="inputbox searchelement" 
+                    placeholder="Εισάγεται τοποθεσία..."
+                    v-model="searchForm.location"
+                >
                 <span class="iconify inputicon" data-icon="ion-locate"></span>
 
                 <HotelDatePicker
                     id = "datepicker" 
                     class="dateinputbox"
                     format="DD/MM/YYYY"
+                    v-on:check-in-changed="searchForm.date1 = $event"
+                    v-on:check-out-changed="searchForm.date2 = $event"
                 >
                 </HotelDatePicker>
                 <!-- <input name="txtName" id="txtName" class="inputbox searchelement" placeholder="Εισάγεται ημερομηνίες...">
                 <span class="iconify inputicon" data-icon="ion-calendar"></span> -->
-
-
              
-                <select class="inputbox searchelement" v-model="selected">
-                    <option value="undefined" disabled>Άτομα..</option>
-                    <option class = "selecttext">1</option>
-                    <option class = "selecttext">2</option>
-                    <option class = "selecttext">3</option>
-                    <option class = "selecttext">4</option>
-                    <option class = "selecttext">5</option>
-                    <option class = "selecttext">6</option>
+                <select 
+                    class="inputbox searchelement" 
+                    v-model="searchForm.persons"
+                >
+                    <option value="" disabled>Άτομα..</option>
+                    <option class = "selecttext" value="1">1</option>
+                    <option class = "selecttext" value="2">2</option>
+                    <option class = "selecttext" value="3">3</option>
+                    <option class = "selecttext" value="4">4</option>
+                    <option class = "selecttext" value="5">5</option>
+                    <option class = "selecttext" value="6">6</option>
                 </select>
                 
-                <b-link class = "searchbutton searchelement d-flex align-items-center" to="/results">
+                <b-link 
+                    class = "searchbutton searchelement d-flex align-items-center"
+                    @click="submit"
+                >
                     Αναζήτηση
                     <span class="iconify searchicons" data-icon="ion-search"></span>
                 </b-link>
-            </div>
+            </form>
         </div>
     </div>
 </template>
@@ -40,17 +52,33 @@
 import HotelDatePicker from 'vue-hotel-datepicker'
 
 export default {
+
+
     components: {
         HotelDatePicker,
     },
     data() {
 		return {
-		
+            searchForm: {
+				location: '',
+                date1: '',
+                date2: '',
+				persons: '',
+			},
 		};
 	},
 	methods: {
+        submit(){
+            let query = { location: this.searchForm.location, date1: this.searchForm.date1, date2: this.searchForm.date2, persons: this.searchForm.persons };
+            
+            query.date1 = query.date1.toISOString();
+            query.date2 = query.date2.toISOString();
 
+            this.$router.push({ path: '/results', query: query}).catch(() => {});
+        }
+        
     },
+
 };
 
 </script>
