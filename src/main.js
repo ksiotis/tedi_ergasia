@@ -4,6 +4,9 @@ import router from './router'
 import store from './store'
 
 
+// import { createPopper } from '@popperjs/core';
+// Vue.use(createPopper)
+
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 Vue.use(BootstrapVue)
 // Vue.use(IconsPlugin)

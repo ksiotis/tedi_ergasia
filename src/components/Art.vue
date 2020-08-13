@@ -15,15 +15,24 @@
 				<i class="iconify mr-1" data-icon="ion-person-circle-outline" />
 				Σύνδεση / Εγγραφή
 			</button>
-			<button
-				v-else
-				class="d-flex align-items-center"
-				v-on:click="$router.push('/profile').catch(() => {})"
-			>
-				<i class="ion-ios-log-in" />
-				{{user.fullName}} / Προφίλ
-			</button>
+			<div v-else>
+				<b-dropdown id="profile-button" size="lg" variant="white" left toggle-class="text-decoration-none" >
+					<template v-slot:button-content>
+						<img v-if="!user.profilepicpath" id="profile-pic" src="../assets/profile_pics/default.png" width="32px" height="32px" class="rounded-circle mr-2">
+						<img v-else id="profile-pic" :src="user.profilepicpath" width="32px" height="32px" class="rounded-circle mr-2">
+						{{user.username}}
+					</template>
+					<b-dropdown-item @click="$router.push('/profile').catch(() => {})">Προβολή Λογαριασμού</b-dropdown-item>
+					<b-dropdown-item @click="$router.push('/messages').catch(() => {})">Μηνύματα</b-dropdown-item>
+					<b-dropdown-item @click="$router.push('/favorites').catch(() => {})">Αγαπημένα</b-dropdown-item>
+					<b-dropdown-item @click="$router.push('/becomehost').catch(() => {})">Γίνετε Οικοδεσπότης</b-dropdown-item>
+					<b-dropdown-divider></b-dropdown-divider>
+					<b-dropdown-item @click="$router.push('/profile').catch(() => {})">Βοήθεια</b-dropdown-item>
+					<b-dropdown-item >Αποσύνδεση</b-dropdown-item>
+				</b-dropdown>
+			</div>
 		</div>
+
 
 		<b-modal id="login-modal" title="BootstrapVue">
 			<template v-slot:modal-header="{close}">
@@ -62,16 +71,18 @@
 export default {
 	data() {
 		return {
+			new_messages: false,
+			user: {
+				name: "Eva",
+				surname: "Adams",
+				username: "quirkygirl85",
+				profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
+			},
 			form: {
 				username: '',
 				password: ''
 			}
 		};
-	},
-	computed: {
-		user() {
-			return this.$store.state.user;
-		},
 	},
 	methods: {
 		onSubmit(evt) {
@@ -101,6 +112,30 @@ button {
 	border-radius: 90px;
 	border: none;
 	color: #153D41;
+	font-weight: normal;
+	cursor: pointer;
+	padding: 0 20px;
+	height: 47px;
+	margin-right: 37px;
+}
+
+#profile-button {
+	background: white;
+	border-radius: 90px;
+	border: none;
+	color: #153D41;
+	font-weight: normal;
+	cursor: pointer;
+	padding: 0 20px;
+	height: 47px;
+	margin-right: 37px;
+}
+
+#profile-button button {
+	background: white !important;
+	border-radius: 90px;
+	border: none;
+	color: #153D41 !important;
 	font-weight: normal;
 	cursor: pointer;
 	padding: 0 20px;
@@ -162,6 +197,10 @@ button:active {
 .widen a {
 	width: fit-content;
 	color: #194A50;
+}
+
+#profile-pic {
+	object-fit: cover;
 }
 
 #to-register {
