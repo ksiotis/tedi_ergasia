@@ -78,6 +78,7 @@
 
 <script>
 export default {
+    name: "Register",
     data() {
         return {
             image: require("../assets/profile_pics/default.png"),
