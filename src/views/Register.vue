@@ -50,7 +50,7 @@
                         <b-form-group id="checkboxes" class="d-flex mb-0">
                             <b-form-checkbox id="checkbox-1" v-model="form.host" name="checkbox-1" class="ml-1">
                                 Είμαι οικοδεσπότης
-                                <span class="iconify" v-b-tooltip.hover title="Tooltip content" data-icon="ion-information-circle-outline"/>
+                                <span v-b-tooltip.hover="{ variant: 'light' }" title="Lorem ipsum dolor arsenal en La Plata"><span class="iconify" data-icon="ion-information-circle-outline"/></span>
                             </b-form-checkbox>
                             <b-form-checkbox id="checkbox-2" v-model="form.terms" name="checkbox-2" class="ml-1" required>
                                 <a href="http://legalipsum.com/?count=3" target="_blank" class="orange-link">
@@ -210,10 +210,6 @@ export default {
 
 #register-btn:hover {
 	background-color: #9C533B;
-}
-
-#file-input {
-    visibility: hidden;
 }
 
 </style>
