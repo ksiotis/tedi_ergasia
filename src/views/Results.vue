@@ -11,9 +11,10 @@
                 id = "datepicker"
                 class="dateinputbox"
                 format="DD/MM/YYYY"
-                v-bind="{startDate: this.searchForm.date1}"
-            >
-            </HotelDatePicker>
+                :startingDateValue = "searchForm.date1"
+                :endingDateValue = "searchForm.date2"
+                v-on:check-in-changed="searchForm.date1 = $event"
+                v-on:check-out-changed="searchForm.date2 = $event"/>
             <!-- row with persons and sort as option -->
             <div class="d-flex justify-content-between">               
                 <select 
@@ -115,14 +116,16 @@ export default {
         if(this.$route.query.location!=null){
             this.searchForm.location = this.$route.query.location;
         }
+
         
         this.searchForm.date1 = new Date(this.$route.query.date1)
         this.searchForm.date2 = new Date(this.$route.query.date2)
 
         this.searchForm.persons = this.$route.query.persons;
+
+        console.log(this.searchForm.date1);
         
     }
-
     
 }
 </script>
