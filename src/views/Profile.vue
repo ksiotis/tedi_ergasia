@@ -29,7 +29,7 @@
                     </span>
                 </div>
             </div>
-            <div id="bottom">
+            <div id="bottom" class="d-flex flex-column">
                 <div class="d-flex align-items-center">
                     <a class="d-flex"><span class="iconify" data-icon="ion-chatbubble-ellipses-outline"/></a>
                     <span class="mt-3 ml-3">Αποστολή Μηνύματος</span>
@@ -42,8 +42,8 @@
                     <a class="d-flex"><span class="iconify" data-icon="ion-time-outline"/></a>
                     <span  class="mt-3 ml-3">Προβολή ιστορικού ενοικιάσεων</span>
                 </div>
-                
-                
+
+                <button id="edit" class="px-4 py-1 align-self-end mr-5">Επεξεργασία <span class="iconify" data-icon="ion-pencil-outline"/></button>
             </div>
         </div>
     </div>
@@ -126,6 +126,13 @@ a .iconify {
 
 #bottom {
     font-size: 20px;
+}
+
+#edit {
+    background-color: #D37556;
+    border: none;
+    color: white;
+    border-radius: 90px;
 }
 
 </style>
