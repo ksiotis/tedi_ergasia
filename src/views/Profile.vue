@@ -9,11 +9,11 @@
 
                 <div id="column2" class="d-flex flex-column">
                     <span>
-                        Όνομα: <span class="semitransparenttext">{{profile.name}}</span>
+                        Επώνυμο: <span class="semitransparenttext">{{profile.surname}}</span>
                     </span>
 
                     <span class="mt-2">
-                        Επώνυμο: <span class="semitransparenttext">{{profile.surname}}</span>
+                        Όνομα: <span class="semitransparenttext">{{profile.name}}</span>
                     </span>
 
                     <span class="mt-2">
@@ -41,6 +41,10 @@
                 <div class="d-flex align-items-center">
                     <a class="d-flex"><span class="iconify" data-icon="ion-time-outline"/></a>
                     <span  class="mt-3 ml-3">Προβολή ιστορικού ενοικιάσεων</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <a class="d-flex admin-button"><span class="iconify" data-icon="ion-repeat-outline"/></a>
+                    <span  class="mt-3 ml-3">Αλλαγή ρόλου</span>
                 </div>
 
                 <button id="edit" class="px-4 py-1 align-self-end mr-5">Επεξεργασία <span class="iconify" data-icon="ion-pencil-outline"/></button>
@@ -115,7 +119,15 @@ a {
 
 a:hover {
     cursor: pointer;
+    background-color: #46676B;
+}
 
+.admin-button {
+    background-color: #D37556;
+}
+
+.admin-button:hover {
+    background-color: #9C533B;
 }
 
 a .iconify {
@@ -133,6 +145,10 @@ a .iconify {
     border: none;
     color: white;
     border-radius: 90px;
+}
+
+#edit:hover {
+    background-color: #9C533B;
 }
 
 </style>
