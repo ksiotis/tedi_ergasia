@@ -22,7 +22,7 @@
 						<img v-else id="profile-pic" :src="user.profilepicpath" width="32px" height="32px" class="rounded-circle mr-2">
 						{{user.username}}
 					</template>
-					<b-dropdown-item @click="$router.push('/profile').catch(() => {})">Προβολή Λογαριασμού</b-dropdown-item>
+					<b-dropdown-item @click="pushProfile">Προβολή Λογαριασμού</b-dropdown-item>
 					<b-dropdown-item @click="$router.push('/messages').catch(() => {})">Μηνύματα</b-dropdown-item>
 					<b-dropdown-item @click="$router.push('/favorites').catch(() => {})">Αγαπημένα</b-dropdown-item>
 					<b-dropdown-item @click="$router.push('/becomehost').catch(() => {})">Γίνετε Οικοδεσπότης</b-dropdown-item>
@@ -73,8 +73,6 @@ export default {
 		return {
 			new_messages: false,
 			user: {
-				name: "Eva",
-				surname: "Adams",
 				username: "quirkygirl85",
 				profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
 			},
@@ -89,6 +87,10 @@ export default {
 			evt.preventDefault()
 			alert(JSON.stringify(this.form))
 		},
+		pushProfile() {
+			let query = { username: this.user.username };
+			this.$router.push({ path: '/profile', query: query}).catch(() => {});
+		}
 	},
 };
 </script>

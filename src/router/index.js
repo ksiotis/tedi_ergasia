@@ -6,6 +6,7 @@ import About from '../views/Home.vue'
 import Support from '../views/Support.vue'
 import Results from '../views/Results.vue'
 import Register from '../views/Register.vue'
+import Profile from '../views/Profile.vue'
 
 Vue.use(VueRouter)
 
@@ -34,6 +35,11 @@ Vue.use(VueRouter)
       path: '/register',
       name: 'Register',
       component: Register
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile
     }
   ]
 
