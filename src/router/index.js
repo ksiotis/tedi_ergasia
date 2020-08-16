@@ -8,6 +8,7 @@ import Results from '../views/Results.vue'
 import Register from '../views/Register.vue'
 import Profile from '../views/Profile.vue'
 import Admin from '../views/Admin.vue'
+import Messages from '../views/Messages.vue'
 
 Vue.use(VueRouter)
 
@@ -46,6 +47,11 @@ Vue.use(VueRouter)
       path: '/admin',
       name: 'Admin',
       component: Admin
+    },
+    {
+      path: '/messages',
+      name: 'Messages',
+      component: Messages
     }
   ]
 
