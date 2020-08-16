@@ -132,6 +132,5 @@ export default {
 
     height: 15px;
     padding: 0 5px;
-    margin-right:3px;
 }
 </style>

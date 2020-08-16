@@ -82,14 +82,15 @@
             </div>
         </form>
 
-        <div class="tileContainer d-flex justify-content-start flex-column">
-          
-            <div class="row">
+        <div class="container">
+            <div class="row ">
                 <div 
                     v-for="(result, index) in results"
                     v-bind:key="index"
-                    class="col-5 row">
-                        <ResultTile/>
+                    class="col col-6 no-gutters">
+                        <div class="panel">
+                            <ResultTile/>
+                        </div>
                 </div> 
             </div>
 
@@ -203,6 +204,7 @@ export default {
 </script>
 
 <style scoped>
+
 .filterform{
     background-color: #194A50;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -294,7 +296,20 @@ p{
     text-decoration: none;   
 }
 
-.tileContainer{
+.container{
     margin-left: 150px;
+    width: 50%;
+    margin-bottom: 50px;
+}
+
+
+.no-gutters {
+  margin-right: 0;
+  margin-left: 0;  
+}
+
+.col{
+    padding-right: 0;
+    padding-left: 0;
 }
 </style>
