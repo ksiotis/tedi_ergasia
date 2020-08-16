@@ -1,5 +1,5 @@
 <template>
-    <div class="d-flex flex-column align-items-center my-3">
+    <div class="d-flex flex-column align-items-center my-5">
         <div id="toppage" class="d-flex mb-1">
             <div class="d-flex move-left">
                 <span class="align-self-center title mr-5">Λίστα Χρηστών</span>
@@ -12,22 +12,53 @@
             <span class="align-self-center title ml-5">Ενεργά Αιτήματα Οικοδεσπότη</span>
         </div>
         <div id="botpage" class="d-flex">
-            <div class="box mr-5">
-                <a v-for="user in users" :key="user.index" class="d-flex user-box flex-fill my-1 mx-1 px-2 py-1">
-                    <img :src="user.profilepicpath" width="32px" height="32px" class="rounded-circle profile-pic">
-                    <span class="d-flex ml-2 mr-auto overflow-hide">{{user.username}}</span>
-                    <span class="iconify" data-icon="ion-briefcase"/>
-                </a>
-            </div>
-            <div class="box ml-5">
-                <div v-for="user in requests" :key="user.index" class="d-flex user-box flex-fill my-1 mx-1 px-2 py-1">
-                    <img :src="user.profilepicpath" width="32px" height="32px" class="rounded-circle profile-pic">
-                    <span class="d-flex ml-2 mr-auto overflow-hide">{{user.username}}</span>
-                    <button class="btn accept mr-1 ">Αποδοχή</button>
-                    <button class="btn reject">Απόρριψη</button>
+            <div id="column1">
+                <div class="box mr-5 mb-3">
+                    <a v-for="user in users" :key="user.index" class="d-flex user-box flex-fill my-1 mx-1 px-2 py-1">
+                        <img :src="user.profilepicpath" width="32px" height="32px" class="rounded-circle profile-pic">
+                        <span class="d-flex ml-2 mr-auto overflow-hide">{{user.username}}</span>
+                        <span class="iconify" data-icon="ion-briefcase"/>
+                    </a>
                 </div>
+                <a id="export" v-b-modal.export-modal class="">Εξαγωγή δεδομένων<span v-b-tooltip.hover="{ variant: 'light' }" title="Lorem ipsum dolor arsenal en La Plata"><span class="iconify" data-icon="ion-information-circle-outline"/></span></a>
+            </div>
+            <div id="column2">
+                <div class="half-box ml-5">
+                    <div v-for="user in requests" :key="user.index" class="d-flex user-box flex-fill my-1 mx-1 px-2 py-1">
+                        <img :src="user.profilepicpath" width="32px" height="32px" class="rounded-circle profile-pic">
+                        <span class="d-flex ml-2 mr-auto overflow-hide">{{user.username}}</span>
+                        <button class="btn accept mr-1 ">Αποδοχή</button>
+                        <button class="btn reject">Απόρριψη</button>
+                    </div>
+                </div>
+                <img id="logo2" src="../assets/homies-logo2 1.png" class="align-self-center">
             </div>
         </div>
+
+        <b-modal id="export-modal" title="BootstrapVue">
+			<template v-slot:modal-header="{close}">
+				<div class="widen d-flex">
+
+					<span class="mr-auto mt-3">
+						Εξαγωγή όλων των δεδομένων της βάσης.
+					</span>
+
+					<a @click="close()">
+						<span class="iconify modal-icon" data-icon="ion-close-circle-outline"></span>
+					</a>
+
+				</div>
+			</template>
+
+			<b-form-group label-for="type" label="Επιλέξτε τον τύπο των δεδομένων" class="mt-3" >
+				<b-form-select id="type" v-model="selected" :options="options"></b-form-select>
+			</b-form-group>
+
+			<template v-slot:modal-footer="" class="d-flex justify-content-start widen">
+				<b-button id="export-btn" type="submit" class="widen">Κατέβασμα</b-button>    
+			</template>
+
+		</b-modal>
     </div>
 </template>
 
@@ -36,6 +67,12 @@ export default {
     name: "Admin",
     data() {
         return {
+            selected: "",
+            options: [
+                { value: null, text: 'Please select an option', disabled: true },
+                { value: 'XML', text: 'XML' },
+                { value: 'JSON', text: 'JSON' },
+            ],
             users: [
                 {
                     username: "quirkygirl85",
@@ -71,9 +108,14 @@ export default {
     width: 32px;
 }
 
-/* .move-left {
-    margin-left: -100px;
-} */
+.modal-icon {
+	color: #194A50;
+}
+
+.modal-icon:hover {
+	color: #153D41;
+    cursor: pointer;
+}
 
 #toppage {
     font-size: 18px;
@@ -93,6 +135,15 @@ export default {
     background-color: #194A50;
     overflow: scroll;
     height: 500px;
+    width: 400px;
+    padding: 3px;
+    border-radius: 10px;
+}
+
+.half-box {
+    background-color: #194A50;
+    overflow: scroll;
+    height: 250px;
     width: 400px;
     padding: 3px;
     border-radius: 10px;
@@ -138,6 +189,40 @@ export default {
 .reject:hover {
     background-color: #B4AEA8;
     color: #194A50;
+}
+
+#export {
+    color: #194A50;
+    text-decoration: underline;
+}
+
+#export:hover {
+    cursor: pointer;
+}
+
+#logo2 {
+    height: auto;
+    width: 350px;
+    position: relative;
+    left: 50px;
+    bottom: -60px
+}
+
+.widen {
+	width: 100%;
+}
+
+#export-btn {
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	background-color: #D37556;
+	color: white;
+}
+
+#export-btn:hover {
+	background-color: #9C533B;
 }
 
 </style>
