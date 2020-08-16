@@ -3,13 +3,13 @@
         <div id="toppage" class="d-flex mb-1">
             <div class="d-flex move-left">
                 <span class="align-self-center title mr-5">Λίστα Χρηστών</span>
-                <div class="d-flex flex-column mr-1">
+                <div class="d-flex flex-column mr-5">
                     <span><span class="iconify" data-icon="ion-build"/>Διαχειριστής</span>
                     <span><span class="iconify" data-icon="ion-home-sharp"/>Οικοδεσπότης</span>
                     <span><span class="iconify" data-icon="ion-briefcase"/>Ενοικιαστής</span>
                 </div>
             </div>
-            <span class="align-self-center title ml-5">Ενεργά Αιτήματα Οικοδεσπότη</span>
+            <span class="align-self-center title2 ml-5">Ενεργά Αιτήματα Οικοδεσπότη</span>
         </div>
         <div id="botpage" class="d-flex">
             <div id="column1">
@@ -23,7 +23,7 @@
                 <a id="export" v-b-modal.export-modal class="">Εξαγωγή δεδομένων<span v-b-tooltip.hover="{ variant: 'light' }" title="Lorem ipsum dolor arsenal en La Plata"><span class="iconify" data-icon="ion-information-circle-outline"/></span></a>
             </div>
             <div id="column2">
-                <div class="half-box ml-5">
+                <div class="half-box ml-3">
                     <div v-for="user in requests" :key="user.index" class="d-flex user-box flex-fill my-1 mx-1 px-2 py-1">
                         <img :src="user.profilepicpath" width="32px" height="32px" class="rounded-circle profile-pic">
                         <span class="d-flex ml-2 mr-auto overflow-hide">{{user.username}}</span>
@@ -50,7 +50,7 @@
 				</div>
 			</template>
 
-			<b-form-group label-for="type" label="Επιλέξτε τον τύπο των δεδομένων" class="mt-3" >
+			<b-form-group label-for="type" label="Επιλέξτε τον τύπο των δεδομένων" class="mt-3">
 				<b-form-select id="type" v-model="selected" :options="options"></b-form-select>
 			</b-form-group>
 
@@ -131,11 +131,15 @@ export default {
     font-size: 32px;
 }
 
+.title2 {
+    font-size: 30px;
+}
+
 .box {
     background-color: #194A50;
     overflow: scroll;
     height: 500px;
-    width: 400px;
+    width: 450px;
     padding: 3px;
     border-radius: 10px;
 }
@@ -144,7 +148,7 @@ export default {
     background-color: #194A50;
     overflow: scroll;
     height: 250px;
-    width: 400px;
+    width: 450px;
     padding: 3px;
     border-radius: 10px;
 }
