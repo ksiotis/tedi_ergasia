@@ -81,16 +81,23 @@
                 </b-link>
             </div>
         </form>
+
+        <!-- result tiles container -->
+        <div class="tileContainer d-flex justify-content-start flex-column">
+            <ResultTile/>
+        </div>
+
     </div>
 </template>
 
 <script>
 import HotelDatePicker from 'vue-hotel-datepicker'
-
+import ResultTile from '../components/ResultTile'
 
 export default {
     components: {
         HotelDatePicker,
+        ResultTile,
     },
 
     data() {
@@ -220,5 +227,9 @@ p{
     background-color: #9C533B;
     color: white;
     text-decoration: none;   
+}
+
+.tileContainer{
+    margin-left: 150px;
 }
 </style>

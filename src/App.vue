@@ -12,6 +12,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Art from './components/Art';
 import HotelDatePicker from 'vue-hotel-datepicker'
+import ResultTile from './components/ResultTile'
 
 
 export default {
@@ -20,6 +21,7 @@ export default {
 		Navbar,
         Footer,
         HotelDatePicker,
+        ResultTile,
 	},
 };
 </script>
