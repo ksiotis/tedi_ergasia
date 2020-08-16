@@ -82,9 +82,17 @@
             </div>
         </form>
 
-        <!-- result tiles container -->
         <div class="tileContainer d-flex justify-content-start flex-column">
-            <ResultTile/>
+          
+            <div class="row">
+                <div 
+                    v-for="(result, index) in results"
+                    v-bind:key="index"
+                    class="col-5 row">
+                        <ResultTile/>
+                </div> 
+            </div>
+
         </div>
 
     </div>
@@ -113,7 +121,66 @@ export default {
         options: [
           { item: 'A', name: 'Φθίνουσα τιμή' },
           { item: 'B', name: 'Αύξουσα τιμή' },
-        ]
+        ],
+
+        results: [
+            {
+                tile: 'Tile A',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+            {
+                tile: 'Title B',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+            {
+                tile: 'Title C',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+            {
+                tile: 'Title C',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+            {
+                tile: 'Title C',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+             {
+                tile: 'Title C',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+             {
+                tile: 'Title C',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+             {
+                tile: 'Title C',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+		],
 
       }
     },
@@ -129,10 +196,8 @@ export default {
         this.searchForm.date2 = new Date(this.$route.query.date2)
 
         this.searchForm.persons = this.$route.query.persons;
+    },
 
-        console.log(this.searchForm.date1);
-        
-    }
     
 }
 </script>
