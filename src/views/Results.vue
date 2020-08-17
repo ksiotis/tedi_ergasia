@@ -187,19 +187,15 @@ export default {
     },
 
     created() {
-
         if(this.$route.query.location!=null){
             this.searchForm.location = this.$route.query.location;
         }
-
         
         this.searchForm.date1 = new Date(this.$route.query.date1)
         this.searchForm.date2 = new Date(this.$route.query.date2)
 
         this.searchForm.persons = this.$route.query.persons;
     },
-
-    
 }
 </script>
 
@@ -311,5 +307,9 @@ p{
 .col{
     padding-right: 0;
     padding-left: 0;
+}
+
+.panel{
+    cursor: pointer;
 }
 </style>

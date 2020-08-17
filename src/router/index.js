@@ -8,6 +8,7 @@ import Results from '../views/Results.vue'
 import Register from '../views/Register.vue'
 import Profile from '../views/Profile.vue'
 import Admin from '../views/Admin.vue'
+import Accommodation from '../views/Accommodation.vue'
 
 Vue.use(VueRouter)
 
@@ -46,7 +47,12 @@ Vue.use(VueRouter)
       path: '/admin',
       name: 'Admin',
       component: Admin
-    }
+    },
+    {
+        path: '/accommodation',
+        name: 'Accommodation',
+        component: Accommodation
+      }
   ]
 
 const router = new VueRouter({
