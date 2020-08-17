@@ -8,11 +8,25 @@
             <div id="mail-buttons" class="d-flex mt-2">
                 <button id="incoming" class="mr-2">Εισερχόμενα</button>
                 <button id="outgoing" class=" mr-auto">Εξερχόμενα</button>
-                <button id="new-mail" class="">
+                <button id="new-mail" class="d-flex">
                     <span class="mr-2">Νέο Μήνυμα</span>
-                    <div class="iconify" data-icon="ion-mail-unread-outline align-item-center"/>
+                    <span class="iconify" data-icon="ion-mail-unread-outline" />
                 </button>
             </div>
+        </div>
+        <div id="table">
+            <table class="my-5">
+            <tr>
+                <th>Θέμα</th>
+                <th>Από</th>
+                <th>Ημερομηνία</th>
+            </tr>
+            <tr v-for="message in mymessages" :key="message.index">
+                <td>{{message.subject}}</td>
+                <td>{{message.from}}</td>
+                <td>{{message.when}}</td>
+            </tr>
+            </table>
         </div>
     </div>
 </template>
@@ -22,7 +36,18 @@ export default {
     name: "Messages",
     data() {
         return {
-
+            mymessages: [
+                {
+                    subject: "why coronavirus is a semetic lie and how to protect yourself from it",
+                    from: "quirkygirl85",
+                    when: "22/1/1999",
+                },
+                {
+                    subject: "Nigerian prince wants to give you money hon",
+                    from: "quirkygirl85",
+                    when: "22/1/1999",
+                }
+            ],
         }
     },
 }
@@ -74,6 +99,53 @@ export default {
 #new-mail .iconify {
     width: 20px;
     height: 20px;
+}
+
+/* table th:nth-child(1) td:nth-child(1) {
+    width:10px !important;
+}
+
+table th:nth-child(2) {
+    width:10px !important;
+}
+
+table th:nth-child(3) {
+    width:10px !important;
+} */
+
+table {
+    border: solid 1px black;
+    width: 100%;
+}
+
+td {
+    text-align: left;
+    padding: 8px;
+    border-right: #194A50 solid 1px;
+    border-left: #194A50 solid 1px;
+    height: 40px;
+    color: black;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+tr:nth-child(even) {
+    background-color: #DBE8EA;
+    height: 40px;
+}
+
+tr:hover {
+    background-color: #c5d0d2;
+    cursor: pointer;
+}
+
+th {
+    background-color: #759296;
+    color: white;
+    text-align: center;
+    padding: 8px;
+    border: #194A50 solid 1px;
 }
 
 </style>
