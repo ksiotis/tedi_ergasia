@@ -40,6 +40,7 @@
                     </div>
 
                     <div class="characteristicsContainer">
+                        <h3 class="subtitle">Παροχές</h3>
                         <form 
                             class="d-flex flex-column"
                             v-for="(characteristic, index) in characteristics"
@@ -64,7 +65,7 @@
                         <p>/διανυκτέρευση</p>
                     </div>
 
-                    <h3 class="subtitle element">Επιπλέον κόστος</h3>
+                    <h3 class="subtitle">Επιπλέον κόστος</h3>
                     <div class="d-flex flex-row align-items-center">
                         <p class="area">{{extraCost}}</p>
                         <p class="area">€</p>
@@ -96,9 +97,20 @@
                         <p>Αριθμός υπνοδωματίων:</p>
                         <p>{{numBedrooms}}</p>
                     </div>
-                    
                 </div>
             </div>
+            
+            <!-- κανόνες -->
+            <h3 class="subtitle element">Κανόνες</h3>
+            <p> {{placeholderText}} </p>
+
+            <!-- Διαθεσιμότητα -->
+            <h3 class="subtitle element">Διαθεσιμότητα</h3>
+            <p>Προσθέστε τις ημερομηνίες του ταξιδιού σας, για να δείτε συγκεκριμένη τιμή.</p>
+            <div class="calendarContainer">
+                <HotelDatePicker ref="datePicker" :closeDatepickerOnClickOutside="false"/>
+            </div>
+
             
         </div>
     </div>
@@ -107,7 +119,13 @@
 
 
 <script>
+import HotelDatePicker from 'vue-hotel-datepicker'
+
  export default {
+    components: {
+        HotelDatePicker,
+    },
+
     data() {
         return {
             slide: 0,
@@ -170,19 +188,23 @@
         }
     },
     methods: {
-      onSlideStart() {
-        this.sliding = true
-      },
-      onSlideEnd() {
-        this.sliding = false
-      }
+        onSlideStart() {
+            this.sliding = true
+        },
+        onSlideEnd() {
+            this.sliding = false
+        },
+    },
+
+    mounted() {
+        this.$refs.datePicker.showDatepicker();
     }
   }
 </script>
 
 <style scoped>
 .container{
-    padding: 0 100px;
+    padding: 0 150px;
     margin-top: 50px;
 }
 
@@ -241,7 +263,7 @@
     font-size: 18px;
     line-height: 21px;
     
-    width: 300px;
+    width: 275px;
 
     margin-bottom: -10px;
 
@@ -249,7 +271,14 @@
 }
 
 .characteristicsContainer{
+    margin-top: 30px;
+}
 
+.calendarContainer{
+    padding: 10 10px;
+    background-color: #194A50;
+    color: #194A50;
+    /* opacity: 0.6; */
 }
 
 </style>
