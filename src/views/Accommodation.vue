@@ -108,8 +108,20 @@
             <h3 class="subtitle element">Διαθεσιμότητα</h3>
             <p>Προσθέστε τις ημερομηνίες του ταξιδιού σας, για να δείτε συγκεκριμένη τιμή.</p>
             <div class="calendarContainer">
-                <HotelDatePicker class="dateinputbox" ref="datePicker" :closeDatepickerOnClickOutside="false"/>
+                <HotelDatePicker 
+                    class="dateinputbox" 
+                    ref="datePicker" 
+                    :closeDatepickerOnClickOutside="false"
+                    format="DD/MM/YYYY"
+                    v-on:check-in-changed="date1 = $event;"
+                    v-on:check-out-changed="date2 = $event;"/>
             </div>
+            <div class="d-flex flex-row">
+                <h3 class="subtitle endspace">Τελική τιμή:</h3>
+                <p class="area">{{total.toFixed(2)}}</p>
+                <p class="area">€</p>
+            </div>
+
 
             
         </div>
@@ -134,14 +146,18 @@ import HotelDatePicker from 'vue-hotel-datepicker'
             placeholderText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam quam sapien, rutrum viverra nunc et, tincidunt sagittis libero. Curabitur dictum tellus sit amet arcu ultrices, in accumsan ipsum ultricies. Donec blandit ac felis id varius. Vestibulum quam tortor, ullamcorper ut euismod et, feugiat et nisl.',
             
             area: "46",
-            price: "68",
-            extraCost: "55",
+            price: 68,
+            extraCost: 55,
             
             minDays: "5",
             numPersons: "3",
             numBeds: "3",
             numBaths: "4",
             numBedrooms: "1",
+
+            date1: "",
+            date2: "",
+            reservationPrice: 0,
 
             characteristics: [
                 {
@@ -195,6 +211,21 @@ import HotelDatePicker from 'vue-hotel-datepicker'
             this.sliding = false
         },
     },
+     computed: {
+        total() {
+            let s = 0;
+            // let days = 1;
+			if(this.date1 != '' && this.date2 != ''){
+                console.log(this.date2);
+                console.log(this.date2);
+                let time = this.date2.getTime() - this.date1.getTime();
+                let days = time / (1000 * 3600 * 24) -1;
+                console.log(days);
+                s = this.price + days * this.extraCost;
+            }
+			return s;
+		},
+    },
 
     mounted() {
         this.$refs.datePicker.showDatepicker();
@@ -203,7 +234,7 @@ import HotelDatePicker from 'vue-hotel-datepicker'
     updated() {
         this.$refs.datePicker.showDatepicker();
     },
-    
+
     beforeUpdate(){
         this.$refs.datePicker.showDatepicker();
     }
@@ -237,7 +268,6 @@ import HotelDatePicker from 'vue-hotel-datepicker'
     font-style: normal;
     font-weight: 500;
     font-size: 24px;
-    line-height: 28px;
 
     color: #194A50;
 }
@@ -287,7 +317,7 @@ import HotelDatePicker from 'vue-hotel-datepicker'
     background-color: #194A50;
     width:700px;
     height:450px; */
-    margin-bottom: 450px;
+    margin-bottom: 400px;
 }
 
 .dateinputbox{
@@ -301,6 +331,10 @@ import HotelDatePicker from 'vue-hotel-datepicker'
 
 .datepicker__inner{
     width: 660px
+}
+
+.endspace{
+    margin-right: 5px;
 }
 
 </style>
