@@ -2,21 +2,19 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import axios from 'axios'
 
-
-// import { createPopper } from '@popperjs/core';
-// Vue.use(createPopper)
-
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import BootstrapVue from 'bootstrap-vue'
 Vue.use(BootstrapVue)
-// Vue.use(IconsPlugin)
+
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.config.productionTip = false
+Vue.prototype.$axios = axios
 
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
 }).$mount('#app')
