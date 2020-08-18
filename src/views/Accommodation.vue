@@ -108,7 +108,7 @@
             <h3 class="subtitle element">Διαθεσιμότητα</h3>
             <p>Προσθέστε τις ημερομηνίες του ταξιδιού σας, για να δείτε συγκεκριμένη τιμή.</p>
             <div class="calendarContainer">
-                <HotelDatePicker ref="datePicker" :closeDatepickerOnClickOutside="false"/>
+                <HotelDatePicker class="dateinputbox" ref="datePicker" :closeDatepickerOnClickOutside="false"/>
             </div>
 
             
@@ -198,6 +198,14 @@ import HotelDatePicker from 'vue-hotel-datepicker'
 
     mounted() {
         this.$refs.datePicker.showDatepicker();
+    },
+
+    updated() {
+        this.$refs.datePicker.showDatepicker();
+    },
+    
+    beforeUpdate(){
+        this.$refs.datePicker.showDatepicker();
     }
   }
 </script>
@@ -275,10 +283,24 @@ import HotelDatePicker from 'vue-hotel-datepicker'
 }
 
 .calendarContainer{
-    padding: 10 10px;
+    /* padding: 10 10px;
     background-color: #194A50;
-    color: #194A50;
-    /* opacity: 0.6; */
+    width:700px;
+    height:450px; */
+    margin-bottom: 450px;
+}
+
+.dateinputbox{
+    background:#194A50;
+    height: 40px;
+    width: 690px;
+    border: none;
+    outline: none;
+    color: white;
+}
+
+.datepicker__inner{
+    width: 660px
 }
 
 </style>
