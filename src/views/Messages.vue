@@ -29,48 +29,7 @@
             </table>
         </div>
 
-        <b-modal id="new-message-modal" title="BootstrapVue">
-			<template v-slot:modal-header="{close}">
-				<div class="widen d-flex">
-
-					<span id="to-register" class="mr-auto mt-3">
-						<span class="mr-2">Νέο Μήνυμα</span>
-                        <span class="iconify" data-icon="ion-mail-unread-outline" />
-					</span>
-
-					<a @click="close()">
-						<span class="iconify" data-icon="ion-close-circle-outline"></span>
-					</a>
-
-				</div>
-			</template>
-
-			<b-form @submit="send" class="mt-3">
-                <b-form-group label-cols="2" label="Από:" label-for="modal-username">
-				    <b-form-input id="modal-username" v-model="user.username" required disabled/>
-                </b-form-group>
-
-                <b-form-group label-cols="2" label="Προς:" label-for="modal-input-top">
-				    <b-form-input id="modal-input-top" v-model="form.to" required/>
-                </b-form-group>
-
-                <b-form-group label-cols="2" label="Θέμα:" label-for="modal-input-to">
-    				<b-form-input id="modal-input-to" v-model="form.subject" required/>
-                </b-form-group>
-
-                <b-form-group label-cols="2" label="Μήνυμα:" label-for="textarea-large">
-				    <b-form-textarea id="textarea-large" v-model="form.message" required/>
-                </b-form-group>
-			</b-form>
-
-			<template v-slot:modal-footer="" class="d-flex justify-content-start widen">
-				<button id="send-button" class="d-flex">
-                    <span >Αποστολή</span>
-                    <span class="iconify" data-icon="ion-send"/>
-                </button>
-			</template>
-
-		</b-modal>
+        
     </div>
 </template>
 
@@ -94,11 +53,6 @@ export default {
                     when: "22/1/1999",
                 }
             ],
-            form: {
-                to: "",
-                subject: "",
-                message: "",
-            }
         }
     },
     methods: {

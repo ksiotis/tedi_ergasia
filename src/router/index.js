@@ -9,6 +9,7 @@ import Register from '../views/Register.vue'
 import Profile from '../views/Profile.vue'
 import Admin from '../views/Admin.vue'
 import Messages from '../views/Messages.vue'
+import NMessage from '../views/NewMessage.vue'
 
 Vue.use(VueRouter)
 
@@ -52,6 +53,11 @@ Vue.use(VueRouter)
       path: '/messages',
       name: 'Messages',
       component: Messages
+    },
+    {
+      path: '/newmessage',
+      name: 'New Message',
+      component: NMessage
     }
   ]
 
