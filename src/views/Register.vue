@@ -9,10 +9,10 @@
                         Έχετε ήδη λογαριασμό;
                         <a id="login-link" v-b-modal.login-modal class="orange-link">Είσοδος</a>
                     </span>
-                    <b-form-group label="Όνομα Χρήστη" :description="username_desc" label-for="username" label-size="sm" class="mt-auto">
+                    <b-form-group label="Όνομα Χρήστη *" :description="username_desc" label-for="username" label-size="sm" class="mt-auto">
                         <b-form-input id="username" :state="username_state" @change="checkusername" v-model="form.username" type="text" required></b-form-input>
                     </b-form-group>
-                    <b-form-group label="Επώνυμο" label-for="surname" label-size="sm" class="">
+                    <b-form-group label="Επώνυμο *" label-for="surname" label-size="sm" class="">
                         <b-form-input id="surname" v-model="form.surname" type="text" required></b-form-input>
                     </b-form-group>
                 </div>
@@ -23,25 +23,25 @@
                         <!-- <a class="orange-link">Επιλογή Εικόνας</a> -->
                         <b-form-file id="file-input" @input="loadFile" v-model="form.file" accept="image/jpeg, image/png, image/gif" placeholder="Επιλογή Εικόνας"></b-form-file>
                     </b-form-group>
-                    <b-form-group label="Όνομα" label-for="name" label-size="sm">
+                    <b-form-group label="Όνομα *" label-for="name" label-size="sm">
                         <b-form-input id="name" v-model="form.name" type="text" required></b-form-input>
                     </b-form-group>
                 </div>
                 
             </div>
 
-            <b-form-group label="Διεύθηνση e-mail" label-for="mail" label-size="sm" class="">
+            <b-form-group label="Διεύθηνση e-mail *" label-for="mail" label-size="sm" class="">
                 <b-form-input id="mail" v-model="form.mail" type="email" required></b-form-input>
             </b-form-group>
 
             <div class="d-flex flex-fill">
 
                 <div class="d-flex flex-column set-width mr-5">
-                    <b-form-group label="Κωδικός Πρόσβασης" label-for="password" label-size="sm" class="mt-auto">
+                    <b-form-group label="Κωδικός Πρόσβασης *" label-for="password" label-size="sm" class="mt-auto">
                         <b-form-input id="password" @change="checkpasswords" v-model="form.password" type="password" required></b-form-input>
                     </b-form-group>
                     <div class="">
-                        <b-form-group label="Τηλέφωνο" label-for="phone-container" label-size="sm">
+                        <b-form-group label="Τηλέφωνο *" label-for="phone-container" label-size="sm">
                             <div id="phone-container" class="d-flex">
                                 <b-form-select id="phone-code" v-model="form.code" :options="options" class="mr-1" required></b-form-select>
                                 <b-form-input id="phone" v-model="form.phone" type="tel" pattern="[0-9]{5,11}" required></b-form-input>
@@ -54,8 +54,8 @@
                             </b-form-checkbox>
                             <b-form-checkbox id="checkbox-2" v-model="form.terms" name="checkbox-2" class="ml-1" required>
                                 <a href="http://legalipsum.com/?count=3" target="_blank" class="orange-link">
-                                    Αποδέχομαι τους όρους χρήσης
-                                </a>
+                                    Αποδέχομαι τους όρους χρήσης 
+                                </a> *
                             </b-form-checkbox>
                         </b-form-group>
                     </div>
@@ -211,6 +211,10 @@ export default {
 
 #register-btn:hover {
 	background-color: #9C533B;
+}
+
+.asterisk {
+
 }
 
 </style>
