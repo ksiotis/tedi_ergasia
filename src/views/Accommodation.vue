@@ -123,17 +123,21 @@
             </div>
             <!-- χοστ -->
             <div class="d-flex flex-row align-items-start element">
-                <i class="iconify endspace" data-icon="ion-home"></i>
+                <i class="iconify hosticon endspace" data-icon="ion-home"></i>
                 <h3 class="subtitle">Οικοδεσπότης:</h3>
             </div>
-            <div class="d-flex flex-row align-items-start">
+            <div class="d-flex flex-row">
                 <img :src="hostImagePath" width="40px" height="40px" class="rounded-circle endspace">
                 <p class="hostName">{{hostName}}</p>
+                <div class="d-flex justify-content-center">
+                    <b-link class = "messagebutton d-flex align-items-center " to="/results">
+                        Μύνημα
+                        <span class="iconify startspace" data-icon="ion-mail"></span>
+                    </b-link>
+                </div>
             </div>
+            <p>{{average_score.toFixed(1)}}</p>
 
-
-
-            
         </div>
     </div>
 </template>
@@ -215,10 +219,15 @@ import HotelDatePicker from 'vue-hotel-datepicker'
             hostImagePath: require("../assets/profile_pics/quirkygirl85.jpg"),
             reviewScore: 2.6,
             reviewNum: 68,
-            reviews: [
+            userReviews: [
                 {
                     text: 'Sed sodales, nulla sed interdum accumsan, est nulla convallis orci, quis rhoncus nisi diam vitae libero. Nulla nec porttitor purus. Nullam tincidunt interdum interdum. Ut suscipit tellus eget orci efficitur, sit amet feugiat ante posuere. Mauris malesuada, dolor imperdiet vulputate sagittis, ante magna accumsan arcu, sed mollis lectus massa a ante. Sed tincidunt consequat erat ut imperdiet. Nulla ornare magna at nisi porta, sed tempus augue pellentesque.',
                     score: 3.5,
+                    user: 'Kostkuber',
+                },
+                {
+                    text: 'Sed sodales, nulla sed interdum accumsan, est nulla convallis orci, quis rhoncus nisi diam vitae libero. Nulla nec porttitor purus. Nullam tincidunt interdum interdum. Ut suscipit tellus eget orci efficitur, sit amet feugiat ante posuere. Mauris malesuada, dolor imperdiet vulputate sagittis, ante magna accumsan arcu, sed mollis lectus massa a ante. Sed tincidunt consequat erat ut imperdiet. Nulla ornare magna at nisi porta, sed tempus augue pellentesque.',
+                    score: 3,
                     user: 'Kostkuber',
                 },
             ],
@@ -247,7 +256,24 @@ import HotelDatePicker from 'vue-hotel-datepicker'
                 s = this.price + days * this.extraCost;
             }
 			return s;
-		},
+        },
+        
+        average_score() {
+            let counter = 0;
+            let totalScore = 0;
+            var r;
+            for(r of this.userReviews){
+                // console.log(r.score);
+                totalScore = totalScore + r.score;
+                counter = counter + 1;
+            }
+            if(totalScore == 0){
+                return 0;
+            }
+            else{
+                return totalScore/counter;
+            }
+        },
     },
 
     mounted() {
@@ -360,7 +386,7 @@ import HotelDatePicker from 'vue-hotel-datepicker'
     margin-right: 5px;
 }
 
-.iconify{
+.hosticon{
     color: #194A50;
     width: 24px;
     height: 24px;
@@ -373,6 +399,34 @@ import HotelDatePicker from 'vue-hotel-datepicker'
     line-height: 42px;
 
     color: #194A50;
+}
+
+.messagebutton{
+    border-radius: 90px;
+
+    margin-left: 30px;
+
+    background: none;
+	color: white;
+    background-color: #D37556;
+	cursor: pointer;
+
+    border: none;
+    outline: none;
+    
+    height: 40px;
+    padding: 0 20px;
+}
+
+
+.messagebutton:hover{
+    background-color: #9C533B;
+    color: white;
+    text-decoration: none;   
+}
+
+.startspace{
+    margin-left: 5px;
 }
 
 </style>
