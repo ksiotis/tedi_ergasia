@@ -121,6 +121,16 @@
                 <p class="area">{{total.toFixed(2)}}</p>
                 <p class="area">€</p>
             </div>
+            <!-- χοστ -->
+            <div class="d-flex flex-row align-items-start element">
+                <i class="iconify endspace" data-icon="ion-home"></i>
+                <h3 class="subtitle">Οικοδεσπότης:</h3>
+            </div>
+            <div class="d-flex flex-row align-items-start">
+                <img :src="hostImagePath" width="40px" height="40px" class="rounded-circle endspace">
+                <p class="hostName">{{hostName}}</p>
+            </div>
+
 
 
             
@@ -154,11 +164,6 @@ import HotelDatePicker from 'vue-hotel-datepicker'
             numBeds: "3",
             numBaths: "4",
             numBedrooms: "1",
-
-            date1: "",
-            date2: "",
-            reservationPrice: 0,
-
             characteristics: [
                 {
                     name: 'Wifi',
@@ -200,7 +205,25 @@ import HotelDatePicker from 'vue-hotel-datepicker'
                     icon: 'ion-happy-outline',
                     status: true,
                 },
-            ]
+            ],
+
+            date1: "",
+            date2: "",
+            reservationPrice: 0,
+
+            hostName: "Νίκος Νιωτς",
+            hostImagePath: require("../assets/profile_pics/quirkygirl85.jpg"),
+            reviewScore: 2.6,
+            reviewNum: 68,
+            reviews: [
+                {
+                    text: 'Sed sodales, nulla sed interdum accumsan, est nulla convallis orci, quis rhoncus nisi diam vitae libero. Nulla nec porttitor purus. Nullam tincidunt interdum interdum. Ut suscipit tellus eget orci efficitur, sit amet feugiat ante posuere. Mauris malesuada, dolor imperdiet vulputate sagittis, ante magna accumsan arcu, sed mollis lectus massa a ante. Sed tincidunt consequat erat ut imperdiet. Nulla ornare magna at nisi porta, sed tempus augue pellentesque.',
+                    score: 3.5,
+                    user: 'Kostkuber',
+                },
+            ],
+
+
         }
     },
     methods: {
@@ -335,6 +358,21 @@ import HotelDatePicker from 'vue-hotel-datepicker'
 
 .endspace{
     margin-right: 5px;
+}
+
+.iconify{
+    color: #194A50;
+    width: 24px;
+    height: 24px;
+}
+
+.hostName{
+    font-style: normal;
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 42px;
+
+    color: #194A50;
 }
 
 </style>
