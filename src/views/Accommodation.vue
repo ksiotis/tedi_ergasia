@@ -136,7 +136,13 @@
                     </b-link>
                 </div>
             </div>
-            <p>{{average_score.toFixed(1)}}</p>
+            <div class="d-flex flex-row align-items-start">
+                <p class="subtitle">{{average_score.toFixed(1)}}</p>
+                <i class="iconify hosticon startspace endspace" data-icon="ion-star"></i>
+                <a class="subtitle startspace">{{total_reviews}} κριτικές</a>
+            </div>
+            <p>Επισκευθήκατε τον χώρο αυτό; Περιγράψτε μας την εμπειρία σας.</p>
+            <star-rating v-model="userRating" class="element stars"></star-rating>
 
         </div>
     </div>
@@ -146,10 +152,13 @@
 
 <script>
 import HotelDatePicker from 'vue-hotel-datepicker'
+import StarRating from 'vue-star-rating'
+
 
  export default {
     components: {
         HotelDatePicker,
+        StarRating,
     },
 
     data() {
@@ -231,6 +240,7 @@ import HotelDatePicker from 'vue-hotel-datepicker'
                     user: 'Kostkuber',
                 },
             ],
+            userRating: 0,
 
 
         }
@@ -274,6 +284,10 @@ import HotelDatePicker from 'vue-hotel-datepicker'
                 return totalScore/counter;
             }
         },
+
+        total_reviews(){
+            return this.userReviews.length;
+        }
     },
 
     mounted() {
@@ -427,6 +441,14 @@ import HotelDatePicker from 'vue-hotel-datepicker'
 
 .startspace{
     margin-left: 5px;
+}
+
+.stars{
+    margin-top: 0px;
+
+    font-weight: bold;
+    font-size: 24px;
+    color: #194A50;
 }
 
 </style>

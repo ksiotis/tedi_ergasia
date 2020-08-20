@@ -12,6 +12,8 @@ Vue.use(BootstrapVue)
 // Vue.use(IconsPlugin)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'vue-star-rating'
+
 
 Vue.config.productionTip = false
 
