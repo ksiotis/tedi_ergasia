@@ -142,7 +142,16 @@
                 <a class="subtitle startspace">{{total_reviews}} κριτικές</a>
             </div>
             <p>Επισκευθήκατε τον χώρο αυτό; Περιγράψτε μας την εμπειρία σας.</p>
-            <star-rating v-model="userRating" class="element stars"></star-rating>
+            <star-rating v-model="userRating" class="element stars" :starSize="25"></star-rating>
+            <div class="input-group">
+                <textarea class="form-control"  v-model="newReview"></textarea>
+            </div>
+            <div class="d-flex justify-content-center ml-auto">
+                <b-link class = "messagebutton d-flex align-items-center " to="/results">
+                    Υποβολή
+                    <span class="iconify startspace" data-icon="ion-send"></span>
+                </b-link>
+            </div>
 
         </div>
     </div>
@@ -241,6 +250,7 @@ import StarRating from 'vue-star-rating'
                 },
             ],
             userRating: 0,
+            newReview: "",
 
 
         }
@@ -445,10 +455,15 @@ import StarRating from 'vue-star-rating'
 
 .stars{
     margin-top: 0px;
+    padding: 10 10px;
 
     font-weight: bold;
     font-size: 24px;
     color: #194A50;
+}
+
+.input-group{
+    margin-bottom: 25px;
 }
 
 </style>
