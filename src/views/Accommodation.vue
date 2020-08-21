@@ -121,6 +121,7 @@
                 <p class="area">{{total.toFixed(2)}}</p>
                 <p class="area">€</p>
             </div>
+
             <!-- χοστ -->
             <div class="d-flex flex-row align-items-start element">
                 <i class="iconify hosticon endspace" data-icon="ion-home"></i>
@@ -184,9 +185,26 @@
                 </b-carousel>
             </div>
 
-
-            
-
+            <!-- τοποθεσία -->
+            <h3 class="subtitle element">Τοποθεσία</h3>
+            <p> {{placeholderText}} </p>
+            <div style="height: 500px;">
+                <!-- <div class="info" style="height: 15%">
+                    <span>Center: {{ center }}</span>
+                    <span>Zoom: {{ zoom }}</span>
+                    <span>Bounds: {{ bounds }}</span>
+                </div> -->
+                <l-map
+                    style="height: 80%; width: 100%"
+                    :zoom="zoom"
+                    :center="center"
+                    @update:zoom="zoomUpdated"
+                    @update:center="centerUpdated"
+                    @update:bounds="boundsUpdated"
+                    >
+                    <l-tile-layer :url="url"></l-tile-layer>
+                </l-map>
+            </div>    
         </div>
     </div>
 </template>
@@ -196,12 +214,17 @@
 <script>
 import HotelDatePicker from 'vue-hotel-datepicker'
 import StarRating from 'vue-star-rating'
+import { LMap, LTileLayer, LMarker } from 'vue2-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 
  export default {
     components: {
         HotelDatePicker,
         StarRating,
+        LMap, 
+        LTileLayer, 
+        LMarker
     },
 
     data() {
@@ -288,6 +311,11 @@ import StarRating from 'vue-star-rating'
             userRating: 0,
             newReview: "",
             reviewBG: require("../assets/review background.png"),
+            
+            url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            zoom: 3,
+            center: [47.413220, -1.219482],
+            bounds: null
 
 
         }
@@ -299,6 +327,16 @@ import StarRating from 'vue-star-rating'
         onSlideEnd() {
             this.sliding = false
         },
+
+        zoomUpdated (zoom) {
+            this.zoom = zoom;
+        },
+        centerUpdated (center) {
+            this.center = center;
+        },
+        boundsUpdated (bounds) {
+            this.bounds = bounds;
+        }
     },
      computed: {
         total() {
@@ -339,6 +377,9 @@ import StarRating from 'vue-star-rating'
 
     mounted() {
         this.$refs.datePicker.showDatepicker();
+        this.$nextTick(() => {
+            this.$refs.myMap.mapObject.test();
+        });
     },
 
     updated() {
