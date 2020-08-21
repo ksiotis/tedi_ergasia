@@ -6,17 +6,17 @@
             <!-- εικόνες -->
             <div class="element">
                 <b-carousel
-                id="carousel-1"
-                v-model="slide"
-                :interval="3000"
-                controls
-                indicators
-                background="#ccc"
-                img-width="1024"
-                img-height="480"
-                style="text-shadow: 1px 1px 2px #000;"
-                @sliding-start="onSlideStart"
-                @sliding-end="onSlideEnd"
+                    id="carousel-1"
+                    v-model="slide"
+                    :interval="3000"
+                    controls
+                    indicators
+                    background="#ccc"
+                    img-width="1024"
+                    img-height="480"
+                    style="text-shadow: 1px 1px 2px #000;"
+                    @sliding-start="onSlideStart"
+                    @sliding-end="onSlideEnd"
                 >
                     <b-carousel-slide img-src="https://picsum.photos/1024/480/?image=52"/>
                     <b-carousel-slide img-src="https://picsum.photos/1024/480/?image=53"/>
@@ -152,6 +152,40 @@
                     <span class="iconify startspace" data-icon="ion-send"></span>
                 </b-link>
             </div>
+             <div class="element smallCarousel">
+                <b-carousel
+                    id="carousel-1"
+                    v-model="slide"
+                    :interval="3000"
+                    controls
+                    indicators
+                    background="#ccc"
+                    img-width="1024"
+                    img-height="480"
+                    style="text-shadow: 1px 1px 2px #000;"
+                    @sliding-start="onSlideStart"
+                    @sliding-end="onSlideEnd"   
+                >
+                    <b-carousel-slide
+                        v-for="(review, index) in userReviews"
+                        v-bind:key="index" 
+                        :img-src="reviewBG">
+                        <div class="d-flex flex-column "> 
+                            <div class="d-flex flex-row align-items-start">
+                                <img :src="review.profilepicpath" width="60px" height="60px" class="rounded-circle endspace">
+                                <h3 class="reviewText startspace endspace">{{review.user}}</h3>
+                                <i class="iconify hosticon startspace endspace" data-icon="ion-star" style="color:white;"></i>
+                                <h3 class="reviewText startspace endspace">{{review.score}}</h3>
+
+                            </div>
+                            <p class="reviewContent"> {{placeholderText}} </p>
+                        </div>
+                    </b-carousel-slide>
+                </b-carousel>
+            </div>
+
+
+            
 
         </div>
     </div>
@@ -242,15 +276,18 @@ import StarRating from 'vue-star-rating'
                     text: 'Sed sodales, nulla sed interdum accumsan, est nulla convallis orci, quis rhoncus nisi diam vitae libero. Nulla nec porttitor purus. Nullam tincidunt interdum interdum. Ut suscipit tellus eget orci efficitur, sit amet feugiat ante posuere. Mauris malesuada, dolor imperdiet vulputate sagittis, ante magna accumsan arcu, sed mollis lectus massa a ante. Sed tincidunt consequat erat ut imperdiet. Nulla ornare magna at nisi porta, sed tempus augue pellentesque.',
                     score: 3.5,
                     user: 'Kostkuber',
+                    profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
                 },
                 {
                     text: 'Sed sodales, nulla sed interdum accumsan, est nulla convallis orci, quis rhoncus nisi diam vitae libero. Nulla nec porttitor purus. Nullam tincidunt interdum interdum. Ut suscipit tellus eget orci efficitur, sit amet feugiat ante posuere. Mauris malesuada, dolor imperdiet vulputate sagittis, ante magna accumsan arcu, sed mollis lectus massa a ante. Sed tincidunt consequat erat ut imperdiet. Nulla ornare magna at nisi porta, sed tempus augue pellentesque.',
                     score: 3,
                     user: 'Kostkuber',
+                    profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
                 },
             ],
             userRating: 0,
             newReview: "",
+            reviewBG: require("../assets/review background.png"),
 
 
         }
@@ -464,6 +501,35 @@ import StarRating from 'vue-star-rating'
 
 .input-group{
     margin-bottom: 25px;
+}
+
+.reviewText {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 21px;
+    /* identical to box height */
+
+
+    color: #FFFFFF;
+}
+
+.reviewContent{
+    font-style: normal;
+    font-weight: 250;
+    font-size: 24px;
+    line-height: 21px;
+    /* identical to box height */
+
+    margin-top: 15px;
+    text-align: left;
+
+    color: #FFFFFF;
+}
+
+.smallCarousel{
+
+
 }
 
 </style>
