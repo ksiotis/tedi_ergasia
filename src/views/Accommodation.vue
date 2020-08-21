@@ -188,6 +188,13 @@
             <!-- τοποθεσία -->
             <h3 class="subtitle element">Τοποθεσία</h3>
             <p> {{placeholderText}} </p>
+
+            <div class="d-flex flex-row align-items-baseline">
+                <span class="iconify addressIcon startspace" data-icon="ion-location"></span>
+                <p class="area">{{address}}</p>
+                <p>/διεύθυνση</p>
+            </div>
+            
             <div style="height: 500px;">
                 <!-- <div class="info" style="height: 15%">
                     <span>Center: {{ center }}</span>
@@ -315,7 +322,8 @@ import 'leaflet/dist/leaflet.css';
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             zoom: 3,
             center: [47.413220, -1.219482],
-            bounds: null
+            bounds: null,
+            address: "Παπαντωνίου 10, Αθήνα"
 
 
         }
@@ -568,9 +576,10 @@ import 'leaflet/dist/leaflet.css';
     color: #FFFFFF;
 }
 
-.smallCarousel{
-
-
+.addressIcon{
+    width: 24px;
+    height: 24px;
+    color: #194A50;
 }
 
 </style>
