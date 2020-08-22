@@ -1,5 +1,5 @@
 <template>
-	<div class="tile d-flex flex-column">
+	<div class="tile d-flex flex-column"  @click="submit">
 	    
         <div class="thumbnail"/>
 
@@ -44,7 +44,17 @@ export default {
 		
 		};
 	},
-	methods: {},
+	methods: {
+        submit(){
+            // let query = { location: this.searchForm.location, date1: this.searchForm.date1, date2: this.searchForm.date2, persons: this.searchForm.persons };
+            
+            // query.date1 = query.date1.toISOString();
+            // query.date2 = query.date2.toISOString();
+
+            this.$router.push({ path: '/accommodation'/*, query: query*/}).catch(() => {});
+        }
+    },
+
 };
 </script>
 
@@ -132,6 +142,5 @@ export default {
 
     height: 15px;
     padding: 0 5px;
-    margin-right:3px;
 }
 </style>

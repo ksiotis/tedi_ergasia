@@ -8,6 +8,7 @@ import Results from '../views/Results.vue'
 import Register from '../views/Register.vue'
 import Profile from '../views/Profile.vue'
 import Admin from '../views/Admin.vue'
+import Accommodation from '../views/Accommodation.vue'
 import Messages from '../views/Messages.vue'
 import NMessage from '../views/NewMessage.vue'
 import EditProfile from '../views/EditProfile.vue'
@@ -65,6 +66,10 @@ Vue.use(VueRouter)
       name: 'Edit Profile',
       component: EditProfile
     },
+        path: '/accommodation',
+        name: 'Accommodation',
+        component: Accommodation
+      }
   ]
 
 const router = new VueRouter({

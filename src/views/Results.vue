@@ -82,9 +82,18 @@
             </div>
         </form>
 
-        <!-- result tiles container -->
-        <div class="tileContainer d-flex justify-content-start flex-column">
-            <ResultTile/>
+        <div class="container">
+            <div class="row ">
+                <div 
+                    v-for="(result, index) in results"
+                    v-bind:key="index"
+                    class="col col-6 no-gutters">
+                        <div class="panel">
+                            <ResultTile/>
+                        </div>
+                </div> 
+            </div>
+
         </div>
 
     </div>
@@ -113,31 +122,85 @@ export default {
         options: [
           { item: 'A', name: 'Φθίνουσα τιμή' },
           { item: 'B', name: 'Αύξουσα τιμή' },
-        ]
+        ],
+
+        results: [
+            {
+                tile: 'Tile A',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+            {
+                tile: 'Title B',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+            {
+                tile: 'Title C',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+            {
+                tile: 'Title C',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+            {
+                tile: 'Title C',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+             {
+                tile: 'Title C',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+             {
+                tile: 'Title C',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+             {
+                tile: 'Title C',
+                reviewScore: '',
+                reviewCount: '',
+                type: '',
+                bedCount: '',
+            },
+		],
 
       }
     },
 
     created() {
-
         if(this.$route.query.location!=null){
             this.searchForm.location = this.$route.query.location;
         }
-
         
         this.searchForm.date1 = new Date(this.$route.query.date1)
         this.searchForm.date2 = new Date(this.$route.query.date2)
 
         this.searchForm.persons = this.$route.query.persons;
-
-        console.log(this.searchForm.date1);
-        
-    }
-    
+    },
 }
 </script>
 
 <style scoped>
+
 .filterform{
     background-color: #194A50;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -229,7 +292,24 @@ p{
     text-decoration: none;   
 }
 
-.tileContainer{
+.container{
     margin-left: 150px;
+    width: 50%;
+    margin-bottom: 50px;
+}
+
+
+.no-gutters {
+  margin-right: 0;
+  margin-left: 0;  
+}
+
+.col{
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.panel{
+    cursor: pointer;
 }
 </style>
