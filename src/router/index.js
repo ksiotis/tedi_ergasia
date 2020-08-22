@@ -10,6 +10,7 @@ import Profile from '../views/Profile.vue'
 import Admin from '../views/Admin.vue'
 import Messages from '../views/Messages.vue'
 import NMessage from '../views/NewMessage.vue'
+import EditProfile from '../views/EditProfile.vue'
 
 Vue.use(VueRouter)
 
@@ -58,7 +59,12 @@ Vue.use(VueRouter)
       path: '/newmessage',
       name: 'New Message',
       component: NMessage
-    }
+    },
+    {
+      path: '/editprofile',
+      name: 'Edit Profile',
+      component: EditProfile
+    },
   ]
 
 const router = new VueRouter({

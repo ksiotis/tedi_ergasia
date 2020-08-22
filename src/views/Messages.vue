@@ -8,7 +8,7 @@
             <div id="mail-buttons" class="d-flex mt-2">
                 <button id="incoming" class="mr-2">Εισερχόμενα</button>
                 <button id="outgoing" class=" mr-auto">Εξερχόμενα</button>
-                <button v-b-modal.new-message-modal id="new-mail" class="d-flex">
+                <button @click="$router.push('newmessage')" id="new-mail" class="d-flex">
                     <span class="mr-2" >Νέο Μήνυμα</span>
                     <span class="iconify" data-icon="ion-mail-unread-outline" />
                 </button>

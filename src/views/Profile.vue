@@ -47,7 +47,7 @@
                     <span  class="mt-3 ml-3">Αλλαγή ρόλου</span>
                 </div>
 
-                <button id="edit" class="px-4 py-1 align-self-end mr-5">Επεξεργασία <span class="iconify" data-icon="ion-pencil-outline"/></button>
+                <button id="edit" @click="$router.push('editprofile')" class="px-4 py-1 align-self-end mr-5">Επεξεργασία <span class="iconify" data-icon="ion-pencil-outline"/></button>
             </div>
         </div>
     </div>
@@ -67,7 +67,7 @@ export default {
                 profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
                 name: "Anna",
                 surname: "Adams",
-                email: "δενεχωιδεαπωςθαυλοποιηθειαυτο@utf-8mail.aω",
+                email: "iamsoquirkyrightnow@gmail.com",
                 phone: "(GR)+30 2102102101",
                 role: "Οικοδεσπότης"
             }
