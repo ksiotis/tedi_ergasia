@@ -633,7 +633,7 @@ import 'leaflet/dist/leaflet.css';
 
 .reservationForm{
     width: 300px;
-    height: 210px;
+    height: 323px;
     border: 1px solid #4E7378;
     background-color: white;
     color: #194A50;
@@ -642,7 +642,7 @@ import 'leaflet/dist/leaflet.css';
     top: 50px;
     margin-top: 73px;
 
-    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+    /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); */
     border-radius: 10px;
 }
 
@@ -678,6 +678,7 @@ import 'leaflet/dist/leaflet.css';
     border-radius: 90px;
     width: 90%;
 
+    margin-top: 113px;
     margin-bottom: 10px;
 
     background: none;
