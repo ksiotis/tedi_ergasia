@@ -209,6 +209,7 @@
                     @update:center="centerUpdated"
                     @update:bounds="boundsUpdated"
                     >
+                    <l-marker :lat-lng="markerLatLng" ></l-marker>
                     <l-tile-layer :url="url"></l-tile-layer>
                 </l-map>
             </div>    
@@ -224,6 +225,14 @@ import StarRating from 'vue-star-rating'
 import { LMap, LTileLayer, LMarker } from 'vue2-leaflet';
 import 'leaflet/dist/leaflet.css';
 
+// MUST BE RRUN ONCE TO MAKE ICON VISIBLE
+// import { Icon } from 'leaflet';
+// delete Icon.Default.prototype._getIconUrl;
+// Icon.Default.mergeOptions({
+//   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+//   iconUrl: require('leaflet/dist/images/marker-icon.png'),
+//   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+// });
 
  export default {
     components: {
@@ -231,7 +240,8 @@ import 'leaflet/dist/leaflet.css';
         StarRating,
         LMap, 
         LTileLayer, 
-        LMarker
+        LMarker,
+        // Icon
     },
 
     data() {
@@ -323,7 +333,8 @@ import 'leaflet/dist/leaflet.css';
             zoom: 3,
             center: [47.413220, -1.219482],
             bounds: null,
-            address: "Παπαντωνίου 10, Αθήνα"
+            address: "Παπαντωνίου 10, Αθήνα",
+            markerLatLng: [37.9838, 23.7275],
 
 
         }
