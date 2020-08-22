@@ -1,6 +1,7 @@
 <template>
-    <div class = "d-flex flex-column justify-content-center container"> 
-        <div class="d-flex flex-column justify-content-start">
+    <div class="d-flex justify-content-between container">
+        
+        <div class="contentLeft d-flex flex-column justify-content-start">
             <!-- τίτλος  -->
             <h2 class="title">Τίτλος χώρου</h2>
             <!-- εικόνες -->
@@ -12,8 +13,8 @@
                     controls
                     indicators
                     background="#ccc"
-                    img-width="1024"
-                    img-height="480"
+                    img-width="500"
+                    img-height="250"
                     style="text-shadow: 1px 1px 2px #000;"
                     @sliding-start="onSlideStart"
                     @sliding-end="onSlideEnd"
@@ -116,11 +117,6 @@
                     v-on:check-in-changed="date1 = $event;"
                     v-on:check-out-changed="date2 = $event;"/>
             </div>
-            <div class="d-flex flex-row">
-                <h3 class="subtitle endspace">Τελική τιμή:</h3>
-                <p class="area">{{total.toFixed(2)}}</p>
-                <p class="area">€</p>
-            </div>
 
             <!-- χοστ -->
             <div class="d-flex flex-row align-items-start element">
@@ -153,7 +149,7 @@
                     <span class="iconify startspace" data-icon="ion-send"></span>
                 </b-link>
             </div>
-             <div class="element smallCarousel">
+            <div class="element smallCarousel">
                 <b-carousel
                     id="carousel-1"
                     v-model="slide"
@@ -214,6 +210,38 @@
                 </l-map>
             </div>    
         </div>
+
+        
+        <!-- scrolling form -->
+        <form class="d-flex flex-column justify-content-start reservationForm">
+            <span class="reservationHeader">
+                <h3 class="subtitle" style="color: white;" > Σύνοψη κράτησης </h3>
+            </span>
+            <div class="reservationContent d-flex flex-column justify-content-start">
+                <div class="d-flex flex-row justify-content-between">
+                    <h5 class="endspace" style="color: black; font-weight: normal;" >Τελική τιμή:</h5>
+                    <div class="d-flex flex-row">
+                        <p class="sumArea">{{total.toFixed(2)}}</p>
+                        <p class="sumArea">€</p>
+                    </div>
+                </div>
+                <div class="d-flex flex-row justify-content-between">
+                    <h5 class="endspace" style="color: black; font-weight: normal;" >Ημέρες:</h5>
+                    <p class="sumArea">{{nights}}</p>
+                </div>
+                <div class="d-flex flex-row justify-content-between">
+                    <h5 class="endspace" style="color: black; font-weight: normal;" >Άτομα:</h5>
+                    <p class="sumArea">1</p>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                <b-link class = "reservationButton d-flex align-items-center " to="/results">
+                    Κράτηση
+                    <span class="iconify startspace" data-icon="ion-card"></span>
+                </b-link>
+            </div>
+        </form>
     </div>
 </template>
 
@@ -389,6 +417,16 @@ import 'leaflet/dist/leaflet.css';
             }
         },
 
+        nights() {
+            let d = 0;
+            // let days = 1;
+			if(this.date1 != '' && this.date2 != ''){
+                let time = this.date2.getTime() - this.date1.getTime();
+                d = time / (1000 * 3600 * 24) -1;
+            }
+			return d;
+        },
+
         total_reviews(){
             return this.userReviews.length;
         }
@@ -413,7 +451,7 @@ import 'leaflet/dist/leaflet.css';
 
 <style scoped>
 .container{
-    padding: 0 150px;
+    padding: 0 50px;
     margin-top: 50px;
 }
 
@@ -591,6 +629,74 @@ import 'leaflet/dist/leaflet.css';
     width: 24px;
     height: 24px;
     color: #194A50;
+}
+
+.reservationForm{
+    width: 300px;
+    height: 210px;
+    border: 1px solid #4E7378;
+    background-color: white;
+    color: #194A50;
+
+    position: sticky;
+    top: 50px;
+    margin-top: 73px;
+
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+    border-radius: 10px;
+}
+
+.contentLeft{
+    width: 690px;
+    
+}
+
+.sumArea{
+    font-style: normal;
+    font-weight: bold;
+    font-size:  18px;
+    height: 18px;
+
+    color: #484A4A;
+}
+
+.reservationHeader{
+    background-color: #194A50;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+
+    padding-left: 10px;
+    padding-top: 10px;   
+}
+
+.reservationContent{
+    margin-top: 10px;
+    padding: 0 10px;  
+}
+
+.reservationButton{
+    border-radius: 90px;
+    width: 90%;
+
+    margin-bottom: 10px;
+
+    background: none;
+	color: white;
+    background-color: #D37556;
+	cursor: pointer;
+
+    border: none;
+    outline: none;
+    
+    height: 40px;
+    padding: 0 90px;
+}
+
+
+.reservationButton:hover{
+    background-color: #9C533B;
+    color: white;
+    text-decoration: none;   
 }
 
 </style>
