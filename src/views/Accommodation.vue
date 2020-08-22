@@ -451,7 +451,7 @@ import 'leaflet/dist/leaflet.css';
 
 <style scoped>
 .container{
-    padding: 0 50px;
+    padding: 0 30px;
     margin-top: 50px;
 }
 
