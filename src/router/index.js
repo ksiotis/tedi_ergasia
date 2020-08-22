@@ -66,10 +66,11 @@ Vue.use(VueRouter)
       name: 'Edit Profile',
       component: EditProfile
     },
+    {
         path: '/accommodation',
         name: 'Accommodation',
         component: Accommodation
-      }
+    }
   ]
 
 const router = new VueRouter({
