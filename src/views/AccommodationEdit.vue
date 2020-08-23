@@ -3,7 +3,17 @@
         
         <div class="contentLeft d-flex flex-column justify-content-start">
             <!-- τίτλος  -->
-            <h2 class="title">Τίτλος χώρου</h2>
+            <div class="d-flex flex-row align-items-center">
+                <h2 class="title">Τίτλος χώρου</h2>
+                <div class="d-flex justify-content-center">
+                <b-link class = "messagebutton d-flex align-items-center " to="">
+                    Επεξεργασία
+                    <span class="iconify startspace" data-icon="ion-build"></span>
+                </b-link>
+            </div>
+
+                
+            </div>
             <!-- εικόνες -->
             <div class="element">
                 <b-carousel
@@ -26,18 +36,31 @@
             
                 </b-carousel>
             </div>
+            <div class="d-flex flex-row align-items-center">
+                <a class="addImageText">Προσθήκη εικόνας</a>
+                <span class="iconify startspace addImageIcon" data-icon="ion-camera"></span>
+            </div>
+
             <!-- περιγραφή -->
             <h3 class="subtitle element">Περιγραφή</h3>
             <p> {{placeholderText}} </p>
+            <div class="d-flex justify-content-center element">
+                <b-link class = "messagebutton d-flex align-items-center ml-auto" to="">
+                    Επεξεργασία
+                    <span class="iconify startspace" data-icon="ion-build"></span>
+                </b-link>
+            </div>
             
             <!-- χαρακτηρηστικά -->
             <div class="d-flex flex-row justify-content-between">
                 <!-- στήλη 1 -->
                 <div>
+                    
                     <h3 class="subtitle element">Χαρακτηρηστικά</h3>
-                    <div class="d-flex flex-row align-items-center">
+                    <div class="d-flex flex-row align-items-baseline">
                         <p class="area">{{area}}</p>
                         <p>/τ.μ.</p>
+                        <span class="iconify startspace addImageIcon" data-icon="ion-build"></span>
                     </div>
 
                     <div class="characteristicsContainer">
@@ -60,17 +83,19 @@
                 <div>
 
                     <h3 class="subtitle element">Ελάχιστη τιμή</h3>
-                    <div class="d-flex flex-row align-items-center">
+                    <div class="d-flex flex-row align-items-baseline">
                         <p class="area">{{price}}</p>
                         <p class="area">€</p>
                         <p>/διανυκτέρευση</p>
+                        <span class="iconify startspace addImageIcon" data-icon="ion-build"></span>
                     </div>
 
                     <h3 class="subtitle">Επιπλέον κόστος</h3>
-                    <div class="d-flex flex-row align-items-center">
+                    <div class="d-flex flex-row align-items-baseline">
                         <p class="area">{{extraCost}}</p>
                         <p class="area">€</p>
                         <p>/ανά άτομο</p>
+                        <span class="iconify startspace addImageIcon" data-icon="ion-build"></span>
                     </div>
 
                     <!-- αριθμητικά -->
@@ -104,6 +129,12 @@
             <!-- κανόνες -->
             <h3 class="subtitle element">Κανόνες</h3>
             <p> {{placeholderText}} </p>
+            <div class="d-flex justify-content-center element">
+                <b-link class = "messagebutton d-flex align-items-center ml-auto" to="">
+                    Επεξεργασία
+                    <span class="iconify startspace" data-icon="ion-build"></span>
+                </b-link>
+            </div>
 
             <!-- Διαθεσιμότητα -->
             <h3 class="subtitle element">Διαθεσιμότητα</h3>
@@ -118,72 +149,15 @@
                     v-on:check-out-changed="date2 = $event;"/>
             </div>
 
-            <!-- χοστ -->
-            <div class="d-flex flex-row align-items-start element">
-                <i class="iconify hosticon endspace" data-icon="ion-home"></i>
-                <h3 class="subtitle">Οικοδεσπότης:</h3>
-            </div>
-            <div class="d-flex flex-row">
-                <img :src="hostImagePath" width="40px" height="40px" class="rounded-circle endspace">
-                <p class="hostName">{{hostName}}</p>
-                <div class="d-flex justify-content-center">
-                    <b-link class = "messagebutton d-flex align-items-center " to="/results">
-                        Μύνημα
-                        <span class="iconify startspace" data-icon="ion-mail"></span>
-                    </b-link>
-                </div>
-            </div>
-            <div class="d-flex flex-row align-items-start">
-                <p class="subtitle">{{average_score.toFixed(1)}}</p>
-                <i class="iconify hosticon startspace endspace" data-icon="ion-star"></i>
-                <a class="subtitle startspace">{{total_reviews}} κριτικές</a>
-            </div>
-            <p>Επισκευθήκατε τον χώρο αυτό; Περιγράψτε μας την εμπειρία σας.</p>
-            <star-rating v-model="userRating" class="element stars" :starSize="25"></star-rating>
-            <div class="input-group">
-                <textarea class="form-control"  v-model="newReview"></textarea>
-            </div>
-            <div class="d-flex justify-content-center ml-auto">
-                <b-link class = "messagebutton d-flex align-items-center " to="/results">
-                    Υποβολή
-                    <span class="iconify startspace" data-icon="ion-send"></span>
-                </b-link>
-            </div>
-            <div class="element smallCarousel">
-                <b-carousel
-                    id="carousel-1"
-                    v-model="slide"
-                    :interval="3000"
-                    controls
-                    indicators
-                    background="#ccc"
-                    img-width="1024"
-                    img-height="480"
-                    style="text-shadow: 1px 1px 2px #000;"
-                    @sliding-start="onSlideStart"
-                    @sliding-end="onSlideEnd"   
-                >
-                    <b-carousel-slide
-                        v-for="(review, index) in userReviews"
-                        v-bind:key="index" 
-                        :img-src="reviewBG">
-                        <div class="d-flex flex-column "> 
-                            <div class="d-flex flex-row align-items-start">
-                                <img :src="review.profilepicpath" width="60px" height="60px" class="rounded-circle endspace">
-                                <h3 class="reviewText startspace endspace">{{review.user}}</h3>
-                                <i class="iconify hosticon startspace endspace" data-icon="ion-star" style="color:white;"></i>
-                                <h3 class="reviewText startspace endspace">{{review.score}}</h3>
-
-                            </div>
-                            <p class="reviewContent"> {{placeholderText}} </p>
-                        </div>
-                    </b-carousel-slide>
-                </b-carousel>
-            </div>
-
             <!-- τοποθεσία -->
             <h3 class="subtitle element">Τοποθεσία</h3>
             <p> {{placeholderText}} </p>
+            <div class="d-flex justify-content-center element">
+                <b-link class = "messagebutton d-flex align-items-center ml-auto" to="">
+                    Επεξεργασία
+                    <span class="iconify startspace" data-icon="ion-build"></span>
+                </b-link>
+            </div>
 
             <div class="d-flex flex-row align-items-baseline">
                 <span class="iconify addressIcon startspace" data-icon="ion-location"></span>
@@ -471,6 +445,12 @@ Icon.Default.mergeOptions({
 
 }
 
+.titleIcon:hover{
+    cursor: pointer;
+}
+
+
+
 .subtitle{
     font-family: Roboto;
     font-style: normal;
@@ -699,5 +679,28 @@ Icon.Default.mergeOptions({
     color: white;
     text-decoration: none;   
 }
+
+.addImageText{
+    font-style: normal;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 21px;
+    /* identical to box height */
+
+    color: #194A50;
+}
+
+.addImageText:hover{
+    text-decoration-line: underline;
+    cursor: pointer;
+}
+
+.addImageIcon{
+    color: #194A50;
+    width: 24px;
+    height: 24px;
+}
+
+
 
 </style>
