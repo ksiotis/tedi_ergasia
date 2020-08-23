@@ -87,7 +87,7 @@
                 <div 
                     v-for="(result, index) in results"
                     v-bind:key="index"
-                    class="col col-6 no-gutters">
+                    class="col col-6">
                         <div class="panel">
                             <ResultTile/>
                         </div>
@@ -207,6 +207,10 @@ export default {
     width: 350px;
     height: 525px;
     padding: 0 20px;
+
+    position: sticky;
+    top: 50px;
+    margin-top: 25px;
 }
 
 .forminputbox{
@@ -298,7 +302,7 @@ p{
     margin-bottom: 50px;
 }
 
-
+/* 
 .no-gutters {
   margin-right: 0;
   margin-left: 0;  
@@ -307,9 +311,17 @@ p{
 .col{
     padding-right: 0;
     padding-left: 0;
+} */
+
+.col{
+    width: 330px;
 }
 
 .panel{
     cursor: pointer;
+}
+
+.panel:hover{
+    filter: drop-shadow(0px 8px 20px rgba(0, 0, 0, 0.5));
 }
 </style>
