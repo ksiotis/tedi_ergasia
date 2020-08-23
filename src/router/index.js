@@ -32,9 +32,9 @@ Vue.use(VueRouter)
       component: Support
     },
     {
-        path: '/results',
-        name: 'Results',
-        component: Results
+      path: '/results',
+      name: 'Results',
+      component: Results
     },
     {
       path: '/register',
@@ -67,10 +67,10 @@ Vue.use(VueRouter)
       component: EditProfile
     },
     {
-        path: '/accommodation',
-        name: 'Accommodation',
-        component: Accommodation
-    }
+      path: '/accommodation',
+      name: 'Accommodation',
+      component: Accommodation
+    },
   ]
 
 const router = new VueRouter({

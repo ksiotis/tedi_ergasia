@@ -30,8 +30,8 @@
                 
             </div>
 
-            <b-form-group label="Διεύθηνση e-mail *" label-for="mail" label-size="sm" class="">
-                <b-form-input id="mail" v-model="form.mail" type="email" required></b-form-input>
+            <b-form-group label="Διεύθηνση e-mail *" :description="email_desc" label-for="mail" label-size="sm" class="">
+                <b-form-input id="mail" :state="email_state" @change="checkemail" v-model="form.email" type="email" required></b-form-input>
             </b-form-group>
 
             <div class="d-flex flex-fill">
@@ -62,10 +62,9 @@
                 </div>
 
                 <div class="d-flex set-width flex-column">
-                    <b-form-group label="Επιβεβαίωση Κωδικού Πρόσβασης" label-for="confirmpassword" label-size="sm" class="set-width">
+                    <b-form-group label="Επιβεβαίωση Κωδικού Πρόσβασης *" :description="password_desc" label-for="confirmpassword" label-size="sm" class="set-width">
                         <b-form-input id="confirmpassword" :state="password_state" @change="checkpasswords" v-model="form.confirmpassword" type="password" required ></b-form-input>
                     </b-form-group>
-                    <p v-if="form.password.length>0 && form.password != form.confirmpassword" class="text-danger">Οι κωδικοί πρόσβασης δεν ταιριάζουν!</p>
                 </div>
             </div>
 
@@ -84,13 +83,15 @@ export default {
             image: require("../assets/profile_pics/default.png"),
             password_state: null,
             username_state: null,
-            submit_disabled: true,
+            email_state: null,
             username_desc: "",
+            email_desc: "",
+            password_desc: "",
             form: {
                 username: '',
                 name: '',
                 surname: '',
-                mail: '',
+                email: '',
                 password: '',
                 confirmpassword: '',
                 code: null,
@@ -105,36 +106,92 @@ export default {
                 { value: '+30', text: 'EL' },
                 { value: '+44', text: 'EN' },
             ],
+            errormessage: "Προέκυψε κάποιο σφάλμα, δοκιμάστε ξανά"
         }
     },
     methods: {
-        onSubmit(evt) {
-			evt.preventDefault()
-			alert(JSON.stringify(this.form))
-        },
-        loadFile() {
-            this.image = URL.createObjectURL(this.form.file);
-        },
-        checkusername(value) {
-            if (value) {
-                this.username_state = true;
-                this.username_desc = ""
-            }
-            else {
+        async checkusername(username) {
+            let myinput = '?username=' + username;
+            let url =  '/checkusername' + myinput;
+            try {
+                let response = await this.$axios.get(url);
+                console.log(response.data);
+                if (!response.data.length) {
+                    this.username_state = null;
+                    this.username_desc = ""
+                }
+                else {
+                    this.username_state = false;
+                    this.username_desc = "Αυτό το όνομα χρήστη χρεισιμοποιείται ήδη!";
+                }
+            } catch(error) {
                 this.username_state = false;
-                this.username_desc = "Αυτό το όνομα χρήστη χρεισιμοποιείται ήδη!";
+                alert(this.errormessage)
+                console.log(error);
+            }
+        },
+        async checkemail(email) {
+            let myinput = '?email=' + email;
+            let url =  '/checkemail' + myinput;
+            try {
+                let response = await this.$axios.get(url);
+                console.log(response.data);
+                if (!response.data.length) {
+                    this.email_state = null;
+                    this.email_desc = ""
+                }
+                else {
+                    this.email_state = false;
+                    this.email_desc = "Αυτή η διεύθυνση email χρεισιμοποιείται ήδη!";
+                }
+            } catch(error) {
+                this.username_state = false;
+                alert(this.errormessage)
+                console.log(error);
             }
         },
         checkpasswords() {
             if (this.form.password === this.form.confirmpassword) {
-                this.password_state = true;
-                this.submit_disabled = false;
+                this.password_state = null;
+                this.password_desc = "";
             }
             else {
                 this.password_state = false;
-                this.submit_disabled = true;
+                this.password_desc = "Οι κωδικοί πρόσβασης δεν ταιριάζουν";
             }
         },
+        async onSubmit(evt) {
+            evt.preventDefault();
+            console.log("start");
+
+            let hashedpassword = await this.$bcrypt.hash(this.form.password, 10);
+            console.log(hashedpassword);
+
+            try {
+                let response = await this.$axios.post('/newuser', {
+                    username: this.form.username,
+                    name: this.form.name,
+                    surname: this.form.surname,
+                    email: this.form.email,
+                    password: hashedpassword,
+                    role: this.form.host ? 2 : 1,
+                    telephone: "(".concat(this.form.code).concat(")").concat(this.form.phone),
+                    picture: this.form.file === null ? "NULL" : `${this.form.file}`,
+                });
+                console.log(response);
+            } catch(error) {
+                alert(this.errormessage)
+                console.log(error);
+            }
+        },
+        loadFile() {
+            this.image = URL.createObjectURL(this.form.file);
+        },
+    },
+    computed: {
+        submit_disabled: function () {
+            return ((this.username_state === false) || (this.email_state === false) || (this.password_state === false));
+        }
     }
 }
 </script>

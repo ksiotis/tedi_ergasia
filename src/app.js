@@ -52,6 +52,70 @@ app.listen(port,() => {
 
 // // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+app.get('/checkusername', async(req, res) => {
+    try {
+        if (req.query.username === "")
+            return;
+
+        let sql = `SELECT u.Username FROM users u WHERE u.username = '${req.query.username}'`;
+        console.log(`/checkusername ${req.query.username}`);
+        let results = await db.query(sql);
+        res.send(results[0])
+    } catch (error) {
+        res.sendStatus(500);
+        console.log(`failed`);
+    }
+})
+
+app.get('/checkemail', async(req, res) => {
+    try {
+        if (req.query.email === "")
+            return;
+
+        let sql = `SELECT u.Email FROM users u WHERE u.Email = '${req.query.email}'`;
+        console.log(`/checkemail ${req.query.email}`);
+        let results = await db.query(sql);
+        res.send(results[0])
+    } catch (error) {
+        res.sendStatus(500);
+        console.log(`failed`);
+    }
+})
+
+app.post('/newuser', async (req, res) => {
+    try {
+        console.log("/newuser");
+
+        let sql = `INSERT INTO users VALUES (NULL, '${req.body.email}', '${req.body.username}', '${req.body.password}',
+        '${req.body.name}', '${req.body.surname}', '${req.body.telephone}', ${req.body.role}, ${req.body.picpath})`;
+        
+        console.log(sql);
+
+        let result = await db.query(sql);
+        res.send(result);
+        
+    } catch(error) {
+        console.error(error)
+        res.sendStatus(500)
+    }
+})
+
+
+// app.post('/login', async (req, res) => {
+//     try {
+//         let sql = `INSERT INTO 'users' ('idUsers', 'Email', 'Username', 'Password', 'Name', 'Surname', 'Telephone', 'Role', 'ProfilePicPath') 
+//         VALUES (NULL, '${req.query.email}', '${req.query.username}', '${req.query.tel}',
+//         '${req.query.password}', '${req.query.surname}', '${req.query.tel}', '${req.query.role}', ${req.query.picpath})`;
+
+//         let result = await db.query(sql);
+//         res.send(result);
+        
+//     } catch(error) {
+//         console.error(error)
+//         res.sendStatus(500)
+//     } 
+// })
+
 // app.get('/lines/', async (req,res) => {
 //     let sql = `SELECT code as 'name' FROM grammes ORDER BY code ASC`;
 //     try {

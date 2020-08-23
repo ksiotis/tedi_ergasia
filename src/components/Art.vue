@@ -72,10 +72,7 @@ export default {
 	data() {
 		return {
 			new_messages: false,
-			user: {
-				username: "quirkygirl85",
-				profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
-			},
+			user: "",
 			form: {
 				username: '',
 				password: ''
