@@ -211,6 +211,7 @@ export default {
     position: sticky;
     top: 50px;
     margin-top: 25px;
+    margin-left: 25px;
 }
 
 .forminputbox{
