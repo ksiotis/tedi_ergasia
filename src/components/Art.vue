@@ -23,6 +23,7 @@
 						{{user.username}}
 					</template>
 					<b-dropdown-item @click="pushProfile">Προβολή Λογαριασμού</b-dropdown-item>
+                    <b-dropdown-item @click="$router.push('/accommodation-edit').catch(() => {})">Οι χώροι μου</b-dropdown-item>
 					<b-dropdown-item @click="$router.push('/messages').catch(() => {})">Μηνύματα</b-dropdown-item>
 					<b-dropdown-item @click="$router.push('/favorites').catch(() => {})">Αγαπημένα</b-dropdown-item>
 					<b-dropdown-item @click="$router.push('/becomehost').catch(() => {})">Γίνετε Οικοδεσπότης</b-dropdown-item>

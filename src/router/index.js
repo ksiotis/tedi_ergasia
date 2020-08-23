@@ -12,6 +12,7 @@ import Accommodation from '../views/Accommodation.vue'
 import Messages from '../views/Messages.vue'
 import NMessage from '../views/NewMessage.vue'
 import EditProfile from '../views/EditProfile.vue'
+import AccommodationEdit from '../views/AccommodationEdit.vue'
 
 Vue.use(VueRouter)
 
@@ -70,6 +71,11 @@ Vue.use(VueRouter)
         path: '/accommodation',
         name: 'Accommodation',
         component: Accommodation
+    },
+    {
+        path: '/accommodation-edit',
+        name: 'AccommodationEdit',
+        component: AccommodationEdit
     }
   ]
 
