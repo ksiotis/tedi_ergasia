@@ -12,7 +12,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'vue-star-rating'
 
-axios.defaults.baseURL = "http://localhost:3000";
+axios.defaults.baseURL = "http://109.242.40.6:3000"; //change is IP changes
 
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios
