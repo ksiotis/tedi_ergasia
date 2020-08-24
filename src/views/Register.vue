@@ -162,18 +162,13 @@ export default {
         },
         async onSubmit(evt) {
             evt.preventDefault();
-            console.log("start");
-
-            let hashedpassword = await this.$bcrypt.hash(this.form.password, 10);
-            console.log(hashedpassword);
-
             try {
                 let response = await this.$axios.post('/newuser', {
                     username: this.form.username,
                     name: this.form.name,
                     surname: this.form.surname,
                     email: this.form.email,
-                    password: hashedpassword,
+                    password: this.form.password,
                     role: this.form.host ? 2 : 1,
                     telephone: "(".concat(this.form.code).concat(")").concat(this.form.phone),
                     picture: this.form.file === null ? "NULL" : `${this.form.file}`,
@@ -190,7 +185,9 @@ export default {
     },
     computed: {
         submit_disabled: function () {
-            return ((this.username_state === false) || (this.email_state === false) || (this.password_state === false));
+            return ((this.username_state === false) ||
+                    (this.email_state === false) ||
+                    (this.password_state === false));
         }
     }
 }

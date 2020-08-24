@@ -1,3 +1,4 @@
+const bcryptjs = require('bcryptjs')
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors= require ('cors')
@@ -21,37 +22,6 @@ app.listen(port,() => {
     console.log(`Server started on port ${port}`)
 })
 
-// // ~~~~~~~~~~test functions~~~~~~~~~~~~~~
-
-// // /something?color1=red&color2=blue
-// app.get('/something', (req, res) => {
-//     try {
-//         let f = req.query.color1
-//         let s = req.query.color2
-//         let results = {'f':f,'s':s}
-//         // console.log(results);
-//         res.send(results);
-//     } catch (error) {
-//         console.error(error);       
-//         res.sendStatus(500);
-//     }
-// })
-
-// // following may not actually work
-// app.get('/stops/:name', async (req,res) => {
-//     let sql = `SELECT * FROM stops WHERE name LIKE '%${req.params.name}%'`;
-//     let query = await db.query(sql, (err, results) => {
-//         if (err) {
-//             throw err;
-//         }
-//         // console.log(sql);
-//         res.send(results)
-        
-//     })
-// })
-
-// // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 app.get('/checkusername', async(req, res) => {
     try {
         if (req.query.username === "")
@@ -63,7 +33,7 @@ app.get('/checkusername', async(req, res) => {
         res.send(results[0])
     } catch (error) {
         res.sendStatus(500);
-        console.log(`failed`);
+        console.error(error)
     }
 })
 
@@ -78,25 +48,35 @@ app.get('/checkemail', async(req, res) => {
         res.send(results[0])
     } catch (error) {
         res.sendStatus(500);
-        console.log(`failed`);
+        console.error(error)
     }
 })
 
 app.post('/newuser', async (req, res) => {
     try {
-        console.log("/newuser");
-
-        let sql = `INSERT INTO users VALUES (NULL, '${req.body.email}', '${req.body.username}', '${req.body.password}',
-        '${req.body.name}', '${req.body.surname}', '${req.body.telephone}', ${req.body.role}, ${req.body.picpath})`;
-        
-        console.log(sql);
-
+        let sql = `SELECT u.idUsers FROM users u 
+        WHERE u.Username = '${req.body.username}' OR u.Email = '${req.body.email}'`
         let result = await db.query(sql);
-        res.send(result);
-        
+
+        if (result[0].length) {
+            console.log("/newuser: Client-side checks failed");
+            res.sendStatus(400);
+            return
+        }
+
+        let hashedpassword = await bcrypt.hash(req.body.password, 10);
+
+        sql = `INSERT INTO users VALUES 
+        (NULL, '${req.body.email}', '${req.body.username}', 
+        '${hashedpassword}', '${req.body.name}', 
+        '${req.body.surname}', '${req.body.telephone}', 
+        ${req.body.role}, ${req.body.picture})`;
+
+        result = await db.query(sql);
+        res.sendStatus(200);
     } catch(error) {
+        res.sendStatus(500);
         console.error(error)
-        res.sendStatus(500)
     }
 })
 
