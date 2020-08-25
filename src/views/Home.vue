@@ -48,7 +48,6 @@
                 </b-link>
             </form>
         </div>
-        <geoInput/>
     </div>
 </template>
 

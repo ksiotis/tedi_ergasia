@@ -10,7 +10,7 @@
              
             <span class="iconify inputicon" data-icon="ion-locate"></span>
         </div>
-        <div v-if="results[0].label != message" class="autocomplete d-flex flex-column justify-content-start">
+        <div v-if="results.length > 0 && message != results[0].label" class="autocomplete d-flex flex-column justify-content-start">
             <p 
                 class="d-flex flex-row" 
                 v-for="(result, index) in results"
@@ -30,7 +30,7 @@ export default {
 
             message: '',
             hide: false,
-            results: null,
+            results: [],
             
             // result: {
             //     x: 0, // lon
