@@ -45,7 +45,6 @@
                 </b-link>
             </form>
         </div>
-            <geoInput/>
     </div>
 </template>
 
@@ -89,9 +88,13 @@ export default {
 <style scoped>
 .background{
     background-color: gray;
-    height: 900px;
+    height: 800px;
     width: 100%;
     z-index: -100;
+
+    background-image: url('../assets/home-bg.png');
+    background-size: 100% 100%;
+     background-repeat: no-repeat;
 }
 
 .searchbar{

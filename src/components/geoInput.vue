@@ -16,6 +16,7 @@ export default {
             message: '',
             
             results: null,
+            
             // result: {
             //     x: 0, // lon
             //     y: 0, // lat
