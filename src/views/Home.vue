@@ -3,14 +3,17 @@
         <div class="background d-flex justify-content-center">
             <form class="searchbar d-flex justify-content-center">
                 
-                <input 
+                <!-- <input 
                     name="txtName" 
                     id="txtName" 
                     class="inputbox searchelement" 
                     placeholder="Εισάγεται τοποθεσία..."
                     v-model="searchForm.location"
                 >
-                <span class="iconify inputicon" data-icon="ion-locate"></span>
+                <span class="iconify inputicon" data-icon="ion-locate"></span> -->
+                <geoInput 
+                class="inputbox searchelement" 
+                    :message="searchForm.location"/>
 
                 <HotelDatePicker
                     id = "datepicker" 
@@ -45,6 +48,7 @@
                 </b-link>
             </form>
         </div>
+        <geoInput/>
     </div>
 </template>
 
@@ -99,7 +103,7 @@ export default {
 
 .searchbar{
     height: 90px;
-    width: 66%;
+    width: 70%;
     z-index: 100;
     background-color: #194A50;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
