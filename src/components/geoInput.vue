@@ -3,23 +3,24 @@
         <div class="d-flex flex-row justify-content-start">
             <input 
                 type="text"
-                id=""
                 v-model="message" 
                 class="input"
-                placeholder="Εισάγεται τοποθεσία...">
+                placeholder="Εισάγεται τοποθεσία..."
+               >
              
             <span class="iconify inputicon" data-icon="ion-locate"></span>
         </div>
-        <div v-if="results.length > 0 && message != results[0].label" class="autocomplete d-flex flex-column justify-content-start">
+        <div v-if="results != null && message != results[0].label" class="autocomplete d-flex flex-column justify-content-start">
             <p 
                 class="d-flex flex-row" 
                 v-for="(result, index) in results"
                 v-bind:key="index"
-                @click="message=result.label">
+                @click="message=result.label ; results = null">
                 {{result.label}}</p>
         </div>
     </form>
 </template>
+ @change="$emit('geo-input-change', message)"
 
 <script>
 

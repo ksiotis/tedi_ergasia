@@ -11,9 +11,7 @@
                     v-model="searchForm.location"
                 >
                 <span class="iconify inputicon" data-icon="ion-locate"></span> -->
-                <geoInput 
-                class="inputbox searchelement" 
-                    :message="searchForm.location"/>
+                <geoInput class="inputbox searchelement" @geo-input-change="searchForm.location=$event"/>
 
                 <HotelDatePicker
                     id = "datepicker" 
