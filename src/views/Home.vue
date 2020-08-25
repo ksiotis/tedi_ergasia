@@ -45,17 +45,20 @@
                 </b-link>
             </form>
         </div>
+            <geoInput/>
     </div>
 </template>
 
 <script>
 import HotelDatePicker from 'vue-hotel-datepicker'
+import geoInput from '../components/geoInput'
 
 export default {
 
 
     components: {
         HotelDatePicker,
+        geoInput,
     },
     data() {
 		return {
