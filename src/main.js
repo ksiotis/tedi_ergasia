@@ -3,7 +3,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import axios from 'axios'
-import bcryptjs from 'bcryptjs'
 
 import BootstrapVue from 'bootstrap-vue'
 Vue.use(BootstrapVue)
@@ -20,8 +19,7 @@ axios.defaults.baseURL = "http://109.242.40.6:3000"; //change is IP changes
 
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios
-// Vue.prototype.$bcrypt = bcryptjs [should be on the server side]
-Vue.prototype.$OSMP = OpenStreetMapProvider
+Vue.prototype.$OSMP = OpenStreetMapProvider;
 
 new Vue({
   router,

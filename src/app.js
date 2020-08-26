@@ -1,7 +1,36 @@
+const bcrypt = require('bcryptjs');
 const express = require('express');
 const mysql = require('mysql2/promise');
-const cors= require ('cors')
+const cors= require ('cors');
+const fs = require('fs');
+
 const port = 3000;
+
+const multer  = require('multer');
+const pathBase = './src/assets/profile_pics/';
+const storage = multer.diskStorage({
+    destination: function(req, file,cb) {
+        cb(null, pathBase)
+    },
+    filename: function(req, file, cb) {
+        cb(null, Date.now() + (req.body.username).
+        concat(".").concat(file.originalname.slice(-3)));
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
+        cb(null, true);
+    }
+    else {
+        cb(new Error('Non accepted image type'));
+    }
+};
+
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter
+});
 
 const app = express();
 app.use(express.json());
@@ -21,49 +50,20 @@ app.listen(port,() => {
     console.log(`Server started on port ${port}`)
 })
 
-// // ~~~~~~~~~~test functions~~~~~~~~~~~~~~
-
-// // /something?color1=red&color2=blue
-// app.get('/something', (req, res) => {
-//     try {
-//         let f = req.query.color1
-//         let s = req.query.color2
-//         let results = {'f':f,'s':s}
-//         // console.log(results);
-//         res.send(results);
-//     } catch (error) {
-//         console.error(error);       
-//         res.sendStatus(500);
-//     }
-// })
-
-// // following may not actually work
-// app.get('/stops/:name', async (req,res) => {
-//     let sql = `SELECT * FROM stops WHERE name LIKE '%${req.params.name}%'`;
-//     let query = await db.query(sql, (err, results) => {
-//         if (err) {
-//             throw err;
-//         }
-//         // console.log(sql);
-//         res.send(results)
-        
-//     })
-// })
-
-// // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 app.get('/checkusername', async(req, res) => {
     try {
         if (req.query.username === "")
             return;
 
-        let sql = `SELECT u.Username FROM users u WHERE u.username = '${req.query.username}'`;
         console.log(`/checkusername ${req.query.username}`);
-        let results = await db.query(sql);
+        let results = await db.query(
+            `SELECT u.Username FROM users u WHERE u.username = ?`, 
+            [req.query.username]
+        );
         res.send(results[0])
     } catch (error) {
         res.sendStatus(500);
-        console.log(`failed`);
+        console.error(error)
     }
 })
 
@@ -72,31 +72,54 @@ app.get('/checkemail', async(req, res) => {
         if (req.query.email === "")
             return;
 
-        let sql = `SELECT u.Email FROM users u WHERE u.Email = '${req.query.email}'`;
         console.log(`/checkemail ${req.query.email}`);
-        let results = await db.query(sql);
+        let results = await db.query(
+            `SELECT u.Email FROM users u WHERE u.Email = ?`, 
+            [req.query.email]
+        );
         res.send(results[0])
     } catch (error) {
         res.sendStatus(500);
-        console.log(`failed`);
+        console.error(error)
     }
 })
 
-app.post('/newuser', async (req, res) => {
+app.post('/newuser', upload.single('picture'), async (req, res) => {
     try {
-        console.log("/newuser");
+        console.log(`/newuser ${req.body.username}`);
 
-        let sql = `INSERT INTO users VALUES (NULL, '${req.body.email}', '${req.body.username}', '${req.body.password}',
-        '${req.body.name}', '${req.body.surname}', '${req.body.telephone}', ${req.body.role}, ${req.body.picpath})`;
-        
-        console.log(sql);
+        //if used username or email, delete saved image and return error
+        let results = await db.query(
+            `SELECT u.Username FROM users u 
+            WHERE u.username = ? OR u.Email = ?`, 
+            [req.query.username, req.query.email]
+        );
+        if (results[0].length) {
+            if (req.file) {
+                try {
+                    fs.unlinkSync(req.file.path);
+                    console.log(`successfully deleted ${req.file.path}`);
+                } catch (err) {
+                    console.error(`failed to delete ${req.file.path}`);
+                }
+            }
+            console.log("/newuser: Client-side checks failed");
+            res.sendStatus(400);
+            return;
+        }
 
-        let result = await db.query(sql);
-        res.send(result);
-        
+        let hashedpassword = await bcrypt.hash(req.body.password, 10);
+
+        results = await db.query(
+            `INSERT INTO users VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+            [req.body.email, req.body.username, hashedpassword, req.body.name,
+            req.body.surname, req.body.telephone, req.body.role,
+            req.file ? (req.file.filename) : null]
+        );
+        res.sendStatus(200);
     } catch(error) {
+        res.sendStatus(500);
         console.error(error)
-        res.sendStatus(500)
     }
 })
 
