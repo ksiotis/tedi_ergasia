@@ -1,5 +1,10 @@
 <template>
-    <form @input.prevent="search" @input="hide=false" class="d-flex flex-column align-content-top" autocomplete="off">
+    <form 
+        @input.prevent="search" 
+        @input="hide=false ; $emit('geo-input-change', message) "
+        class="d-flex flex-column align-content-top" 
+        autocomplete="off">
+        
         <div class="d-flex flex-row justify-content-start">
             <input 
                 type="text"
@@ -10,17 +15,17 @@
              
             <span class="iconify inputicon" data-icon="ion-locate"></span>
         </div>
-        <div v-if="hide == false || message != results[0].label" class="autocomplete d-flex flex-column justify-content-start">
+        <div v-if="hide == false" class="autocomplete d-flex flex-column justify-content-start">
             <p 
                 class="d-flex flex-row" 
                 v-for="(result, index) in results"
                 v-bind:key="index"
-                @click="message=result.label ; hide = true">
+                @click="message=result.label ; hide = true ; $emit('geo-input-change', message) ">
                 {{result.label}}</p>
         </div>
     </form>
 </template>
- @change="$emit('geo-input-change', message)"
+
 
 <script>
 
