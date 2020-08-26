@@ -68,15 +68,21 @@ export default {
         complete(){
             this.message = this.results.label;
             this.results = null;
+        },
+
+        close (e) {
+            if (!this.$el.contains(e.target)) {
+                this.hide = true
+            }
         }
     },
-    computed:{
-        
+    mounted () {
+        document.addEventListener('click', this.close)
     },
-
-    created(){
-        
+    beforeDestroy () {
+        document.removeEventListener('click',this.close)
     }
+    
 };
 </script>
 
