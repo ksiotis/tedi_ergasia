@@ -1,8 +1,36 @@
-const bcryptjs = require('bcryptjs')
+const bcrypt = require('bcryptjs');
 const express = require('express');
 const mysql = require('mysql2/promise');
-const cors= require ('cors')
+const cors= require ('cors');
+const fs = require('fs');
+
 const port = 3000;
+
+const multer  = require('multer');
+const pathBase = './src/assets/profile_pics/';
+const storage = multer.diskStorage({
+    destination: function(req, file,cb) {
+        cb(null, pathBase)
+    },
+    filename: function(req, file, cb) {
+        cb(null, Date.now() + (req.body.username).
+        concat(".").concat(file.originalname.slice(-3)));
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
+        cb(null, true);
+    }
+    else {
+        cb(new Error('Non accepted image type'));
+    }
+};
+
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter
+});
 
 const app = express();
 app.use(express.json());
@@ -27,9 +55,11 @@ app.get('/checkusername', async(req, res) => {
         if (req.query.username === "")
             return;
 
-        let sql = `SELECT u.Username FROM users u WHERE u.username = '${req.query.username}'`;
         console.log(`/checkusername ${req.query.username}`);
-        let results = await db.query(sql);
+        let results = await db.query(
+            `SELECT u.Username FROM users u WHERE u.username = ?`, 
+            [req.query.username]
+        );
         res.send(results[0])
     } catch (error) {
         res.sendStatus(500);
@@ -42,9 +72,11 @@ app.get('/checkemail', async(req, res) => {
         if (req.query.email === "")
             return;
 
-        let sql = `SELECT u.Email FROM users u WHERE u.Email = '${req.query.email}'`;
         console.log(`/checkemail ${req.query.email}`);
-        let results = await db.query(sql);
+        let results = await db.query(
+            `SELECT u.Email FROM users u WHERE u.Email = ?`, 
+            [req.query.email]
+        );
         res.send(results[0])
     } catch (error) {
         res.sendStatus(500);
@@ -52,27 +84,38 @@ app.get('/checkemail', async(req, res) => {
     }
 })
 
-app.post('/newuser', async (req, res) => {
+app.post('/newuser', upload.single('picture'), async (req, res) => {
     try {
-        let sql = `SELECT u.idUsers FROM users u 
-        WHERE u.Username = '${req.body.username}' OR u.Email = '${req.body.email}'`
-        let result = await db.query(sql);
+        console.log(`/newuser ${req.body.username}`);
 
-        if (result[0].length) {
+        //if used username or email, delete saved image and return error
+        let results = await db.query(
+            `SELECT u.Username FROM users u 
+            WHERE u.username = ? OR u.Email = ?`, 
+            [req.query.username, req.query.email]
+        );
+        if (results[0].length) {
+            if (req.file) {
+                try {
+                    fs.unlinkSync(req.file.path);
+                    console.log(`successfully deleted ${req.file.path}`);
+                } catch (err) {
+                    console.error(`failed to delete ${req.file.path}`);
+                }
+            }
             console.log("/newuser: Client-side checks failed");
             res.sendStatus(400);
-            return
+            return;
         }
 
         let hashedpassword = await bcrypt.hash(req.body.password, 10);
 
-        sql = `INSERT INTO users VALUES 
-        (NULL, '${req.body.email}', '${req.body.username}', 
-        '${hashedpassword}', '${req.body.name}', 
-        '${req.body.surname}', '${req.body.telephone}', 
-        ${req.body.role}, ${req.body.picture})`;
-
-        result = await db.query(sql);
+        results = await db.query(
+            `INSERT INTO users VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+            [req.body.email, req.body.username, hashedpassword, req.body.name,
+            req.body.surname, req.body.telephone, req.body.role,
+            req.file ? (req.file.filename) : null]
+        );
         res.sendStatus(200);
     } catch(error) {
         res.sendStatus(500);
