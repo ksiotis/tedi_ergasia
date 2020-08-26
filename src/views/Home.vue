@@ -11,7 +11,7 @@
                     v-model="searchForm.location"
                 >
                 <span class="iconify inputicon" data-icon="ion-locate"></span> -->
-                <geoInput class="inputbox searchelement" @geo-input-change="searchForm.location=$event"/>
+                <geoInput class="inputbox searchelement geo" v-model="searchForm.location"/>
 
                 <HotelDatePicker
                     id = "datepicker" 
@@ -88,14 +88,15 @@ export default {
 
 <style scoped>
 .background{
-    background-color: gray;
+
+    background-color: #4E7378;
     height: 800px;
     width: 100%;
     z-index: -100;
 
     background-image: url('../assets/home-bg.png');
     background-size: 100% 100%;
-     background-repeat: no-repeat;
+     background-repeat: no-repeat; 
 }
 
 .searchbar{
@@ -189,4 +190,9 @@ export default {
     margin-top: 25px;
     margin-left: 14px;
 }
+
+.geo{
+    width: 250px;
+}
+
 </style>

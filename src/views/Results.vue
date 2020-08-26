@@ -1,11 +1,13 @@
 <template>
-	<div class="d-flex justify-content-start">
+	<div class="d-flex justify-content-start background">
         <form class="filterform d-flex justify-content-start flex-column">
             <!-- row with location input -->
-            <div class="forminputbox">
+            <!-- <div class="forminputbox">
                 <input  class="forminput" placeholder="Εισάγετε τοποθεσία..." v-model="searchForm.location">
                 <i class="iconify formicon" data-icon="ion-locate"></i>
-            </div>
+            </div> -->
+            <geoInput class="forminputbox" style="width: 310px;" v-model="searchForm.location"/>
+            
             <!-- row with date input -->
             <HotelDatePicker 
                 id = "datepicker"
@@ -102,11 +104,13 @@
 <script>
 import HotelDatePicker from 'vue-hotel-datepicker'
 import ResultTile from '../components/ResultTile'
+import geoInput from '../components/geoInput'
 
 export default {
     components: {
         HotelDatePicker,
         ResultTile,
+        geoInput,
     },
 
     data() {
@@ -200,6 +204,17 @@ export default {
 </script>
 
 <style scoped>
+
+.background{
+    background-color: #FCF5EE;
+    /* height: 800px; */
+    /* width: 100%; */
+    z-index: -100;
+/* 
+    background-image: url('../assets/results-bg.png');
+    background-size:cover;
+    background-repeat: no-repeat; */
+}
 
 .filterform{
     background-color: #194A50;

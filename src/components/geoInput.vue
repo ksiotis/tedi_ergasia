@@ -1,16 +1,17 @@
 <template>
     <form 
         @input.prevent="search" 
-        @input="hide=false ; $emit('geo-input-change', message) "
         class="d-flex flex-column align-content-top" 
         autocomplete="off">
         
         <div class="d-flex flex-row justify-content-start">
-            <input 
+            <input
+                 
                 type="text"
                 v-model="message" 
                 class="input"
                 placeholder="Εισάγεται τοποθεσία..."
+                @input="hide=false ; $emit('input', message)"
                >
              
             <span class="iconify inputicon" data-icon="ion-locate"></span>
@@ -20,7 +21,7 @@
                 class="d-flex flex-row" 
                 v-for="(result, index) in results"
                 v-bind:key="index"
-                @click="message=result.label ; hide = true ; $emit('geo-input-change', message) ">
+                @click="message=result.label ; hide = true ; $emit('input', message) ">
                 {{result.label}}</p>
         </div>
     </form>
@@ -30,6 +31,9 @@
 <script>
 
 export default {
+    
+    props: ['value'],
+
 	data() {
 		return {
             provider: new this.$OSMP(),
@@ -72,17 +76,18 @@ export default {
 
         close (e) {
             if (!this.$el.contains(e.target)) {
-                this.hide = true
+                this.hide = true;
             }
         }
     },
     mounted () {
-        document.addEventListener('click', this.close)
+        document.addEventListener('click', this.close);
+        this.message = this.value;
     },
     beforeDestroy () {
-        document.removeEventListener('click',this.close)
+        document.removeEventListener('click',this.close);
     }
-    
+
 };
 </script>
 
@@ -96,7 +101,8 @@ form{
     background-color: #4E7378;
     color: white;
 
-    width: 200px;
+    width: 250px;
+    /* width: 90%; */
 
     outline: none;
     border: none;
@@ -129,6 +135,7 @@ form{
     left: -20px;
     top: 10px;
 
+    /* border: solid 0.5px #4E7378;  */
 
     border-bottom-right-radius: 3px;    
     border-bottom-left-radius: 3px;    
@@ -140,7 +147,9 @@ form{
     padding-top: 5px;
     padding-bottom: 5px;
     margin-bottom: 0px;
-    width: 100%; 
+    width: 100%;
+
+  
 
 
     white-space: nowrap;
