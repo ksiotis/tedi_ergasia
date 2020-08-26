@@ -3,14 +3,15 @@
         <div class="background d-flex justify-content-center">
             <form class="searchbar d-flex justify-content-center">
                 
-                <input 
+                <!-- <input 
                     name="txtName" 
                     id="txtName" 
                     class="inputbox searchelement" 
                     placeholder="Εισάγεται τοποθεσία..."
                     v-model="searchForm.location"
                 >
-                <span class="iconify inputicon" data-icon="ion-locate"></span>
+                <span class="iconify inputicon" data-icon="ion-locate"></span> -->
+                <geoInput class="inputbox searchelement" @geo-input-change="searchForm.location=$event"/>
 
                 <HotelDatePicker
                     id = "datepicker" 
@@ -50,12 +51,14 @@
 
 <script>
 import HotelDatePicker from 'vue-hotel-datepicker'
+import geoInput from '../components/geoInput'
 
 export default {
 
 
     components: {
         HotelDatePicker,
+        geoInput,
     },
     data() {
 		return {
@@ -86,14 +89,18 @@ export default {
 <style scoped>
 .background{
     background-color: gray;
-    height: 900px;
+    height: 800px;
     width: 100%;
     z-index: -100;
+
+    background-image: url('../assets/home-bg.png');
+    background-size: 100% 100%;
+     background-repeat: no-repeat;
 }
 
 .searchbar{
     height: 90px;
-    width: 66%;
+    width: 70%;
     z-index: 100;
     background-color: #194A50;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
