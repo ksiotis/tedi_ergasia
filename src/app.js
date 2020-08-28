@@ -124,6 +124,46 @@ app.post('/newuser', upload.single('picture'), async (req, res) => {
 })
 
 //THOMAS TESTING FUNCTIONS
+app.post('/search', async (req, res) => {
+    // console.log(`/search ${req.body.south}`);
+    console.log('I ENTERED SEARCH');
+    // try {
+
+    //     //if used username or email, delete saved image and return error
+    //     let results = await db.query(
+    //         `SELECT u.Username FROM users u 
+    //         WHERE u.username = ? OR u.Email = ?`, 
+    //         [req.query.username, req.query.email]
+    //     );
+    //     if (results[0].length) {
+    //         if (req.file) {
+    //             try {
+    //                 fs.unlinkSync(req.file.path);
+    //                 console.log(`successfully deleted ${req.file.path}`);
+    //             } catch (err) {
+    //                 console.error(`failed to delete ${req.file.path}`);
+    //             }
+    //         }
+    //         console.log("/newuser: Client-side checks failed");
+    //         res.sendStatus(400);
+    //         return;
+    //     }
+
+    //     let hashedpassword = await bcrypt.hash(req.body.password, 10);
+
+    //     results = await db.query(
+    //         `INSERT INTO users VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+    //         [req.body.email, req.body.username, hashedpassword, req.body.name,
+    //         req.body.surname, req.body.telephone, req.body.role,
+    //         req.file ? (req.file.filename) : null]
+    //     );
+    //     res.sendStatus(200);
+    // } catch(error) {
+    //     res.sendStatus(500);
+    //     console.error(error)
+    // }
+})
+
 
 
 // app.post('/login', async (req, res) => {

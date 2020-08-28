@@ -187,7 +187,32 @@ export default {
 
       }
     },
+    methods:{
+        async firstSearch() {
+            // evt.preventDefault();
+            try {
+                let formData = new FormData()
+                formData.append("south", this.searchForm.geo_package.bounds[0][0]);
+                formData.append("west", this.searchForm.geo_package.bounds[0][1]);
+                formData.append("north", this.searchForm.geo_package.bounds[1][0]);
+                formData.append("east", this.searchForm.geo_package.bounds[1][1]);
+                // formData.append("name", this.form.name)
+                // formData.append("surname", this.form.surname)
+                // formData.append("email", this.form.email)
+                // formData.append("password", this.form.password)
+                // formData.append("role", this.form.host ? 2 : 1)
+                // formData.append("telephone", "(".concat(this.form.code).concat(")").concat(this.form.phone))
+                // formData.append("picture", this.form.file)
 
+                let response = await this.$axios.post('/search', formData);
+                
+                
+            } catch(error) {
+                alert(this.errormessage)
+                console.log(error);
+            }
+        },
+    },
     created() {
         if(this.$route.query.location!=null){
             this.searchForm.geo_package.message = this.$route.query.location;
@@ -198,6 +223,8 @@ export default {
         this.searchForm.date2 = new Date(this.$route.query.date2)
 
         this.searchForm.persons = this.$route.query.persons;
+
+        this.firstSearch();
     },
 }
 </script>
