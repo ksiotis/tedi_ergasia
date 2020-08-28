@@ -91,7 +91,7 @@
                     v-bind:key="index"
                     class="col col-6">
                         <div class="panel">
-                            <ResultTile/>
+                            <ResultTile :preview_package="preview_package"/>
                         </div>
                 </div> 
             </div>
@@ -115,6 +115,50 @@ export default {
 
     data() {
       return {
+        preview_package: {
+                id: 0,
+                img: 'placeholder',
+                title: 'test',
+                reviewScore: 0,
+                reviewCount: 0,
+                roomType: 'placeholder',
+                price: 0,
+                beds: 0,
+                characteristics: [
+                    {
+                        name: 'Wifi',
+                        status: true,
+                    },
+                    {
+                        name: 'Ψύξη',
+                        status: true,
+                    },
+                    {
+                        name: 'Θέρμανση',
+                        status: true,
+                    },
+                    {
+                        name: 'Κουζίνα',
+                        status: true,
+                    },
+                    {
+                        name: 'Τηλεόραση',
+                        status: true,
+                    },
+                    {
+                        name: 'Χώρος στάθμευσης',
+                        status: true,
+                    },
+                    {
+                        name: 'Ανελκυστήρας',
+                        status: true,
+                    },
+                    {
+                        name: 'Καθιστικό',
+                        status: true,
+                    },
+                ]
+            },
          searchForm: {
                 geo_package:{
                     message: '',
@@ -134,55 +178,6 @@ export default {
         results: [
             {
                 tile: 'Tile A',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-            {
-                tile: 'Title B',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-            {
-                tile: 'Title C',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-            {
-                tile: 'Title C',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-            {
-                tile: 'Title C',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-             {
-                tile: 'Title C',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-             {
-                tile: 'Title C',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-             {
-                tile: 'Title C',
                 reviewScore: '',
                 reviewCount: '',
                 type: '',
@@ -231,6 +226,7 @@ export default {
     top: 50px;
     margin-top: 25px;
     margin-left: 25px;
+    margin-bottom: 25px;
 }
 
 .forminputbox{
