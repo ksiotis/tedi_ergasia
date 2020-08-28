@@ -8,10 +8,10 @@
             <input
                  
                 type="text"
-                v-model="message" 
+                v-model="geo_package.message" 
                 class="input"
                 placeholder="Εισάγεται τοποθεσία..."
-                @input="hide=false ; $emit('input', message)"
+                @input="hide=false ; $emit('input', geo_package)"
                >
              
             <span class="iconify inputicon" data-icon="ion-locate"></span>
@@ -21,7 +21,11 @@
                 class="d-flex flex-row" 
                 v-for="(result, index) in results"
                 v-bind:key="index"
-                @click="message=result.label ; hide = true ; $emit('input', message) ">
+                @click="
+                    geo_package.message=result.label ; 
+                    geo_package.bounds=result.bounds ;
+                    hide = true ; 
+                    $emit('input', geo_package)">
                 {{result.label}}</p>
         </div>
     </form>
@@ -37,8 +41,12 @@ export default {
 	data() {
 		return {
             provider: new this.$OSMP(),
+            
+            geo_package:{
+                message: '',
+                bounds: [],
+            },
 
-            message: '',
             hide: false,
             results: [],
             
@@ -60,7 +68,7 @@ export default {
             try {
                 console.log('HERE');
                                 
-                this.results = await this.provider.search({ query: this.message });
+                this.results = await this.provider.search({ query: this.geo_package.message });
             
                 console.log(this.results);
             } 
@@ -70,7 +78,7 @@ export default {
         },
 
         complete(){
-            this.message = this.results.label;
+            this.geo_package.message = this.results.label;
             this.results = null;
         },
 
