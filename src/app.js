@@ -123,6 +123,8 @@ app.post('/newuser', upload.single('picture'), async (req, res) => {
     }
 })
 
+//THOMAS TESTING FUNCTIONS
+
 
 // app.post('/login', async (req, res) => {
 //     try {

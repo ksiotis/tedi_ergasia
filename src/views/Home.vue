@@ -11,7 +11,7 @@
                     v-model="searchForm.location"
                 >
                 <span class="iconify inputicon" data-icon="ion-locate"></span> -->
-                <geoInput class="inputbox searchelement geo" v-model="searchForm.location"/>
+                <geoInput class="inputbox searchelement geo" v-model="searchForm.geo_package"/>
 
                 <HotelDatePicker
                     id = "datepicker" 
@@ -63,7 +63,10 @@ export default {
     data() {
 		return {
             searchForm: {
-				location: '',
+                geo_package:{
+                    message: '',
+                    bounds: [],
+                },
                 date1: '',
                 date2: '',
 				persons: '',
@@ -72,7 +75,9 @@ export default {
 	},
 	methods: {
         submit(){
-            let query = { location: this.searchForm.location, date1: this.searchForm.date1, date2: this.searchForm.date2, persons: this.searchForm.persons };
+            let coords = JSON.stringify(this.searchForm.geo_package.bounds);
+
+            let query = { location: this.searchForm.geo_package.message, bounds: coords ,date1: this.searchForm.date1, date2: this.searchForm.date2, persons: this.searchForm.persons };
             
             query.date1 = query.date1.toISOString();
             query.date2 = query.date2.toISOString();

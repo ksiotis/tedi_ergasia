@@ -6,7 +6,7 @@
                 <input  class="forminput" placeholder="Εισάγετε τοποθεσία..." v-model="searchForm.location">
                 <i class="iconify formicon" data-icon="ion-locate"></i>
             </div> -->
-            <geoInput class="forminputbox" style="width: 310px;" v-model="searchForm.location"/>
+            <geoInput class="forminputbox" style="width: 310px;" v-model="searchForm.geo_package"/>
             
             <!-- row with date input -->
             <HotelDatePicker 
@@ -115,12 +115,15 @@ export default {
 
     data() {
       return {
-        searchForm: {
-				location: '',
+         searchForm: {
+                geo_package:{
+                    message: '',
+                    bounds: [],
+                },
                 date1: '',
                 date2: '',
 				persons: '',
-		},
+			},
 
         selected2: 'A',
         options: [
@@ -192,7 +195,8 @@ export default {
 
     created() {
         if(this.$route.query.location!=null){
-            this.searchForm.location = this.$route.query.location;
+            this.searchForm.geo_package.message = this.$route.query.location;
+            this.searchForm.geo_package.bounds = JSON.parse(this.$route.query.bounds);
         }
         
         this.searchForm.date1 = new Date(this.$route.query.date1)

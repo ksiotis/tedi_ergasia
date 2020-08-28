@@ -90,7 +90,7 @@ export default {
     },
     mounted () {
         document.addEventListener('click', this.close);
-        this.message = this.value;
+        this.geo_package = this.value;
     },
     beforeDestroy () {
         document.removeEventListener('click',this.close);
