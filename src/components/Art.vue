@@ -22,7 +22,9 @@
 						<img v-else id="profile-pic" :src="user.profilepicpath" width="32px" height="32px" class="rounded-circle mr-2">
 						{{user.username}}
 					</template>
-					<b-dropdown-item @click="pushProfile">Προβολή Λογαριασμού</b-dropdown-item>
+					
+                    <b-dropdown-item @click="pushProfile ; $emit('user-send', user)">Προβολή Λογαριασμού</b-dropdown-item>
+
                     <b-dropdown-item @click="$router.push('/accommodation-edit').catch(() => {})">Οι χώροι μου</b-dropdown-item>
 					<b-dropdown-item @click="$router.push('/messages').catch(() => {})">Μηνύματα</b-dropdown-item>
 					<b-dropdown-item @click="$router.push('/favorites').catch(() => {})">Αγαπημένα</b-dropdown-item>
@@ -73,7 +75,17 @@ export default {
 	data() {
 		return {
 			new_messages: false,
-			user: "",
+            
+            user: {
+                username: "",
+                profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
+                name: "",
+                surname: "",
+                email: "iamsoquirkyrightnow@zz",
+                phone: "(GR)+30 2102102101",
+                role: "Οικοδεσπότης"
+            },
+
 			form: {
 				username: '',
 				password: ''

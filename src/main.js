@@ -15,7 +15,7 @@ import "leaflet-geosearch/assets/css/leaflet.css"
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
 
-axios.defaults.baseURL = "http://109.242.40.6:3000"; //change is IP changes
+axios.defaults.baseURL = "http://localhost:3000"; //change is IP changes
 
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios

@@ -91,11 +91,10 @@
                     v-bind:key="index"
                     class="col col-6">
                         <div class="panel">
-                            <ResultTile :preview_package="preview_package"/>
+                            <ResultTile :preview_package="result"/>
                         </div>
                 </div> 
             </div>
-
         </div>
 
     </div>
@@ -115,97 +114,87 @@ export default {
 
     data() {
       return {
-        preview_package: {
-                id: 0,
-                img: 'placeholder',
-                title: 'test',
-                reviewScore: 0,
-                reviewCount: 0,
-                roomType: 'placeholder',
-                price: 0,
-                beds: 0,
-                characteristics: [
-                    {
-                        name: 'Wifi',
-                        status: true,
-                    },
-                    {
-                        name: 'Ψύξη',
-                        status: true,
-                    },
-                    {
-                        name: 'Θέρμανση',
-                        status: true,
-                    },
-                    {
-                        name: 'Κουζίνα',
-                        status: true,
-                    },
-                    {
-                        name: 'Τηλεόραση',
-                        status: true,
-                    },
-                    {
-                        name: 'Χώρος στάθμευσης',
-                        status: true,
-                    },
-                    {
-                        name: 'Ανελκυστήρας',
-                        status: true,
-                    },
-                    {
-                        name: 'Καθιστικό',
-                        status: true,
-                    },
-                ]
+        results: [],
+
+        searchForm: {
+            geo_package:{
+                message: '',
+                bounds: [
+                ],
             },
-         searchForm: {
-                geo_package:{
-                    message: '',
-                    bounds: [],
-                },
-                date1: '',
-                date2: '',
-				persons: '',
-			},
+            date1: '',
+            date2: '',
+            persons: '',
+        },
 
         selected2: 'A',
         options: [
           { item: 'A', name: 'Φθίνουσα τιμή' },
           { item: 'B', name: 'Αύξουσα τιμή' },
         ],
-
-        results: [
-            {
-                tile: 'Tile A',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-		],
-
       }
     },
     methods:{
-        async firstSearch() {
+        async search() {
             // evt.preventDefault();
             try {
-                let formData = new FormData()
-                formData.append("south", this.searchForm.geo_package.bounds[0][0]);
-                formData.append("west", this.searchForm.geo_package.bounds[0][1]);
-                formData.append("north", this.searchForm.geo_package.bounds[1][0]);
-                formData.append("east", this.searchForm.geo_package.bounds[1][1]);
-                // formData.append("name", this.form.name)
-                // formData.append("surname", this.form.surname)
-                // formData.append("email", this.form.email)
-                // formData.append("password", this.form.password)
-                // formData.append("role", this.form.host ? 2 : 1)
-                // formData.append("telephone", "(".concat(this.form.code).concat(")").concat(this.form.phone))
-                // formData.append("picture", this.form.file)
-
-                let response = await this.$axios.post('/search', formData);
+              
+                let response = await this.$axios.post('/search', {
+                    north: this.searchForm.geo_package.bounds[1][0],
+                    south: this.searchForm.geo_package.bounds[0][0],
+                    west: this.searchForm.geo_package.bounds[0][1],
+                    east: this.searchForm.geo_package.bounds[1][1],
+                });
                 
+                // console.log(response);
+                var i;
+                for(i=0 ; i < response.data.length ; i++){
+                    let preview_package = {
+                        img: 'placeholder',
+                        id: response.data[i].idAccommodation,
+                        title: response.data[i].Name,
+                        reviewScore: 0,
+                        reviewCount: 0,
+                        roomType: response.data[i].type,
+                        price: response.data[i].PricePerNight,
+                        beds: response.data[i].Beds,
+                        characteristics: [
+                            {
+                                name: 'Wifi',
+                                status: true,
+                            },
+                            {
+                                name: 'Ψύξη',
+                                status: true,
+                            },
+                            {
+                                name: 'Θέρμανση',
+                                status: true,
+                            },
+                            {
+                                name: 'Κουζίνα',
+                                status: true,
+                            },
+                            {
+                                name: 'Τηλεόραση',
+                                status: true,
+                            },
+                            {
+                                name: 'Χώρος στάθμευσης',
+                                status: true,
+                            },
+                            {
+                                name: 'Ανελκυστήρας',
+                                status: true,
+                            },
+                            {
+                                name: 'Καθιστικό',
+                                status: true,
+                            },
+                        ]
+                    };
+                    this.results.push(preview_package);
+                }
                 
             } catch(error) {
                 alert(this.errormessage)
@@ -224,7 +213,7 @@ export default {
 
         this.searchForm.persons = this.$route.query.persons;
 
-        this.firstSearch();
+        this.search();
     },
 }
 </script>
