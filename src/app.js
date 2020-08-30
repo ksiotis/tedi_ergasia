@@ -3,6 +3,7 @@ const express = require('express');
 const mysql = require('mysql2/promise');
 const cors= require ('cors');
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 
 const port = 3000;
 
@@ -35,6 +36,7 @@ const upload = multer({
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use('/profile_pics', express.static('./src/assets/profile_pics'))
 
 const db = mysql.createPool({
     host: 'localhost',
@@ -84,17 +86,19 @@ app.get('/checkemail', async(req, res) => {
     }
 })
 
-app.post('/newuser', upload.single('picture'), async (req, res) => {
+app.post('/signup', upload.single('picture'), async (req, res) => {
     try {
-        console.log(`/newuser ${req.body.username}`);
+        console.log(`/signup ${req.body.username}`);
+        //TODO add non empty checks 
 
         //if used username or email, delete saved image and return error
         let results = await db.query(
             `SELECT u.Username FROM users u 
-            WHERE u.username = ? OR u.Email = ?`, 
-            [req.query.username, req.query.email]
+            WHERE u.Username = ? OR u.Email = ?`, 
+            [req.body.username, req.body.email]
         );
         if (results[0].length) {
+            
             if (req.file) {
                 try {
                     fs.unlinkSync(req.file.path);
@@ -103,7 +107,7 @@ app.post('/newuser', upload.single('picture'), async (req, res) => {
                     console.error(`failed to delete ${req.file.path}`);
                 }
             }
-            console.log("/newuser: Client-side checks failed");
+            console.log("/signup: Client-side checks failed");
             res.sendStatus(400);
             return;
         }
@@ -123,21 +127,55 @@ app.post('/newuser', upload.single('picture'), async (req, res) => {
     }
 })
 
+app.post('/login', async (req, res) => {
+    try {
+        console.log(`/login ${req.body.username}`);
+        if (req.body.username === '' || req.body.password === '') { //empty check
+            res.sendStatus(400);
+            return;
+        }
 
-// app.post('/login', async (req, res) => {
-//     try {
-//         let sql = `INSERT INTO 'users' ('idUsers', 'Email', 'Username', 'Password', 'Name', 'Surname', 'Telephone', 'Role', 'ProfilePicPath') 
-//         VALUES (NULL, '${req.query.email}', '${req.query.username}', '${req.query.tel}',
-//         '${req.query.password}', '${req.query.surname}', '${req.query.tel}', '${req.query.role}', ${req.query.picpath})`;
+        let result = await db.query(
+            `SELECT u.* FROM users u
+            WHERE u.Username = ?`, [req.body.username]
+        );
+        if (result[0].length === 0) { //if user does not exist
+            res.sendStatus(400);
+            return;
+        }
+        if (result[0].length > 1) { //if found identical usernames
+            console.error(`Identical usernames found: ${result[0][0].Username}`)
+            res.sendStatus(500);
+            return;
+        }
 
-//         let result = await db.query(sql);
-//         res.send(result);
-        
-//     } catch(error) {
-//         console.error(error)
-//         res.sendStatus(500)
-//     } 
-// })
+        let user = result[0][0];
+        let match = bcrypt.compareSync(req.body.password, user.Password);
+
+        if (!match) { //if given wrong password
+            res.sendStatus(403);
+            return;
+        }
+
+        delete user.Password;
+        let token = jwt.sign({ user }, 'shhhhh');
+
+        res.send({
+            token: token
+        });
+    } catch(error) {
+        console.error(error);
+        res.sendStatus(500);
+    }
+})
+
+function verifyToken(req, res, next) {
+    let bearer = req.headers.authorization;
+    let user = jwt.verify(bearer, 'shhhhh');
+
+    console.log(user);
+    next();
+}
 
 // app.get('/lines/', async (req,res) => {
 //     let sql = `SELECT code as 'name' FROM grammes ORDER BY code ASC`;

@@ -18,24 +18,27 @@
 			<div v-else>
 				<b-dropdown id="profile-button" size="lg" variant="white" left toggle-class="text-decoration-none" >
 					<template v-slot:button-content>
-						<img v-if="!user.profilepicpath" id="profile-pic" src="../assets/profile_pics/default.png" width="32px" height="32px" class="rounded-circle mr-2">
-						<img v-else id="profile-pic" :src="user.profilepicpath" width="32px" height="32px" class="rounded-circle mr-2">
-						{{user.username}}
+						<img id="profile-pic" :src="userPic" width="32px" height="32px" class="rounded-circle mr-2">
+						{{user.Username}}
 					</template>
 					<b-dropdown-item @click="pushProfile">Προβολή Λογαριασμού</b-dropdown-item>
-                    <b-dropdown-item @click="$router.push('/accommodation-edit').catch(() => {})">Οι χώροι μου</b-dropdown-item>
+                    
+					<b-dropdown-item v-if="user.Role === 'aproved'" @click="$router.push('/accommodation-edit').catch(() => {})">Οι χώροι μου</b-dropdown-item>
+                    <b-dropdown-item v-if="user.Role === 'unaproved'" disabled>Εκκρεμής Αίτηση Οικοδεσπότη</b-dropdown-item>
+					<b-dropdown-item v-if="user.Role === 'admin'" @click="$router.push('/admin').catch(() => {})">Κατάλογος Χρηστών</b-dropdown-item>
+					<b-dropdown-item v-else @click="$router.push('/becomehost').catch(() => {})">Γίνετε Οικοδεσπότης</b-dropdown-item>
+					
 					<b-dropdown-item @click="$router.push('/messages').catch(() => {})">Μηνύματα</b-dropdown-item>
 					<b-dropdown-item @click="$router.push('/favorites').catch(() => {})">Αγαπημένα</b-dropdown-item>
-					<b-dropdown-item @click="$router.push('/becomehost').catch(() => {})">Γίνετε Οικοδεσπότης</b-dropdown-item>
-					<b-dropdown-divider></b-dropdown-divider>
+					<b-dropdown-divider/>
 					<b-dropdown-item @click="$router.push('/profile').catch(() => {})">Βοήθεια</b-dropdown-item>
-					<b-dropdown-item >Αποσύνδεση</b-dropdown-item>
+					<b-dropdown-item @click="logout">Αποσύνδεση</b-dropdown-item>
 				</b-dropdown>
 			</div>
 		</div>
 
 
-		<b-modal id="login-modal" title="BootstrapVue">
+		<b-modal ref="login-modal" id="login-modal" title="BootstrapVue">
 			<template v-slot:modal-header="{close}">
 				<div class="widen d-flex">
 
@@ -51,8 +54,8 @@
 				</div>
 			</template>
 
-			<b-form @submit="onSubmit" class="mt-3">
-				<b-form-input id="modal-input-top" v-model="form.username" placeholder="Όνομα Χρήστη" size="lg" required="test"></b-form-input>
+			<b-form @submit.prevent="onSubmit" class="mt-3">
+				<b-form-input id="modal-input-top" v-model="form.username" placeholder="Όνομα Χρήστη" size="lg" required></b-form-input>
 				<b-form-input id="modal-input-bot" v-model="form.password" type="password" placeholder="Κωδικός Πρόσβασης" size="lg" required></b-form-input>
 				<b-button id="login-btn" type="submit" class="widen mt-5">Είσοδος</b-button>
 			</b-form>
@@ -73,23 +76,60 @@ export default {
 	data() {
 		return {
 			new_messages: false,
-			user: "",
+			user: '',
 			form: {
 				username: '',
 				password: ''
-			}
+			},
+			errormessage: "Προέκυψε κάποιο σφάλμα, δοκιμάστε ξανά",
 		};
 	},
+	computed: {
+		userPic() {
+			let fileName = 'default.png';
+			if (this.user && this.user.ProfilePicPath) {
+				fileName = this.user.ProfilePicPath;
+			}
+			return require(`../assets/profile_pics/${fileName}`);
+		},
+	},
+	created() {
+		if (localStorage.token) {
+			this.user = this.$jwt.decode(localStorage.token).user;
+		}
+	},
 	methods: {
-		onSubmit(evt) {
-			evt.preventDefault()
-			alert(JSON.stringify(this.form))
+		async onSubmit() {
+			if (this.form.username && this.form.password) {
+				try {
+					let response = await this.$axios.post('/login', {
+						username: this.form.username,
+						password: this.form.password
+					});
+					localStorage.token = response.data.token;
+					this.user = this.$jwt.decode(response.data.token).user;
+					this.$refs['login-modal'].hide()
+
+					if (this.user.Role === 'admin')
+						this.$router.push('/admin').catch(() => {});
+					else if (this.user.Role === 'aproved')
+						this.$router.push('/TODO').catch(() => {});
+				} catch(error) {
+					alert(this.errormessage)
+					console.log(error);
+				}
+			}
 		},
 		pushProfile() {
 			let query = { username: this.user.username };
-			this.$router.push({ path: '/profile', query: query}).catch(() => {});
+			this.$router.push({ path: `/profile`, query: query}).catch(() => {});
+		},
+		logout() {
+			this.user = '';
+			localStorage.token = '';
+			this.$router.push('/').catch(() => {});
 		}
-	},
+	}
 };
 </script>
 

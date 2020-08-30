@@ -3,29 +3,29 @@
         <div id="profile" >
             <div class="d-flex p-3">
                 <div id="column1" class="d-flex flex-column align-items-center mr-5">
-                    <img :src="user.profilepicpath" width="150px" height="150px" class="rounded-circle ">
-                    <span class="mt-3">{{profile.username}}</span>
+                    <img :src="user.ProfilePicPath" width="150px" height="150px" class="rounded-circle ">
+                    <span class="mt-3">{{user.Username}}</span>
                 </div>
 
                 <div id="column2" class="d-flex flex-column">
-                    <span>
-                        Επώνυμο: <span class="semitransparenttext">{{profile.surname}}</span>
+                    <span v-on:user-send="user.Username = $event.user.Username">
+                        Επώνυμο: <span class="semitransparenttext">{{user.Username}}</span>
                     </span>
 
                     <span class="mt-2">
-                        Όνομα: <span class="semitransparenttext">{{profile.name}}</span>
+                        Όνομα: <span class="semitransparenttext">{{user.Username}}</span>
                     </span>
 
                     <span class="mt-2">
-                        Διεύθυνση e-mail: <span class="semitransparenttext">{{profile.email}}</span>
+                        Διεύθυνση e-mail: <span class="semitransparenttext">{{user.Username}}</span>
                     </span>
 
                     <span class="mt-2">
-                        Τηλέφωνο: <span class="semitransparenttext">{{profile.phone}}</span>
+                        Τηλέφωνο: <span class="semitransparenttext">{{user.Username}}</span>
                     </span>
                     
                     <span class="mt-2">
-                        Ρόλος: <span class="semitransparenttext">{{profile.role}}</span> <span class="iconify" data-icon="ion-briefcase"/>
+                        Ρόλος: <span class="semitransparenttext">{{user.Username}}</span> <span class="iconify" data-icon="ion-briefcase"/>
                     </span>
                 </div>
             </div>
@@ -59,17 +59,13 @@ export default {
     data() {
         return {
             user: {
-				username: "kostass00",
-				profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
-            },
-            profile: {
-                username: "quirkygirl85",
-                profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
-                name: "Anna",
-                surname: "Adams",
-                email: "iamsoquirkyrightnow@gmail.com",
-                phone: "(GR)+30 2102102101",
-                role: "Οικοδεσπότης"
+                Username: "quirkygirl85",
+                ProfilePicPath: require("../assets/profile_pics/quirkygirl85.jpg"),
+                Name: "Anna",
+                Surname: "Adams",
+                Email: "iamsoquirkyrightnow@gmail.com",
+                Phone: "(GR)+30 2102102101",
+                Role: "Οικοδεσπότης"
             }
         }
     },
@@ -77,7 +73,9 @@ export default {
         
     },
     created() {
-        this.profile.username = this.$route.query.username;
+        // this.profile.username = this.$route.query.username;
+
+
     }
 }
 </script>
