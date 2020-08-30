@@ -141,7 +141,19 @@ app.post('/search', async (req, res) => {
             if( req.body.south <= results[i][0].Latitude && results[i][0].Latitude <= req.body.north &&
                 req.body.west <= results[i][0].Longtitude && results[i][0].Longtitude <= req.body.east){
                 console.log("WITHIN BOUNDS");
+                // console.log(results[i][0]);
+
+                let picture = await db.query(
+                    `SELECT p.Path  
+                     FROM accomodationphotos p
+                     WHERE p.idAccomodation = ?`,
+                     [results[i][0].idAccomodation] 
+                );
+
+                // console.log(picture);
+                results[i][0].Thumbnail = picture[i][0].Path;
                 console.log(results[i][0]);
+
                 accepted.push(results[i][0]);
             }
         }

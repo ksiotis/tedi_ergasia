@@ -150,7 +150,7 @@ export default {
                 var i;
                 for(i=0 ; i < response.data.length ; i++){
                     let preview_package = {
-                        img: 'placeholder',
+                        img: response.data[i].Thumbnail,
                         id: response.data[i].idAccommodation,
                         title: response.data[i].Name,
                         reviewScore: 0,

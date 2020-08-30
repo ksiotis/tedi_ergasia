@@ -1,7 +1,7 @@
 <template>
 	<div class="tile d-flex flex-column"  @click="submit">
 	    
-        <div class="thumbnail"/>
+        <img :src="require(`@/assets/accommodation_pics/${preview_package.img}`)" class="thumbnail"/>
 
         <div class="textrow d-flex justify-content-between">
             <p> {{preview_package.title}} </p>
@@ -109,7 +109,7 @@ export default {
     margin-top: 25px;
     margin-right: 40px;
 
-    height:280px;
+    height:300px;
     width: 330px;
     background-color: #194A50;
 
@@ -120,6 +120,8 @@ export default {
     background-color: grey;
     width: 330px;
     height: 170px;
+
+
 }
 
 .textrow{
