@@ -160,6 +160,8 @@ export default {
                     west: this.searchForm.geo_package.bounds[0][1],
                     east: this.searchForm.geo_package.bounds[1][1],
                     persons: this.searchForm.persons,
+                    date1: this.searchForm.date1.toISOString(),
+                    date2: this.searchForm.date2.toISOString(),
                 });
                 
                 console.log(response);

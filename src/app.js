@@ -199,27 +199,54 @@ app.post('/search', async (req, res) => {
                 req.body.west <= results[0][i].Longtitude && results[0][i].Longtitude <= req.body.east &&
                 req.body.persons <= results[0][i].Beds){
                 console.log("WITHIN BOUNDS");
-
-                let picture = await db.query(
-                    `SELECT p.Path  
-                     FROM accomodationphotos p
-                     WHERE p.idAccomodation = ?`,
-                     [results[0][i].idAccomodation] 
-                );
-
-                // console.log(picture);
-                let reviews = await db.query(
-                    `SELECT r.Rating  
-                     FROM accomodationreview r
-                     WHERE r.Accomodations_idAccomodation = ?`,
-                     [results[0][i].idAccomodation]
-                )
-                // console.log(reviews);
-                results[0][i].Thumbnail = picture[0][0].Path;
-                results[0][i].Ratings = reviews[0];
                 
-                console.log(results[0][i]);
-                accepted.push(results[0][i]);
+                let date1 = new Date(req.body.date1);
+                let date2 = new Date(req.body.date2);
+                let reservations = await db.query(
+                    `SELECT r.From, r.To  
+                    FROM reservations r
+                    WHERE r.Accomodations_idAccomodation = ?`,
+                    [results[0][i].idAccomodation]
+                );
+                console.log(reservations);
+                let flag = true;
+
+                var j;
+                for(j = 0 ; j<reservations[0].length ; j ++){
+                    console.log(reservations[0]);
+                    let from = reservations[0][j].From;
+                    let to = reservations[0][j].To;
+                    from = new Date(from);
+                    to = new Date(to);
+                    
+                    console.log(from);
+                    if((from <= date1 && date1 <= to) || (from <= date2 && date2 <= to)){
+                        flag = false;
+                        break;
+                    }
+                }  
+                if(flag == true){
+                    let picture = await db.query(
+                        `SELECT p.Path  
+                        FROM accomodationphotos p
+                        WHERE p.idAccomodation = ?`,
+                        [results[0][i].idAccomodation] 
+                    );
+    
+                    // console.log(picture);
+                    let reviews = await db.query(
+                        `SELECT r.Rating  
+                        FROM accomodationreview r
+                        WHERE r.Accomodations_idAccomodation = ?`,
+                        [results[0][i].idAccomodation]
+                    )
+                    // console.log(reviews);
+                    results[0][i].Thumbnail = picture[0][0].Path;
+                    results[0][i].Ratings = reviews[0];
+                    
+                    console.log(results[0][i]);
+                    accepted.push(results[0][i]);
+                }
             }
         }
         res.send(accepted);
