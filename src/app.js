@@ -191,17 +191,19 @@ app.post('/search', async (req, res) => {
         
         let accepted = [];
 
-        for(i = 0 ; i < results.length ; i++) {
-            if( req.body.south <= results[i][0].Latitude && results[i][0].Latitude <= req.body.north &&
-                req.body.west <= results[i][0].Longtitude && results[i][0].Longtitude <= req.body.east){
+        console.log(results);
+        for(i = 0 ; i < results[0].length ; i++) {
+            console.log("HERE");
+
+            if( req.body.south <= results[0][i].Latitude && results[0][i].Latitude <= req.body.north &&
+                req.body.west <= results[0][i].Longtitude && results[0][i].Longtitude <= req.body.east){
                 console.log("WITHIN BOUNDS");
-                // console.log(results[i][0]);
 
                 let picture = await db.query(
                     `SELECT p.Path  
                      FROM accomodationphotos p
                      WHERE p.idAccomodation = ?`,
-                     [results[i][0].idAccomodation] 
+                     [results[0][i].idAccomodation] 
                 );
 
                 // console.log(picture);
@@ -209,14 +211,14 @@ app.post('/search', async (req, res) => {
                     `SELECT r.Rating  
                      FROM accomodationreview r
                      WHERE r.Accomodations_idAccomodation = ?`,
-                     [results[i][0].idAccomodation]
+                     [results[0][i].idAccomodation]
                 )
                 // console.log(reviews);
-                results[i][0].Thumbnail = picture[i][0].Path;
-                results[i][0].Ratings = reviews[i];
-                console.log(results[i][0]);
-
-                accepted.push(results[i][0]);
+                results[0][i].Thumbnail = picture[0][0].Path;
+                results[0][i].Ratings = reviews[0];
+                
+                console.log(results[0][i]);
+                accepted.push(results[0][i]);
             }
         }
         res.send(accepted);

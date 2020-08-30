@@ -159,7 +159,7 @@ export default {
                     east: this.searchForm.geo_package.bounds[1][1],
                 });
                 
-                // console.log(response);
+                console.log(response);
                 var i;
                 for(i=0 ; i < response.data.length ; i++){
                     
