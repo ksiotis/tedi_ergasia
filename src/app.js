@@ -196,7 +196,8 @@ app.post('/search', async (req, res) => {
             console.log("HERE");
 
             if( req.body.south <= results[0][i].Latitude && results[0][i].Latitude <= req.body.north &&
-                req.body.west <= results[0][i].Longtitude && results[0][i].Longtitude <= req.body.east){
+                req.body.west <= results[0][i].Longtitude && results[0][i].Longtitude <= req.body.east &&
+                req.body.persons <= results[0][i].Beds){
                 console.log("WITHIN BOUNDS");
 
                 let picture = await db.query(

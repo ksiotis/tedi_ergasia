@@ -159,6 +159,7 @@ export default {
                     south: this.searchForm.geo_package.bounds[0][0],
                     west: this.searchForm.geo_package.bounds[0][1],
                     east: this.searchForm.geo_package.bounds[1][1],
+                    persons: this.searchForm.persons,
                 });
                 
                 console.log(response);
