@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex flex-column align-items-center mt-3 mb-3">
-        <b-form @submit="onSubmit" id="registration-form" class="">
+        <b-form v-if="!logged_in" @submit.prevent="onSubmit" id="registration-form" class="">
             <div class="d-flex">
 
                 <div class="d-flex flex-column set-width mr-5">
@@ -19,9 +19,9 @@
 
                 <div class="d-flex flex-column set-width">
                     <img :src="image" id="profile-pic" class="rounded-circle align-self-center">
-                    <b-form-group id="file" class="mt-4 align-self-center">
+                    <b-form-group id="file" class="mt-4 align-self-center" description="">
                         <!-- <a class="orange-link">Επιλογή Εικόνας</a> -->
-                        <b-form-file id="file-input" @input="loadFile" v-model="form.file" accept="image/jpeg, image/png, image/gif" placeholder="Επιλογή Εικόνας"></b-form-file>
+                        <b-form-file id="file-input" @input="loadFile" v-model="form.file" accept="image/jpeg, image/png" placeholder="Επιλογή Εικόνας"></b-form-file>
                     </b-form-group>
                     <b-form-group label="Όνομα *" label-for="name" label-size="sm">
                         <b-form-input id="name" v-model="form.name" type="text" required></b-form-input>
@@ -72,6 +72,11 @@
                 <b-button id="register-btn" type="submit" class="ml-auto mr-5 px-5 py-2" :disabled="submit_disabled">Δημιουργία Λογαριασμού</b-button>
             </div>
         </b-form>
+        <div v-else @click="$router.push('/').catch(() => {})" id="already-logged-in" class="d-flex flex-column">
+            <div> Έχετε ήδη λογαριασμό χρήστη. Παρακαλώ αποσυνδεθείτε για να συνεχίσετε ή πατήστε τον παρακάτω σύνδεσμο...</div>
+            <a class="orange-link mt-auto mb-5">Επιστροφή στην αρχική σελίδα</a>
+        </div>
+
     </div>
 </template>
 
@@ -106,7 +111,8 @@ export default {
                 { value: '+30', text: 'EL' },
                 { value: '+44', text: 'EN' },
             ],
-            errormessage: "Προέκυψε κάποιο σφάλμα, δοκιμάστε ξανά"
+            errormessage: "Προέκυψε κάποιο σφάλμα, δοκιμάστε ξανά",
+            user: ''
         }
     },
     methods: {
@@ -160,8 +166,7 @@ export default {
                 this.password_desc = "Οι κωδικοί πρόσβασης δεν ταιριάζουν";
             }
         },
-        async onSubmit(evt) {
-            evt.preventDefault();
+        async onSubmit() {
             try {
                 let formData = new FormData()
                 formData.append("username", this.form.username)
@@ -173,9 +178,22 @@ export default {
                 formData.append("telephone", "(".concat(this.form.code).concat(")").concat(this.form.phone))
                 formData.append("picture", this.form.file)
 
-                let response = await this.$axios.post('/newuser', formData);
+                let response = await this.$axios.post('/signup', formData);
+                alert("Η δημιουργία λογαριασμού ολοκληρώθηκε με επιτυχία!");
+
+                response = await this.$axios.post('/login', {
+                    username: this.form.username,
+                    password: this.form.password,
+                });
+                localStorage.token = response.data.token;
+                this.user = this.$jwt.decode(response.data.token).user;
                 
-                
+                if (this.user.Role === 'admin')
+                    this.$router.push('/admin').catch(() => {});
+                else if (this.user.Role === 'aproved')
+                    this.$router.push('/TODO').catch(() => {});
+                else
+                    this.$router.push('/').catch(() => {});
             } catch(error) {
                 alert(this.errormessage)
                 console.log(error);
@@ -186,10 +204,13 @@ export default {
         },
     },
     computed: {
-        submit_disabled: function () {
+        submit_disabled: function() {
             return ((this.username_state === false) ||
                     (this.email_state === false) ||
                     (this.password_state === false));
+        },
+        logged_in: function() {
+            return localStorage.getItem('token') ? true : false;
         }
     }
 }
@@ -197,7 +218,7 @@ export default {
 
 <style scoped>
 
-#registration-form {
+#registration-form, #already-logged-in {
     /* width: 50%; */
     /* max-width: 800px; */
     background-color: #194A50;
@@ -205,6 +226,13 @@ export default {
     border-radius: 15px;
     padding: 20px;
     font-size: 18px;
+}
+
+#already-logged-in {
+    height: 500px;
+    width: 500px;
+    font-size: 30px;
+    text-align: center;
 }
 
 #registration-form input {

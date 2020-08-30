@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import axios from 'axios'
+import jsonwebtoken from 'jsonwebtoken'
 
 import BootstrapVue from 'bootstrap-vue'
 Vue.use(BootstrapVue)
@@ -20,6 +21,7 @@ axios.defaults.baseURL = "http://localhost:3000"; //change is IP changes
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios
 Vue.prototype.$OSMP = OpenStreetMapProvider;
+Vue.prototype.$jwt = jsonwebtoken;
 
 new Vue({
   router,
