@@ -7,7 +7,7 @@
                     <div class="title mb-4">Επεξεργασία Στοιχείων</div>
                     
                     <b-form-group label="Όνομα Χρήστη" :description="username_desc" label-for="username" label-size="sm" class="mt-auto">
-                        <input id="username" :state="username_state" @change="checkusername" v-model="form.username" type="text" required></input>
+                        <input id="username" :state="username_state" @change="checkusername" v-model="form.username" type="text" required/>
                     </b-form-group>
                     <b-form-group label="Επώνυμο" label-for="surname" label-size="sm" class="">
                         <input id="surname" v-model="form.surname" type="text" required/>
@@ -15,7 +15,7 @@
                 </div>
 
                 <div class="d-flex flex-column set-width">
-                    <img :src="image" id="profile-pic" class="rounded-circle align-self-center">
+                    <img :src="profilePic" id="profile-pic" class="rounded-circle align-self-center">
                     <b-form-group id="file" class="mt-4 align-self-center">
                         <!-- <a class="orange-link">Επιλογή Εικόνας</a> -->
                         <b-form-file id="file-input" @input="loadFile" v-model="form.file" accept="image/jpeg, image/png, image/gif" placeholder="Επιλογή Εικόνας"></b-form-file>
@@ -28,7 +28,7 @@
             </div>
 
             <b-form-group label="Διεύθηνση e-mail" label-for="mail" label-size="sm" class="">
-                <input id="mail" v-model="form.mail" type="email" required/>
+                <input id="mail" v-model="form.email" type="email" required/>
             </b-form-group>
 
             <div class="d-flex flex-fill">
@@ -50,7 +50,9 @@
 
                 <div class="d-flex set-width flex-column">
                     <b-form-group label="Ρόλος" label-for="role" label-size="sm" class="set-width">
-                        <input id="role" :state="password_state" v-model="form.confirmpassword" type="password" required />
+                        <span class="mr-2">{{rolenames[user.Role][0]}}</span>
+                        <span class="iconify" :data-icon="rolenames[user.Role][1]"/>
+                        <button v-if="user.Role === 'tenant'" class="mybutton">Γίνετε Οικοδεσπότης</button>
                     </b-form-group>
                 </div>
             </div>
@@ -67,7 +69,6 @@ export default {
     name: "EditProfile",
     data() {
         return {
-            image: require("../assets/profile_pics/default.png"),
             password_state: null,
             username_state: null,
             username_desc: "",
@@ -75,22 +76,50 @@ export default {
                 username: '',
                 name: '',
                 surname: '',
-                mail: '',
+                email: '',
                 password: '',
                 confirmpassword: '',
                 code: null,
                 phone: '',
                 file: null,
                 host: false,
-                terms: false
             },
+            user: '',
             options: [
                 { value: null, text: '...', disabled: true},
                 { value: '+1', text: 'US'},
                 { value: '+30', text: 'EL' },
                 { value: '+44', text: 'EN' },
             ],
+            rolenames: {
+                tenant: ['Ενοικιαστής', 'ion-briefcase'],
+                unaproved: ['Ενοικιαστής', 'ion-briefcase'],
+                aproved: ['Οικοδεσπότης', 'ion-home-sharp'],
+                admin: ['Διαχειριστής', 'ion-build'],
+            }
         }
+    },
+    created() {
+        if (localStorage.token) {
+            this.user = this.$jwt.decode(localStorage.token).user;
+            this.form.username = this.user.Username;
+            this.form.name = this.user.Name;
+            this.form.surname = this.user.Surname;
+            this.form.email = this.user.Email;
+            this.form.code = this.user.Telephone.split(')')[0].substring(1);
+            this.form.phone = this.user.Telephone.split(')')[1];
+        }
+    },
+    computed: {
+        profilePic: function () {
+            if (form.file === null) {
+                let filename = 'default.png';
+    
+                if (this.user && this.user.ProfilePicPath)
+                    filename = this.user.ProfilePicPath;
+                return require(`../assets/profile_pics/${filename}`);
+            }
+        },
     },
     methods: {
         onSubmit(evt) {
@@ -192,6 +221,22 @@ input, select {
     color: white;
     border-radius: 5px;
     padding: 5px;
+}
+
+.mybutton {
+    margin-left: 15px;
+    padding: 3px;
+    border: none;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius:5px;
+	background-color: #D37556;
+	color: white;
+}
+
+.mybutton:hover {
+	background-color: #9C533B;
 }
 
 </style>

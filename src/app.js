@@ -273,7 +273,7 @@ app.post('/login', async (req, res) => {
             WHERE u.Username = ?`, [req.body.username]
         );
         if (result[0].length === 0) { //if user does not exist
-            res.sendStatus(400);
+            res.sendStatus(403);
             return;
         }
         if (result[0].length > 1) { //if found identical usernames

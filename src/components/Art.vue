@@ -106,6 +106,7 @@ export default {
 						username: this.form.username,
 						password: this.form.password
 					});
+
 					localStorage.token = response.data.token;
 					this.user = this.$jwt.decode(response.data.token).user;
 					this.$refs['login-modal'].hide()
@@ -115,6 +116,10 @@ export default {
 					else if (this.user.Role === 'aproved')
 						this.$router.push('/TODO').catch(() => {});
 				} catch(error) {
+					if (error == 'Error: Request failed with status code 403') {
+						alert('Λάθος όνομα χρήστη ή κωδικός πρόσβασης!');
+						return;
+					}
 					alert(this.errormessage)
 					console.log(error);
 				}
