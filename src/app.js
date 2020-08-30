@@ -6,8 +6,10 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 
 const port = 3000;
+const secretKey = 'shhhhh'
 
 const multer  = require('multer');
+const { allowedNodeEnvironmentFlags } = require('process');
 const pathBase = './src/assets/profile_pics/';
 const storage = multer.diskStorage({
     destination: function(req, file,cb) {
@@ -127,6 +129,54 @@ app.post('/signup', upload.single('picture'), async (req, res) => {
     }
 })
 
+app.get('/profile', async(req, res) => { //get info of target user
+    try {
+        if (req.query.username === "")
+            return;
+
+        console.log(`/profile ${req.query.username}`);
+        let result = await db.query(
+            `SELECT u.* FROM users u WHERE u.Username = ?`, 
+            [req.query.username]
+        );
+        if (result[0].length === 0) { //if user does not exist
+            res.sendStatus(400);
+            return;
+        }
+        if (result[0].length > 1) { //if found identical usernames
+            console.error(`Identical usernames found: ${result[0][0].Username}`)
+            res.sendStatus(500);
+            return;
+        }
+
+        let token = req.headers.authorization.split(' ')[1];
+        let user = null;
+        if (token !== 'null' && token !== 'undefined') {
+            user = jwt.verify(token, secretKey);
+            if (user) user = user.user;
+        }
+        let profile = result[0][0];
+        
+        profile.same = user ? user.idUsers === profile.idUsers : false;
+        profile.admin = user ? user.Role === 'admin' : false;
+        profile.loggedin = user ? true : false;
+
+        if (user === null || !(profile.same || profile.admin || user.Role === 'aproved')) {
+            delete profile.Password;
+            delete profile.Email;
+            delete profile.Telephone;
+        }
+        else {
+            delete profile.Password ;
+        }
+
+        res.send(profile);
+    } catch (error) {
+        res.sendStatus(500);
+        console.error(error)
+    }
+})
+
 //THOMAS TESTING FUNCTIONS
 app.post('/search', async (req, res) => {
     try {
@@ -141,7 +191,7 @@ app.post('/search', async (req, res) => {
         
         let accepted = [];
 
-        for(i = 0 ; i < results.length ; i++){
+        for(i = 0 ; i < results.length ; i++) {
             if( req.body.south <= results[i][0].Latitude && results[i][0].Latitude <= req.body.north &&
                 req.body.west <= results[i][0].Longtitude && results[i][0].Longtitude <= req.body.east){
                 console.log("WITHIN BOUNDS");
@@ -191,7 +241,7 @@ app.post('/login', async (req, res) => {
         }
 
         delete user.Password;
-        let token = jwt.sign({ user }, 'shhhhh');
+        let token = jwt.sign({ user }, secretKey);
 
         res.send({
             token: token
@@ -202,13 +252,15 @@ app.post('/login', async (req, res) => {
     }
 })
 
-function verifyToken(req, res, next) {
-    let bearer = req.headers.authorization;
-    let user = jwt.verify(bearer, 'shhhhh');
+// function verifyToken(req, res, next) {
+//     let bearer = req.headers.authorization.split(' ')[1];
+//     req.token = bearer;
+//     if ()
+//     let user = jwt.verify(bearer, secretKey);
 
-    console.log(user);
-    next();
-}
+//     console.log(user);
+//     next();
+// }
 
 // app.get('/lines/', async (req,res) => {
 //     let sql = `SELECT code as 'name' FROM grammes ORDER BY code ASC`;

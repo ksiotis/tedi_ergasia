@@ -3,34 +3,34 @@
         <div id="profile" >
             <div class="d-flex p-3">
                 <div id="column1" class="d-flex flex-column align-items-center mr-5">
-                    <img :src="user.ProfilePicPath" width="150px" height="150px" class="rounded-circle ">
+                    <img :src="profilePic" width="150px" height="150px" class="rounded-circle ">
                     <span class="mt-3">{{user.Username}}</span>
                 </div>
 
                 <div id="column2" class="d-flex flex-column">
-                    <span v-on:user-send="user.Username = $event.user.Username">
-                        Επώνυμο: <span class="semitransparenttext">{{user.Username}}</span>
+                    <span>
+                        Επώνυμο: <span class="semitransparenttext">{{user.Surname}}</span>
                     </span>
 
                     <span class="mt-2">
-                        Όνομα: <span class="semitransparenttext">{{user.Username}}</span>
+                        Όνομα: <span class="semitransparenttext">{{user.Name}}</span>
                     </span>
 
-                    <span class="mt-2">
-                        Διεύθυνση e-mail: <span class="semitransparenttext">{{user.Username}}</span>
+                    <span v-if="user.Email" class="mt-2">
+                        Διεύθυνση e-mail: <span class="semitransparenttext">{{user.Email}}</span>
                     </span>
 
-                    <span class="mt-2">
-                        Τηλέφωνο: <span class="semitransparenttext">{{user.Username}}</span>
+                    <span v-if="user.Telephone" class="mt-2">
+                        Τηλέφωνο: <span class="semitransparenttext">{{user.Telephone}}</span>
                     </span>
                     
                     <span class="mt-2">
-                        Ρόλος: <span class="semitransparenttext">{{user.Username}}</span> <span class="iconify" data-icon="ion-briefcase"/>
+                        Ρόλος: <span class="semitransparenttext">{{rolenames[user.Role][0]}}</span> <span class="iconify" :data-icon="rolenames[user.Role][1]"/>
                     </span>
                 </div>
             </div>
             <div id="bottom" class="d-flex flex-column">
-                <div class="d-flex align-items-center">
+                <div v-if="user.loggedin" class="d-flex align-items-center">
                     <a class="d-flex"><span class="iconify" data-icon="ion-chatbubble-ellipses-outline"/></a>
                     <span class="mt-3 ml-3">Αποστολή Μηνύματος</span>
                 </div>
@@ -38,16 +38,18 @@
                     <a class="d-flex"><span class="iconify" data-icon="ion-star"/></a>
                     <span  class="mt-3 ml-3">Κριτικές Χρήστη</span>
                 </div>
-                <div class="d-flex align-items-center">
+                <div v-if="user.admin || user.same" class="d-flex align-items-center">
                     <a class="d-flex"><span class="iconify" data-icon="ion-time-outline"/></a>
                     <span  class="mt-3 ml-3">Προβολή ιστορικού ενοικιάσεων</span>
                 </div>
-                <div class="d-flex align-items-center">
+                <div v-if="user && user.admin" class="d-flex align-items-center">
                     <a class="d-flex admin-button"><span class="iconify" data-icon="ion-repeat-outline"/></a>
                     <span  class="mt-3 ml-3">Αλλαγή ρόλου</span>
                 </div>
 
-                <button id="edit" @click="$router.push('editprofile')" class="px-4 py-1 align-self-end mr-5">Επεξεργασία <span class="iconify" data-icon="ion-pencil-outline"/></button>
+                <button v-if="user && user.same" id="edit" @click="$router.push('editprofile')" class="px-4 py-1 align-self-end mr-5">
+                    Επεξεργασία <span class="iconify" data-icon="ion-pencil-outline"/>
+                </button>
             </div>
         </div>
     </div>
@@ -58,24 +60,37 @@ export default {
     name: "Profile",
     data() {
         return {
-            user: {
-                Username: "quirkygirl85",
-                ProfilePicPath: require("../assets/profile_pics/quirkygirl85.jpg"),
-                Name: "Anna",
-                Surname: "Adams",
-                Email: "iamsoquirkyrightnow@gmail.com",
-                Phone: "(GR)+30 2102102101",
-                Role: "Οικοδεσπότης"
+            user: '',
+            rolenames: {
+                tenant: ['Ενοικιαστής', 'ion-briefcase'],
+                unaproved: ['Ενοικιαστής', 'ion-briefcase'],
+                aproved: ['Οικοδεσπότης', 'ion-home-sharp'],
+                admin: ['Διαχειριστής', 'ion-build'],
             }
         }
+    },
+    computed: {
+        profilePic: function () {
+            let filename = 'default.png';
+
+            if (this.user && this.user.ProfilePicPath)
+                filename = this.user.ProfilePicPath;
+            return require(`../assets/profile_pics/${filename}`);
+        },
+
     },
     methods: {
         
     },
-    created() {
-        // this.profile.username = this.$route.query.username;
+    async created() {
+        let targetProfile = this.$route.query.username;
+        
+        let url = `/profile?username=${targetProfile}`;
+        let response = await this.$axios.get(url, {
+            headers: { "authorization": 'Bearer ' + localStorage.getItem('token') }
+        });
 
-
+        this.user = response.data;
     }
 }
 </script>

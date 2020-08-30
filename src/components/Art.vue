@@ -121,12 +121,12 @@ export default {
 			}
 		},
 		pushProfile() {
-			let query = { username: this.user.username };
+			let query = { username: this.user.Username };
 			this.$router.push({ path: `/profile`, query: query}).catch(() => {});
 		},
 		logout() {
 			this.user = '';
-			localStorage.token = '';
+			localStorage.removeItem('token');
 			this.$router.push('/').catch(() => {});
 		}
 	}
