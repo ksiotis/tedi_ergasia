@@ -205,7 +205,15 @@ app.post('/search', async (req, res) => {
                 );
 
                 // console.log(picture);
+                let reviews = await db.query(
+                    `SELECT r.Rating  
+                     FROM accomodationreview r
+                     WHERE r.Accomodations_idAccomodation = ?`,
+                     [results[i][0].idAccomodation]
+                )
+                // console.log(reviews);
                 results[i][0].Thumbnail = picture[i][0].Path;
+                results[i][0].Ratings = reviews[i];
                 console.log(results[i][0]);
 
                 accepted.push(results[i][0]);

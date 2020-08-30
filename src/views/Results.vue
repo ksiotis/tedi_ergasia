@@ -135,6 +135,19 @@ export default {
       }
     },
     methods:{
+        review_average(reviews){
+            let sum = 0;
+            var i;
+            if(reviews.length != 0){
+                for (i=0 ; i < reviews.length ; i++){
+                    // console.log(reviews[i].Rating);
+                    sum += reviews[i].Rating;
+                }
+                return (sum/reviews.length).toFixed(1);
+            }
+            return sum;
+        },
+
         async search() {
             // evt.preventDefault();
             try {
@@ -149,13 +162,23 @@ export default {
                 // console.log(response);
                 var i;
                 for(i=0 ; i < response.data.length ; i++){
+                    
+                    let avg = this.review_average(response.data[i].Ratings);
+                    var type;
+                    if(response.data[i].Type == 'room'){
+                        type = "Δωμάτιο";
+                    }
+                    else{
+                        type = "Οικεία";
+                    }
+
                     let preview_package = {
                         img: response.data[i].Thumbnail,
                         id: response.data[i].idAccommodation,
                         title: response.data[i].Name,
-                        reviewScore: 0,
-                        reviewCount: 0,
-                        roomType: response.data[i].type,
+                        reviewScore: avg,
+                        reviewCount: response.data[i].Ratings.length,
+                        roomType: type,
                         price: response.data[i].PricePerNight,
                         beds: response.data[i].Beds,
                         characteristics: [
