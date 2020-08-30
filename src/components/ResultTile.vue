@@ -4,44 +4,90 @@
         <div class="thumbnail"/>
 
         <div class="textrow d-flex justify-content-between">
-            <p> Τίτλος διαμερίσματος </p>
+            <p> {{preview_package.title}} </p>
             
             <div class="d-flex flex-row reviewContainer"> 
                 <i class="iconify formicon reviewStar" data-icon="ion-star"></i>
-                <p class="reviewScore">3.5</p>
-                <a class="reviewCount"> 75 κριτικές </a>
+                <p class="reviewScore">{{preview_package.reviewScore}}</p>
+                <a class="reviewCount"> {{preview_package.reviewCount}} κριτικές </a>
             </div>
         </div>
 
          <div class="textrow d-flex justify-content-between">
             <div class="characteristics">
-                <p>Τύπος δωματίου </p>
-                <p>Αριθμός κρεβατιλων </p>
+                <p>{{preview_package.roomType}} </p>
+                <p>{{preview_package.beds}} κρεβατιών </p>
             </div>
 
             <div class="priceContainer d-flex flex-row"> 
-                <p class="priceTag">69€</p>
+                <p class="priceTag">{{preview_package.price}}€</p>
                 <p>/διανυκτέρευση</p>
             </div>
         </div>
+        <div class="d-flex flex-row flex-wrap" style="margin-bottom: 10px;">
+            <div 
+                class="textrow"
+                v-for="(characteristic, index) in preview_package.characteristics"
+                v-bind:key="index">
 
-        <div class="textrow d-flex justify-content-start">
-            <div class="tag">
-                Wifi
-            </div>
-            <div class="tag">
-                Parking
+                    <div class="tag" v-if="characteristic.status == true">
+                        {{characteristic.name}}
+                    </div>
             </div>
         </div>
-
 	</div>
 </template>
 
 <script>
 export default {
+    props: {
+        preview_package: {
+            id: Number,
+            img: String,
+            title: String,
+            reviewScore: Number,
+            reviewCount: Number,
+            roomType: String,
+            price: Number,
+            beds: Number,
+            characteristics: [
+                {
+                    name: String,
+                    status: Boolean,
+                },
+                {
+                    name: String,
+                    status: Boolean,
+                },
+                {
+                    name: String,
+                    status: Boolean,
+                },
+                {
+                    name: String,
+                    status: Boolean,
+                },
+                {
+                    name: String,
+                    status: Boolean,
+                },
+                {
+                    name: String,
+                    status: Boolean,
+                },
+                {
+                    name: String,
+                    status: Boolean,
+                },
+                {
+                    name: String,
+                    status: Boolean,
+                },
+            ]
+        }
+    },
 	data() {
 		return {
-		
 		};
 	},
 	methods: {
@@ -142,5 +188,6 @@ export default {
 
     height: 15px;
     padding: 0 5px;
+    /* margin-left: -5px; */
 }
 </style>

@@ -6,7 +6,7 @@
                 <input  class="forminput" placeholder="Εισάγετε τοποθεσία..." v-model="searchForm.location">
                 <i class="iconify formicon" data-icon="ion-locate"></i>
             </div> -->
-            <geoInput class="forminputbox" style="width: 310px;" v-model="searchForm.location"/>
+            <geoInput class="forminputbox" style="width: 310px;" v-model="searchForm.geo_package"/>
             
             <!-- row with date input -->
             <HotelDatePicker 
@@ -91,11 +91,10 @@
                     v-bind:key="index"
                     class="col col-6">
                         <div class="panel">
-                            <ResultTile/>
+                            <ResultTile :preview_package="result"/>
                         </div>
                 </div> 
             </div>
-
         </div>
 
     </div>
@@ -115,90 +114,106 @@ export default {
 
     data() {
       return {
+        results: [],
+
         searchForm: {
-				location: '',
-                date1: '',
-                date2: '',
-				persons: '',
-		},
+            geo_package:{
+                message: '',
+                bounds: [
+                ],
+            },
+            date1: '',
+            date2: '',
+            persons: '',
+        },
 
         selected2: 'A',
         options: [
           { item: 'A', name: 'Φθίνουσα τιμή' },
           { item: 'B', name: 'Αύξουσα τιμή' },
         ],
-
-        results: [
-            {
-                tile: 'Tile A',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-            {
-                tile: 'Title B',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-            {
-                tile: 'Title C',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-            {
-                tile: 'Title C',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-            {
-                tile: 'Title C',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-             {
-                tile: 'Title C',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-             {
-                tile: 'Title C',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-             {
-                tile: 'Title C',
-                reviewScore: '',
-                reviewCount: '',
-                type: '',
-                bedCount: '',
-            },
-		],
-
       }
     },
-
+    methods:{
+        async search() {
+            // evt.preventDefault();
+            try {
+              
+                let response = await this.$axios.post('/search', {
+                    north: this.searchForm.geo_package.bounds[1][0],
+                    south: this.searchForm.geo_package.bounds[0][0],
+                    west: this.searchForm.geo_package.bounds[0][1],
+                    east: this.searchForm.geo_package.bounds[1][1],
+                });
+                
+                // console.log(response);
+                var i;
+                for(i=0 ; i < response.data.length ; i++){
+                    let preview_package = {
+                        img: 'placeholder',
+                        id: response.data[i].idAccommodation,
+                        title: response.data[i].Name,
+                        reviewScore: 0,
+                        reviewCount: 0,
+                        roomType: response.data[i].type,
+                        price: response.data[i].PricePerNight,
+                        beds: response.data[i].Beds,
+                        characteristics: [
+                            {
+                                name: 'Wifi',
+                                status: true,
+                            },
+                            {
+                                name: 'Ψύξη',
+                                status: true,
+                            },
+                            {
+                                name: 'Θέρμανση',
+                                status: true,
+                            },
+                            {
+                                name: 'Κουζίνα',
+                                status: true,
+                            },
+                            {
+                                name: 'Τηλεόραση',
+                                status: true,
+                            },
+                            {
+                                name: 'Χώρος στάθμευσης',
+                                status: true,
+                            },
+                            {
+                                name: 'Ανελκυστήρας',
+                                status: true,
+                            },
+                            {
+                                name: 'Καθιστικό',
+                                status: true,
+                            },
+                        ]
+                    };
+                    this.results.push(preview_package);
+                }
+                
+            } catch(error) {
+                alert(this.errormessage)
+                console.log(error);
+            }
+        },
+    },
     created() {
         if(this.$route.query.location!=null){
-            this.searchForm.location = this.$route.query.location;
+            this.searchForm.geo_package.message = this.$route.query.location;
+            this.searchForm.geo_package.bounds = JSON.parse(this.$route.query.bounds);
         }
         
         this.searchForm.date1 = new Date(this.$route.query.date1)
         this.searchForm.date2 = new Date(this.$route.query.date2)
 
         this.searchForm.persons = this.$route.query.persons;
+
+        this.search();
     },
 }
 </script>
@@ -227,6 +242,7 @@ export default {
     top: 50px;
     margin-top: 25px;
     margin-left: 25px;
+    margin-bottom: 25px;
 }
 
 .forminputbox{

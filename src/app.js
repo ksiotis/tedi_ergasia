@@ -127,6 +127,39 @@ app.post('/signup', upload.single('picture'), async (req, res) => {
     }
 })
 
+//THOMAS TESTING FUNCTIONS
+app.post('/search', async (req, res) => {
+    try {
+        
+        console.log('I ENTERED SEARCH');
+        // console.log(req);
+
+        let results = await db.query(
+            `SELECT a.idAccomodation, a.Name, a.Type, a.Beds, a.PricePerNight, a.Latitude, a.Longtitude  
+             FROM accomodations a`, 
+        );
+        
+        let accepted = [];
+
+        for(i = 0 ; i < results.length ; i++){
+            if( req.body.south <= results[i][0].Latitude && results[i][0].Latitude <= req.body.north &&
+                req.body.west <= results[i][0].Longtitude && results[i][0].Longtitude <= req.body.east){
+                console.log("WITHIN BOUNDS");
+                console.log(results[i][0]);
+                accepted.push(results[i][0]);
+            }
+        }
+        res.send(accepted);
+        res.sendStatus(200);
+    } 
+    catch(error) {
+        res.sendStatus(500);
+        console.error(error);
+    }
+})
+
+//ENDING THOMAS
+
 app.post('/login', async (req, res) => {
     try {
         console.log(`/login ${req.body.username}`);
