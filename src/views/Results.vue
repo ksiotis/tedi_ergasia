@@ -77,7 +77,7 @@
             </div>
             <!-- search button -->
             <div class="d-flex justify-content-center">
-                <b-link class = "searchbutton d-flex align-items-center" to="/results">
+                <b-link class = "searchbutton d-flex align-items-center" @click="search">
                     Αναζήτηση
                     <span class="iconify searchicons" data-icon="ion-search"></span>
                 </b-link>
@@ -151,7 +151,9 @@ export default {
         async search() {
             // evt.preventDefault();
             try {
-              
+                
+                this.results = [];
+
                 let response = await this.$axios.post('/search', {
                     north: this.searchForm.geo_package.bounds[1][0],
                     south: this.searchForm.geo_package.bounds[0][0],
@@ -218,7 +220,15 @@ export default {
                     };
                     this.results.push(preview_package);
                 }
-                
+                this.results.sort(function(a, b) {
+                    var keyA = a.price,
+                        keyB = b.price;
+                    // Compare the 2 dates
+                    if (keyA < keyB) return -1;
+                    if (keyA > keyB) return 1;
+                    return 0;
+                });
+                                        
             } catch(error) {
                 alert(this.errormessage)
                 console.log(error);
