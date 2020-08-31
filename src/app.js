@@ -91,7 +91,13 @@ app.get('/checkemail', async(req, res) => {
 app.post('/signup', upload.single('picture'), async (req, res) => {
     try {
         console.log(`/signup ${req.body.username}`);
-        //TODO add non empty checks 
+        
+        if (req.body.username === '' || req.body.email === '' || 
+            req.body.password === '' || req.body.name === '' ||
+            req.body.surname === '' || req.body.telephone === '' ||
+            req.body.role < 1 || req.body.role > 4) {
+                return;
+        }
 
         //if used username or email, delete saved image and return error
         let results = await db.query(
@@ -343,6 +349,66 @@ app.post('/login', async (req, res) => {
     } catch(error) {
         console.error(error);
         res.sendStatus(500);
+    }
+})
+
+app.post('/userupdate', upload.single('picture'), async (req, res) => {
+    try {
+        let token = req.headers.authorization.split(' ')[1];
+        let user = null;
+        if (token !== 'null' && token !== 'undefined') {
+            user = jwt.verify(token, secretKey);
+            if (user) user = user.user;
+        }
+        else {
+            res.sendStatus(400);
+            return;
+        }
+        console.log(`/userupdate ${req.body.username}`);
+
+        let result = await db.query(
+            `SELECT Password FROM users 
+            WHERE idUsers = ?`, [user.idUsers]
+        );
+        if (result[0].length === 0) { //if user does not exist
+            res.sendStatus(400);
+            return;
+        }
+        if (result[0].length > 1) { //if found identical users
+            console.error(`Identical users found: ${user.idUsers}`)
+            res.sendStatus(500);
+            return;
+        }
+
+        let match = bcrypt.compareSync(req.body.password, result[0][0].Password);
+
+        if (!match) { //if given wrong password
+            res.sendStatus(403);
+            return;
+        }
+        
+        result = await db.query(
+            `UPDATE users
+            SET Email = ?, Username = ?, Name = ?, Surname = ?, Telephone = ?, ProfilePicPath = ?
+            WHERE users.idUsers = ?`, 
+            [req.body.email, req.body.username, req.body.name, req.body.surname, req.body.telephone, req.file ? (req.file.filename) : user.ProfilePicPath,
+            user.idUsers]
+        );
+        
+        if (result[0].affectedRows === 0) { //if update did not succeed
+            res.sendStatus(500);
+            return;
+        }
+        if (result[0].affectedRows > 1) { //if updated more rows
+            console.error(`Updated multiple rows with id: ${user.idUsers}`)
+            res.sendStatus(500);
+            return;
+        }
+
+        res.sendStatus(200);
+    } catch (error) {
+        res.sendStatus(403);
+        console.error(error)
     }
 })
 

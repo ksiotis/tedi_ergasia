@@ -124,7 +124,7 @@ export default {
                 console.log(response.data);
                 if (!response.data.length) {
                     this.username_state = null;
-                    this.username_desc = ""
+                    this.username_desc = "";
                 }
                 else {
                     this.username_state = false;
@@ -132,7 +132,7 @@ export default {
                 }
             } catch(error) {
                 this.username_state = false;
-                alert(this.errormessage)
+                alert(this.errormessage);
                 console.log(error);
             }
         },
@@ -144,7 +144,7 @@ export default {
                 console.log(response.data);
                 if (!response.data.length) {
                     this.email_state = null;
-                    this.email_desc = ""
+                    this.email_desc = "";
                 }
                 else {
                     this.email_state = false;
@@ -152,7 +152,7 @@ export default {
                 }
             } catch(error) {
                 this.username_state = false;
-                alert(this.errormessage)
+                alert(this.errormessage);
                 console.log(error);
             }
         },
@@ -168,15 +168,15 @@ export default {
         },
         async onSubmit() {
             try {
-                let formData = new FormData()
-                formData.append("username", this.form.username)
-                formData.append("name", this.form.name)
-                formData.append("surname", this.form.surname)
-                formData.append("email", this.form.email)
-                formData.append("password", this.form.password)
-                formData.append("role", this.form.host ? 2 : 1)
-                formData.append("telephone", "(".concat(this.form.code).concat(")").concat(this.form.phone))
-                formData.append("picture", this.form.file)
+                let formData = new FormData();
+                formData.append("username", this.form.username);
+                formData.append("name", this.form.name);
+                formData.append("surname", this.form.surname);
+                formData.append("email", this.form.email);
+                formData.append("password", this.form.password);
+                formData.append("role", this.form.host ? 2 : 1);
+                formData.append("telephone", "(".concat(this.form.code).concat(")").concat(this.form.phone));
+                formData.append("picture", this.form.file);
 
                 let response = await this.$axios.post('/signup', formData);
                 alert("Η δημιουργία λογαριασμού ολοκληρώθηκε με επιτυχία!");
