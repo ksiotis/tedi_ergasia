@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex flex-column align-items-center mt-3 mb-3">
-        <b-form @submit="onSubmit" id="registration-form" class="">
+        <b-form @submit.prevent="onSubmit" id="registration-form" class="">
             <div class="d-flex">
 
                 <div class="d-flex flex-column set-width mr-5">
@@ -18,7 +18,7 @@
                     <img :src="profilePic" id="profile-pic" class="rounded-circle align-self-center">
                     <b-form-group id="file" class="mt-4 align-self-center">
                         <!-- <a class="orange-link">Επιλογή Εικόνας</a> -->
-                        <b-form-file id="file-input" @input="loadFile" v-model="form.file" accept="image/jpeg, image/png, image/gif" placeholder="Επιλογή Εικόνας"></b-form-file>
+                        <b-form-file id="file-input" v-model="form.file" accept="image/jpeg, image/png, image/gif" placeholder="Επιλογή Εικόνας"></b-form-file>
                     </b-form-group>
                     <b-form-group label="Όνομα" label-for="name" label-size="sm">
                         <input id="name" v-model="form.name" type="text" required/>
@@ -27,8 +27,8 @@
                 
             </div>
 
-            <b-form-group label="Διεύθηνση e-mail" label-for="mail" label-size="sm" class="">
-                <input id="mail" v-model="form.email" type="email" required/>
+            <b-form-group label="Διεύθηνση e-mail" :description="email_desc"  label-for="mail" label-size="sm" class="">
+                <input id="mail" :state="email_state" @change="checkemail" v-model="form.email" type="email" required/>
             </b-form-group>
 
             <div class="d-flex flex-fill">
@@ -44,7 +44,7 @@
                         
                     </div>
                     <b-form-group label="Τρέχων Κωδικός Πρόσβασης *" label-for="password" label-size="sm" class="mt-auto">
-                        <input id="password" @change="checkpassword" v-model="form.password" type="password" required/>
+                        <input id="password" v-model="form.password" type="password" required/>
                     </b-form-group>
                 </div>
 
@@ -58,7 +58,7 @@
             </div>
 
             <div class="d-flex flex-fill">
-                <b-button id="register-btn" type="submit" class="ml-auto mr-5 px-5 py-2">Αποθήκευση</b-button>
+                <b-button id="register-btn" type="submit" class="ml-auto mr-5 px-5 py-2" :disabled="submit_disabled">Αποθήκευση</b-button>
             </div>
         </b-form>
     </div>
@@ -71,14 +71,16 @@ export default {
         return {
             password_state: null,
             username_state: null,
+            email_state: null,
             username_desc: "",
+            email_desc: "",
+            password_desc: "",
             form: {
                 username: '',
                 name: '',
                 surname: '',
                 email: '',
                 password: '',
-                confirmpassword: '',
                 code: null,
                 phone: '',
                 file: null,
@@ -96,7 +98,8 @@ export default {
                 unaproved: ['Ενοικιαστής', 'ion-briefcase'],
                 aproved: ['Οικοδεσπότης', 'ion-home-sharp'],
                 admin: ['Διαχειριστής', 'ion-build'],
-            }
+            },
+            errormessage: "Προέκυψε κάποιο σφάλμα, δοκιμάστε ξανά"
         }
     },
     created() {
@@ -112,41 +115,117 @@ export default {
     },
     computed: {
         profilePic: function () {
-            if (form.file === null) {
+            if (this.form.file === null) {
                 let filename = 'default.png';
     
                 if (this.user && this.user.ProfilePicPath)
                     filename = this.user.ProfilePicPath;
                 return require(`../assets/profile_pics/${filename}`);
             }
+            else {
+                return URL.createObjectURL(this.form.file);
+            }
+        },
+        submit_disabled: function() {
+            return ((this.username_state === false) ||
+                    (this.email_state === false) ||
+                    (this.password_state === false));
         },
     },
     methods: {
-        onSubmit(evt) {
-			evt.preventDefault()
-			alert(JSON.stringify(this.form))
-        },
-        loadFile() {
-            this.image = URL.createObjectURL(this.form.file);
-        },
-        checkusername() {
-            if (this.form.username) {
-                this.username_state = true;
-                this.username_desc = ""
+        async onSubmit(evt) {
+            try {
+                let formData = new FormData();
+                formData.append("username", this.form.username);
+                formData.append("name", this.form.name);
+                formData.append("surname", this.form.surname);
+                formData.append("email", this.form.email);
+                formData.append("password", this.form.password);
+                formData.append("telephone", "(".concat(this.form.code).concat(")").concat(this.form.phone));
+                formData.append("picture", this.form.file);
+
+                let response = await this.$axios.post('/userupdate', formData, {
+                    headers: { "authorization": 'Bearer ' + localStorage.getItem('token') }
+                });
+                delete localStorage.token;
+                alert("Τα στοιχεία του λογαριασμού άλλαξαν επιτυχώς!\nΠαρακαλώ συνδεθείτε ξανά στον λογαριασμό σας.");
+
+                response = await this.$axios.post('/login', {
+                    username: this.form.username,
+                    password: this.form.password,
+                });
+                this.user = this.$jwt.decode(response.data.token).user;
+                localStorage.token = response.data.token;
+                
+                // if (this.user.Role === 'admin')
+                //     this.$router.push('/admin').catch(() => {});
+                // else if (this.user.Role === 'aproved')
+                //     this.$router.push('/TODO').catch(() => {});
+                // else
+                //     this.$router.push('/').catch(() => {});
+                this.$router.push('/');
+            } catch(error) {
+                if (error == 'Error: Request failed with status code 403') {
+                    alert('Λάθος κωδικός πρόσβασης!');
+                    console.log(error);
+                }
+                else {
+                    alert(this.errormessage)
+                    console.log(error);
+                }
             }
-            else {
+        },
+        async checkusername() {
+            let username = this.form.username;
+            if (this.user.Username === this.form.username) {
+                this.username_state = null;
+                this.username_desc = "";
+                return;
+            }
+            console.log(this.user.Username === this.form.username);
+            let myinput = '?username=' + username;
+            let url =  '/checkusername' + myinput;
+            try {
+                let response = await this.$axios.get(url);
+                console.log(response.data);
+                if (!response.data.length) {
+                    this.username_state = null;
+                    this.username_desc = "";
+                }
+                else {
+                    this.username_state = false;
+                    this.username_desc = "Αυτό το όνομα χρήστη χρεισιμοποιείται ήδη!";
+                }
+            } catch(error) {
                 this.username_state = false;
-                this.username_desc = "Αυτό το όνομα χρήστη χρεισιμοποιείται ήδη!";
+                alert(this.errormessage);
+                console.log(error);
             }
         },
-        checkpassword() {
-            if (this.form.password === this.form.confirmpassword) {
-                this.password_state = true;
-                this.submit_disabled = false;
+        async checkemail() {
+            let email = this.form.email;
+            if (this.user.Email === this.form.email) {
+                this.email_state = null;
+                this.email_desc = "";
+                return;
             }
-            else {
-                this.password_state = false;
-                this.submit_disabled = true;
+            let myinput = '?email=' + email;
+            let url =  '/checkemail' + myinput;
+            try {
+                let response = await this.$axios.get(url);
+                console.log(response.data);
+                if (!response.data.length) {
+                    this.email_state = null;
+                    this.email_desc = "";
+                }
+                else {
+                    this.email_state = false;
+                    this.email_desc = "Αυτή η διεύθυνση email χρεισιμοποιείται ήδη!";
+                }
+            } catch(error) {
+                this.username_state = false;
+                alert(this.errormessage);
+                console.log(error);
             }
         },
     }
