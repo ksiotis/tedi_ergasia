@@ -3,7 +3,7 @@
         
         <div class="contentLeft d-flex flex-column justify-content-start">
             <!-- τίτλος  -->
-            <h2 class="title">Τίτλος χώρου</h2>
+            <h2 class="title">{{title}}</h2>
             <!-- εικόνες -->
             <div class="element">
                 <b-carousel
@@ -19,16 +19,13 @@
                     @sliding-start="onSlideStart"
                     @sliding-end="onSlideEnd"
                 >
-                    <b-carousel-slide img-src="https://picsum.photos/1024/480/?image=52"/>
-                    <b-carousel-slide img-src="https://picsum.photos/1024/480/?image=53"/>
-                    <b-carousel-slide img-src="https://picsum.photos/1024/480/?image=54"/>
-                    <b-carousel-slide img-src="https://picsum.photos/1024/480/?image=55"/>
+                    <b-carousel-slide :img-src="require(`@/assets/accommodation_pics/${path}`)"/>
             
                 </b-carousel>
             </div>
             <!-- περιγραφή -->
             <h3 class="subtitle element">Περιγραφή</h3>
-            <p> {{placeholderText}} </p>
+            <p> {{desc}} </p>
             
             <!-- χαρακτηρηστικά -->
             <div class="d-flex flex-row justify-content-between">
@@ -274,11 +271,16 @@ Icon.Default.mergeOptions({
 
     data() {
         return {
+            id: null,
             slide: 0,
             sliding: null,
             
             placeholderText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam quam sapien, rutrum viverra nunc et, tincidunt sagittis libero. Curabitur dictum tellus sit amet arcu ultrices, in accumsan ipsum ultricies. Donec blandit ac felis id varius. Vestibulum quam tortor, ullamcorper ut euismod et, feugiat et nisl.',
             
+            title: "",
+            path: "",
+            desc: "",
+
             area: "46",
             price: 68,
             extraCost: 55,
@@ -383,7 +385,33 @@ Icon.Default.mergeOptions({
         },
         boundsUpdated (bounds) {
             this.bounds = bounds;
-        }
+        },
+
+        async view() {
+            // evt.preventDefault();
+            try {
+                let response = await this.$axios.post('/view', {
+                    id: this.id,
+                });
+                console.log(response);
+
+                this.title = response.data.Name;
+                this.path = response.data.Path;
+                this.desc = response.data.Description;
+                this.area = response.data.Area;
+                this.price = response.data.PricePerNight;
+                this.extraCost = response.data.ExtraCostPerPerson;
+                this.minDays = response.data.MinimumDays;
+                this.numPersons = response.data.Persons;
+                this.numBeds = response.data.Beds;
+                // this.numBaths = response.data.
+                // thiis.numBedrooms = response.data.
+                this.markerLatLng = [response.data.Latitude, response.data.Longtitude];
+            } catch(error) {
+                alert(this.errormessage)
+                console.log(error);
+            }
+        },
     },
      computed: {
         total() {
@@ -429,7 +457,7 @@ Icon.Default.mergeOptions({
 
         total_reviews(){
             return this.userReviews.length;
-        }
+        },
     },
 
     mounted() {
@@ -445,8 +473,14 @@ Icon.Default.mergeOptions({
 
     beforeUpdate(){
         this.$refs.datePicker.showDatepicker();
+    },
+    created(){
+        if(this.$route.query.id!=null){
+            this.id = this.$route.query.id;
+            this.view();
+        }
     }
-  }
+}
 </script>
 
 <style scoped>

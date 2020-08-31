@@ -91,7 +91,8 @@
                     v-bind:key="index"
                     class="col col-6">
                         <div class="panel">
-                            <ResultTile :preview_package="result"/>
+                            <ResultTile 
+                                :preview_package="result"/>
                         </div>
                 </div> 
             </div>
@@ -178,8 +179,8 @@ export default {
                     }
 
                     let preview_package = {
+                        id: response.data[i].idAccomodation,
                         img: response.data[i].Thumbnail,
-                        id: response.data[i].idAccommodation,
                         title: response.data[i].Name,
                         reviewScore: avg,
                         reviewCount: response.data[i].Ratings.length,

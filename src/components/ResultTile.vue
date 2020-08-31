@@ -92,12 +92,13 @@ export default {
 	},
 	methods: {
         submit(){
-            // let query = { location: this.searchForm.location, date1: this.searchForm.date1, date2: this.searchForm.date2, persons: this.searchForm.persons };
+
+            let query = { id : this.preview_package.id };
             
             // query.date1 = query.date1.toISOString();
             // query.date2 = query.date2.toISOString();
 
-            this.$router.push({ path: '/accommodation'/*, query: query*/}).catch(() => {});
+            this.$router.push({ path: '/accommodation', query: query}).catch(() => {});
         }
     },
 

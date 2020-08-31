@@ -258,6 +258,50 @@ app.post('/search', async (req, res) => {
     }
 })
 
+app.post('/view', async (req, res) => {
+    try {
+        console.log('I ENTERED VIEW');
+        let result = await db.query(
+            `SELECT a.*  
+             FROM accomodations a
+             WHERE a.idAccomodation = ?`,
+             [req.body.id] 
+        );
+        // console.log(result[0][0]);
+        
+        let photos = await db.query(
+            `SELECT a.*  
+             FROM accomodationphotos a
+             WHERE a.idAccomodation = ?`,
+             [req.body.id] 
+        );
+        // console.log(photos[0][0]);
+
+        let reviews = await db.query(
+            `SELECT a.*  
+             FROM accomodationreview a
+             WHERE a.Accomodations_idAccomodation = ?`,
+             [req.body.id] 
+        );
+        // console.log(reviews[0][0]);
+
+        let final = {
+            ...result[0][0],
+            ...photos[0][0],
+            ...reviews[0][0],
+        };
+        console.log(final);
+        
+        res.send(final);
+        
+        res.sendStatus(200);
+    } 
+    catch(error) {
+        res.sendStatus(500);
+        console.error(error);
+    }
+})
+
 //ENDING THOMAS
 
 app.post('/login', async (req, res) => {
