@@ -149,6 +149,71 @@ export default {
             return sum;
         },
 
+        assign_characteristics(characteristics){
+            let final = [
+                {
+                    name: 'Wifi',
+                    status: false,
+                },
+                {
+                    name: 'Ψύξη',
+                    status: false,
+                },
+                {
+                    name: 'Θέρμανση',
+                    status: false,
+                },
+                {
+                    name: 'Κουζίνα',
+                    status: false,
+                },
+                {
+                    name: 'Τηλεόραση',
+                    status: false,
+                },
+                {
+                    name: 'Χώρος στάθμευσης',
+                    status: false,
+                },
+                {
+                    name: 'Ανελκυστήρας',
+                    status: false,
+                },
+                {
+                    name: 'Καθιστικό',
+                    status: false,
+                },
+            ];
+            var i;
+            for(i=0 ; i < characteristics.length ; i++){
+                if(characteristics[i].Characteristics_idCharacteristics == 0){
+                    final[0].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 1){
+                    final[1].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 2){
+                    final[2].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 3){
+                    final[3].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 4){
+                    final[4].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 5){
+                    final[5].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 6){
+                    final[6].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 7){
+                    final[7].status = true;
+                }
+            }
+            return final;
+        },
+
         async search() {
             // evt.preventDefault();
             try {
@@ -164,8 +229,8 @@ export default {
                     date1: this.searchForm.date1.toISOString(),
                     date2: this.searchForm.date2.toISOString(),
                 });
-                
                 console.log(response);
+                
                 var i;
                 for(i=0 ; i < response.data.length ; i++){
                     
@@ -177,6 +242,9 @@ export default {
                     else{
                         type = "Οικεία";
                     }
+                    let c = this.assign_characteristics(response.data[i].Characteristics)
+                    // console.log(response.data[i].Characteristics);
+                    
 
                     let preview_package = {
                         id: response.data[i].idAccomodation,
@@ -187,40 +255,7 @@ export default {
                         roomType: type,
                         price: response.data[i].PricePerNight,
                         beds: response.data[i].Beds,
-                        characteristics: [
-                            {
-                                name: 'Wifi',
-                                status: true,
-                            },
-                            {
-                                name: 'Ψύξη',
-                                status: true,
-                            },
-                            {
-                                name: 'Θέρμανση',
-                                status: true,
-                            },
-                            {
-                                name: 'Κουζίνα',
-                                status: true,
-                            },
-                            {
-                                name: 'Τηλεόραση',
-                                status: true,
-                            },
-                            {
-                                name: 'Χώρος στάθμευσης',
-                                status: true,
-                            },
-                            {
-                                name: 'Ανελκυστήρας',
-                                status: true,
-                            },
-                            {
-                                name: 'Καθιστικό',
-                                status: true,
-                            },
-                        ]
+                        characteristics: c,
                     };
                     this.results.push(preview_package);
                 }

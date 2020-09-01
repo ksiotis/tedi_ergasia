@@ -245,8 +245,18 @@ app.post('/search', async (req, res) => {
                         FROM accomodationreview r
                         WHERE r.Accomodations_idAccomodation = ?`,
                         [results[0][i].idAccomodation]
-                    )
+                    );
                     // console.log(reviews);
+
+                    let chars = await db.query(
+                        `SELECT c.Characteristics_idCharacteristics  
+                        FROM accomodations_has_characteristics c
+                        WHERE c.Accomodations_idAccomodation = ?`,
+                        [results[0][i].idAccomodation]
+                    );
+                    console.log(chars[0]);
+                    
+                    results[0][i].Characteristics = chars[0];
                     results[0][i].Thumbnail = picture[0][0].Path;
                     results[0][i].Ratings = reviews[0];
                     
