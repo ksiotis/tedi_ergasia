@@ -300,11 +300,27 @@ app.post('/view', async (req, res) => {
              [req.body.id] 
         );
         // console.log(reviews[0][0]);
+        
+        let chars = await db.query(
+            `SELECT c.Characteristics_idCharacteristics  
+            FROM accomodations_has_characteristics c
+            WHERE c.Accomodations_idAccomodation = ?`,
+            [req.body.id]
+        );
+
+        let reservations = await db.query(
+            `SELECT r.From, r.To  
+            FROM reservations r
+            WHERE r.Accomodations_idAccomodation = ?`,
+            [req.body.id]
+        );
 
         let final = {
             ...result[0][0],
             ...reviews[0][0],
             Path: photos[0],
+            Characteristics: chars[0],
+            Reservations: reservations[0],
         };
         console.log(final);
         

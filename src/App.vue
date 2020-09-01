@@ -124,4 +124,8 @@ option{
 #datepicker svg{
     filter: brightness(100%) saturate(0%);
 }
+
+.datepicker__month-day--disabled{
+    /* background-color: #194A50; */
+}
 </style>

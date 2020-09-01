@@ -84,10 +84,6 @@
                         <p>{{numPersons}}</p>
                     </div>
                     <div class="d-flex flex-row justify-content-between arithmetic">
-                        <p>Αριθμός κρεβατιών:</p>
-                        <p>{{numBeds}}</p>
-                    </div>
-                    <div class="d-flex flex-row justify-content-between arithmetic">
                         <p>Αριθμός μπάνιων:</p>
                         <p>{{numBaths}}</p>
                     </div>
@@ -104,7 +100,7 @@
             
             <!-- κανόνες -->
             <h3 class="subtitle element">Κανόνες</h3>
-            <p> {{placeholderText}} </p>
+            <p> {{rulesText}} </p>
 
             <!-- Διαθεσιμότητα -->
             <h3 class="subtitle element">Διαθεσιμότητα</h3>
@@ -114,6 +110,7 @@
                     class="dateinputbox" 
                     ref="datePicker" 
                     :closeDatepickerOnClickOutside="false"
+                    :disabledDates="reservedDates"
                     format="DD/MM/YYYY"
                     v-on:check-in-changed="date1 = $event;"
                     v-on:check-out-changed="date2 = $event;"/>
@@ -284,6 +281,7 @@ Icon.Default.mergeOptions({
             title: "",
             path: [],
             desc: "",
+            rulesText: "",
 
             area: "46",
             price: 68,
@@ -294,52 +292,12 @@ Icon.Default.mergeOptions({
             numBeds: "3",
             numBaths: "4",
             numBedrooms: "1",
-            characteristics: [
-                {
-                    name: 'Wifi',
-                    icon: 'ion-wifi',
-                    status: true,
-                },
-                {
-                    name: 'Ψύξη',
-                    icon: 'ion-snow',
-                    status: true,
-                },
-                {
-                    name: 'Θέρμανση',
-                    icon: 'ion-thermometer',
-                    status: true,
-                },
-                {
-                    name: 'Κουζίνα',
-                    icon: 'ion-fast-food',
-                    status: true,
-                },
-                {
-                    name: 'Τηλεόραση',
-                    icon: 'ion-tv',
-                    status: true,
-                },
-                {
-                    name: 'Χώρος στάθμευσης',
-                    icon: 'ion-car',
-                    status: true,
-                },
-                {
-                    name: 'Ανελκυστήρας',
-                    icon: 'ion-arrow-up',
-                    status: true,
-                },
-                {
-                    name: 'Καθιστικό',
-                    icon: 'ion-happy-outline',
-                    status: true,
-                },
-            ],
+            characteristics: [ ],
 
             date1: "",
             date2: "",
             reservationPrice: 0,
+            reservedDates: [],
 
             hostName: "Νίκος Νιωτς",
             hostImagePath: require("../assets/profile_pics/quirkygirl85.jpg"),
@@ -390,6 +348,114 @@ Icon.Default.mergeOptions({
         boundsUpdated (bounds) {
             this.bounds = bounds;
         },
+        
+        assign_characteristics(characteristics){
+            let final = [
+                {
+                    name: 'Wifi',
+                    icon: 'ion-wifi',
+                    status: false,
+                },
+                {
+                    name: 'Ψύξη',
+                    icon: 'ion-snow',
+                    status: false,
+                },
+                {
+                    name: 'Θέρμανση',
+                    icon: 'ion-thermometer',
+                    status: false,
+                },
+                {
+                    name: 'Κουζίνα',
+                    icon: 'ion-fast-food',
+                    status: false,
+                },
+                {
+                    name: 'Τηλεόραση',
+                    icon: 'ion-tv',
+                    status: false,
+                },
+                {
+                    name: 'Χώρος στάθμευσης',
+                    icon: 'ion-car',
+                    status: false,
+                },
+                {
+                    name: 'Ανελκυστήρας',
+                    icon: 'ion-arrow-up',
+                    status: false,
+                },
+                {
+                    name: 'Καθιστικό',
+                    icon: 'ion-happy-outline',
+                    status: false,
+                },
+            ];
+            var i;
+            for(i=0 ; i < characteristics.length ; i++){
+                if(characteristics[i].Characteristics_idCharacteristics == 0){
+                    final[0].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 1){
+                    final[1].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 2){
+                    final[2].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 3){
+                    final[3].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 4){
+                    final[4].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 5){
+                    final[5].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 6){
+                    final[6].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 7){
+                    final[7].status = true;
+                }
+            }
+            return final;
+        },
+        getDates(startDate, endDate) {
+            var dates = [],
+                currentDate = startDate,
+                addDays = function(days) {
+                    var date = new Date(this.valueOf());
+                    date.setDate(date.getDate() + days);
+                    return date;
+                };
+            while (currentDate <= endDate) {
+                dates.push(currentDate);
+                currentDate = addDays.call(currentDate, 1);
+            }
+            return dates;
+        },
+
+        disable_dates(reservations){
+            // console.log(reservations);
+            let final = [];
+            var i;
+            for(i=0 ; i < reservations.length ; i++){
+                let from = new Date(reservations[i].From);
+                let to = new Date(reservations[i].To);
+
+                // from = from.toISOString().split('T')[0];
+                // to = to.toISOString().split('T')[0]
+
+                final = final.concat(this.getDates(from, to));
+
+            }
+            // for(let i = 0 ; i < final.length ; i++){
+            //     final[i] = final[i].toISOString().split('T')[0];
+            // }
+            console.log(final);
+            return final;
+        },
 
         async view() {
             // evt.preventDefault();
@@ -408,9 +474,17 @@ Icon.Default.mergeOptions({
                 this.minDays = response.data.MinimumDays;
                 this.numPersons = response.data.Persons;
                 this.numBeds = response.data.Beds;
-                // this.numBaths = response.data.
-                // thiis.numBedrooms = response.data.
+                this.numBaths = response.data.Bathrooms;
+                this.numBedrooms = response.data.Bedrooms;
                 this.markerLatLng = [response.data.Latitude, response.data.Longtitude];
+
+                this.characteristics = this.assign_characteristics(response.data.Characteristics);
+                this.rulesText = response.data.Rules;
+
+                this.reservedDates = this.disable_dates(response.data.Reservations);
+
+
+
             } catch(error) {
                 alert(this.errormessage)
                 console.log(error);
@@ -427,8 +501,10 @@ Icon.Default.mergeOptions({
                 let time = this.date2.getTime() - this.date1.getTime();
                 let days = time / (1000 * 3600 * 24) -1;
                 console.log(days);
-                s = this.price + days * this.extraCost;
+                s = Number(this.price) + days * Number(this.extraCost);
             }
+            // console.log(typeof s);
+            // console.log(s);
 			return s;
         },
         
@@ -466,9 +542,9 @@ Icon.Default.mergeOptions({
 
     mounted() {
         this.$refs.datePicker.showDatepicker();
-        this.$nextTick(() => {
-            this.$refs.myMap.mapObject.test();
-        });
+        // this.$nextTick(() => {
+        //     this.$refs.myMap.mapObject.test();
+        // });
     },
 
     updated() {
