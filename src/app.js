@@ -254,7 +254,7 @@ app.post('/search', async (req, res) => {
                         WHERE c.Accomodations_idAccomodation = ?`,
                         [results[0][i].idAccomodation]
                     );
-                    console.log(chars[0]);
+                    // console.log(chars[0]);
                     
                     results[0][i].Characteristics = chars[0];
                     results[0][i].Thumbnail = picture[0][0].Path;
@@ -303,8 +303,8 @@ app.post('/view', async (req, res) => {
 
         let final = {
             ...result[0][0],
-            ...photos[0][0],
             ...reviews[0][0],
+            Path: photos[0],
         };
         console.log(final);
         
