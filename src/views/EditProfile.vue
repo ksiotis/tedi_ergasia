@@ -52,7 +52,7 @@
                     <b-form-group label="Ρόλος" label-for="role" label-size="sm" class="set-width">
                         <span class="mr-2">{{rolenames[user.Role][0]}}</span>
                         <span class="iconify" :data-icon="rolenames[user.Role][1]"/>
-                        <button v-if="user.Role === 'tenant'" class="mybutton">Γίνετε Οικοδεσπότης</button>
+                        <button v-if="user.Role === 'tenant'" @click.prevent="changeRole" class="mybutton">Γίνετε Οικοδεσπότης</button>
                     </b-form-group>
                 </div>
             </div>
@@ -84,7 +84,6 @@ export default {
                 code: null,
                 phone: '',
                 file: null,
-                host: false,
             },
             user: '',
             options: [
@@ -228,6 +227,24 @@ export default {
                 console.log(error);
             }
         },
+        async changeRole() {
+            try {
+                let response = await this.$axios.post('/changerole', {
+                    role: 2,
+                    username: null
+                }, {
+                    headers: { "authorization": 'Bearer ' + localStorage.getItem('token')}
+                });
+
+                delete localStorage.token;
+                alert('Το αίτημα αλλαγής ρόλου καταχωρήθηκε. Θα σας ενημερώσουμε όταν το εξετάσει ένας διαχειριστής');
+                console.log(response.data);
+            } catch(error) {
+                this.username_state = false;
+                alert(this.errormessage);
+                console.log(error);
+            }
+        }
     }
 }
 </script>

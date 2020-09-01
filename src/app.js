@@ -412,6 +412,70 @@ app.post('/userupdate', upload.single('picture'), async (req, res) => {
     }
 })
 
+app.post('/changerole', async (req, res) => {
+    try {
+        let token = req.headers.authorization.split(' ')[1];
+        let user = null;
+        if (token !== 'null' && token !== 'undefined') {
+            user = jwt.verify(token, secretKey);
+            if (user) user = user.user;
+        }
+        else {
+            res.sendStatus(400);
+            return;
+        }
+        console.log(`/changerole ${user.Username} changing ${req.body.username} to role ${req.body.role}`);
+
+        if (req.body.role > 4 || req.body.role < 1 || req.body.role === '' || req.body.username === '') {
+            res.sendStatus(400);
+            return;
+        }
+        if (user.Role !== 'admin' && req.body.username !== null) {
+            res.sendStatus(403);
+            return;
+        }
+
+        let targetuser = req.body.username === null ? user.Username : req.body.username;
+
+        let result = await db.query(
+            `SELECT idUsers FROM users 
+            WHERE Username = ?`, [targetuser]
+        );
+        if (result[0].length === 0) { //if user does not exist
+            res.sendStatus(400);
+            return;
+        }
+        if (result[0].length > 1) { //if found identical users
+            console.error(`Identical users found: ${user.idUsers}`)
+            res.sendStatus(500);
+            return;
+        }
+        
+        let targetuserid = result[0][0].idUsers;
+
+        result = await db.query(
+            `UPDATE users SET Role = ? WHERE users.idUsers = ?`, 
+            [req.body.role, targetuserid]
+        );
+        console.log(result);
+        
+        if (result[0].affectedRows === 0) { //if update did not succeed
+            res.sendStatus(500);
+            return;
+        }
+        if (result[0].affectedRows > 1) { //if updated more rows
+            console.error(`Updated multiple rows with id: ${targetuserid}`)
+            res.sendStatus(500);
+            return;
+        }
+
+        res.sendStatus(200);
+    } catch (error) {
+        res.sendStatus(403);
+        console.error(error)
+    }
+})
+
 // function verifyToken(req, res, next) {
 //     let bearer = req.headers.authorization.split(' ')[1];
 //     req.token = bearer;

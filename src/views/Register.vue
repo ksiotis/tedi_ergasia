@@ -186,7 +186,7 @@ export default {
                     password: this.form.password,
                 });
                 localStorage.token = response.data.token;
-                this.user = this.$jwt.decode(response.data.token).user;
+                this.user = await this.$jwt.decode(response.data.token).user;
                 
                 if (this.user.Role === 'admin')
                     this.$router.push('/admin').catch(() => {});
