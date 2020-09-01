@@ -19,7 +19,11 @@
                     @sliding-start="onSlideStart"
                     @sliding-end="onSlideEnd"
                 >
-                    <b-carousel-slide :img-src="require(`@/assets/accommodation_pics/${path}`)"/>
+                    <b-carousel-slide
+                        style="height: 335px; width: 690px;" 
+                        v-for="(p, index) in path"
+                        v-bind:key="index"
+                        :img-src="require(`@/assets/accommodation_pics/${p.Path}`)"/>
             
                 </b-carousel>
             </div>
@@ -278,7 +282,7 @@ Icon.Default.mergeOptions({
             placeholderText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam quam sapien, rutrum viverra nunc et, tincidunt sagittis libero. Curabitur dictum tellus sit amet arcu ultrices, in accumsan ipsum ultricies. Donec blandit ac felis id varius. Vestibulum quam tortor, ullamcorper ut euismod et, feugiat et nisl.',
             
             title: "",
-            path: "",
+            path: [],
             desc: "",
 
             area: "46",
