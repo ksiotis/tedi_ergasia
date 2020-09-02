@@ -315,14 +315,37 @@ app.post('/view', async (req, res) => {
             [req.body.id]
         );
 
+        let host = await db.query(
+            `SELECT u.Name, u.Surname, u.ProfilePicPath  
+            FROM users u
+            WHERE u.idUsers = ?`,
+            [result[0][0].idHost]
+        );
+        // console.log(host);
+        
+        let reviewers = [];
+        for(let i=0 ; i < reviews[0].length ; i++){
+            let temp = await db.query(
+                `SELECT u.Username, u.ProfilePicPath, u.idUsers  
+                FROM users u
+                WHERE u.idUsers = ?`,
+                [reviews[0][i].Users_idUsers]
+            );
+            reviewers.push(temp[0][0]); 
+        }
+        // console.log(reviewers);
+            
         let final = {
             ...result[0][0],
-            ...reviews[0][0],
+            Reviews: reviews[0],
+            Reviewers: reviewers,
             Path: photos[0],
             Characteristics: chars[0],
             Reservations: reservations[0],
+            Host: host[0][0],
         };
-        console.log(final);
+
+        // console.log(final);
         
         res.send(final);
         

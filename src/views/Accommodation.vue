@@ -122,7 +122,7 @@
                 <h3 class="subtitle">Οικοδεσπότης:</h3>
             </div>
             <div class="d-flex flex-row">
-                <img :src="hostImagePath" width="40px" height="40px" class="rounded-circle endspace">
+                <img :src="require(`@/assets/profile_pics/${hostImagePath}`)" width="40px" height="40px" class="rounded-circle endspace">
                 <p class="hostName">{{hostName}}</p>
                 <div class="d-flex justify-content-center">
                     <b-link class = "messagebutton d-flex align-items-center " to="/results">
@@ -132,7 +132,7 @@
                 </div>
             </div>
             <div class="d-flex flex-row align-items-start">
-                <p class="subtitle">{{average_score.toFixed(1)}}</p>
+                <p class="subtitle">{{reviewScore}}</p>
                 <i class="iconify hosticon startspace endspace" data-icon="ion-star"></i>
                 <a class="subtitle startspace">{{total_reviews}} κριτικές</a>
             </div>
@@ -157,14 +157,15 @@
                     background="#ccc"
                     img-width="1024"
                     img-height="480"
-                    style="text-shadow: 1px 1px 2px #000;"
+                    style=""
                     @sliding-start="onSlideStart"
                     @sliding-end="onSlideEnd"   
                 >
                     <b-carousel-slide
                         v-for="(review, index) in userReviews"
                         v-bind:key="index" 
-                        :img-src="reviewBG">
+                        :img-src="reviewBG"
+                        style="height:275px;">
                         <div class="d-flex flex-column "> 
                             <div class="d-flex flex-row align-items-start">
                                 <img :src="review.profilepicpath" width="60px" height="60px" class="rounded-circle endspace">
@@ -173,7 +174,7 @@
                                 <h3 class="reviewText startspace endspace">{{review.score}}</h3>
 
                             </div>
-                            <p class="reviewContent"> {{placeholderText}} </p>
+                            <p class="reviewContent"> {{review.text}} </p>
                         </div>
                     </b-carousel-slide>
                 </b-carousel>
@@ -181,7 +182,7 @@
 
             <!-- τοποθεσία -->
             <h3 class="subtitle element">Τοποθεσία</h3>
-            <p> {{placeholderText}} </p>
+            <p> {{locationText}} </p>
 
             <div class="d-flex flex-row align-items-baseline">
                 <span class="iconify addressIcon startspace" data-icon="ion-location"></span>
@@ -300,33 +301,21 @@ Icon.Default.mergeOptions({
             reservedDates: [],
 
             hostName: "Νίκος Νιωτς",
-            hostImagePath: require("../assets/profile_pics/quirkygirl85.jpg"),
+            hostImagePath: "default.png",
             reviewScore: 2.6,
             reviewNum: 68,
-            userReviews: [
-                {
-                    text: 'Sed sodales, nulla sed interdum accumsan, est nulla convallis orci, quis rhoncus nisi diam vitae libero. Nulla nec porttitor purus. Nullam tincidunt interdum interdum. Ut suscipit tellus eget orci efficitur, sit amet feugiat ante posuere. Mauris malesuada, dolor imperdiet vulputate sagittis, ante magna accumsan arcu, sed mollis lectus massa a ante. Sed tincidunt consequat erat ut imperdiet. Nulla ornare magna at nisi porta, sed tempus augue pellentesque.',
-                    score: 3.5,
-                    user: 'Kostkuber',
-                    profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
-                },
-                {
-                    text: 'Sed sodales, nulla sed interdum accumsan, est nulla convallis orci, quis rhoncus nisi diam vitae libero. Nulla nec porttitor purus. Nullam tincidunt interdum interdum. Ut suscipit tellus eget orci efficitur, sit amet feugiat ante posuere. Mauris malesuada, dolor imperdiet vulputate sagittis, ante magna accumsan arcu, sed mollis lectus massa a ante. Sed tincidunt consequat erat ut imperdiet. Nulla ornare magna at nisi porta, sed tempus augue pellentesque.',
-                    score: 3,
-                    user: 'Kostkuber',
-                    profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
-                },
-            ],
+            userReviews: [],
             userRating: 0,
             newReview: "",
             reviewBG: require("../assets/review background.png"),
             
+            locationText: "",
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             zoom: 3,
             center: [47.413220, -1.219482],
             bounds: null,
-            address: "Παπαντωνίου 10, Αθήνα",
             markerLatLng: [37.9838, 23.7275],
+            address:"",
 
 
         }
@@ -457,6 +446,44 @@ Icon.Default.mergeOptions({
             return final;
         },
 
+        review_average(reviews){
+            let sum = 0;
+            var i;
+            if(reviews.length != 0){
+                for (i=0 ; i < reviews.length ; i++){
+                    // console.log(reviews[i].Rating);
+                    sum += reviews[i].Rating;
+                }
+                return (sum/reviews.length).toFixed(1);
+            }
+            return sum;
+        },
+
+        assign_reviews(reviews, reviewers){
+            let userReviews = [];
+            for( let i=0 ; i < reviews.length ; i++ ){
+                var username;
+                let path = "default.png";
+                for(let  j=0 ; j < reviewers.length ; j++){
+                    if(reviews[i].Users_idUsers == reviewers[j].idUsers){
+                        username = reviewers[j].Username;
+                        if(reviewers[j].ProfilePicPath != null){
+                            path = reviewers[j].ProfilePicPath;
+                        }
+                        break;
+                    }
+                }
+                let temp = {
+                    text: reviews[i].Text,
+                    score: reviews[i].Rating.toFixed(1),
+                    user: username,
+                    profilepicpath: require(`@/assets/profile_pics/${path}`),
+                };
+                userReviews.push(temp);
+            }
+            return userReviews;
+        },
+
         async view() {
             // evt.preventDefault();
             try {
@@ -482,7 +509,18 @@ Icon.Default.mergeOptions({
                 this.rulesText = response.data.Rules;
 
                 this.reservedDates = this.disable_dates(response.data.Reservations);
+                
+                this.hostName = response.data.Host.Name + " " + response.data.Host.Surname;
+                if(response.data.Host.ProfilePicPath != null){
+                    this.hostImagePath = response.data.Host.ProfilePicPath;
+                }
 
+                this.reviewScore = this.review_average(response.data.Reviews);
+                this.userReviews = this.assign_reviews(response.data.Reviews, response.data.Reviewers);
+                console.log(this.userReviews);
+
+                this.locationText = response.data.Location;
+                this.address = response.data.Address;
 
 
             } catch(error) {
@@ -506,23 +544,6 @@ Icon.Default.mergeOptions({
             // console.log(typeof s);
             // console.log(s);
 			return s;
-        },
-        
-        average_score() {
-            let counter = 0;
-            let totalScore = 0;
-            var r;
-            for(r of this.userReviews){
-                // console.log(r.score);
-                totalScore = totalScore + r.score;
-                counter = counter + 1;
-            }
-            if(totalScore == 0){
-                return 0;
-            }
-            else{
-                return totalScore/counter;
-            }
         },
 
         nights() {
