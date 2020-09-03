@@ -70,11 +70,12 @@
                             v-for="(characteristic, index) in characteristics"
                             v-bind:key="index">
                                 <div 
-                                    class="d-flex flex-row align-items-center justify-content-between characterisitc"
+                                    class="d-flex flex-row align-items-center justify-content-start characterisitc"
                                     v-if="characteristic.status"
                                     >
-                                        <span>{{ characteristic.name }}</span>
-                                        <i aria-hidden="true" class="iconify mr-2" v-bind:data-icon="characteristic.icon" />
+                                        <input type="checkbox" class="form-check-input"/>
+                                        <span class="checktext">{{ characteristic.name }}</span>
+                                        <i aria-hidden="true" class="iconify mr-2 ml-auto" v-bind:data-icon="characteristic.icon" />
                                 </div>
                         </form>
                     </div>
@@ -99,29 +100,26 @@
                     </div>
 
                     <!-- αριθμητικά -->
+                    
                     <div class="d-flex flex-row justify-content-between arithmetic">
                         <p>Ελάχιστες μέρες:</p>
-                        <p>{{minDays}}</p>
+                        <input type="number" class="form-control"/>             
                     </div>
                     <div class="d-flex flex-row justify-content-between arithmetic">
                         <p>Αριθμός ατόμων:</p>
-                        <p>{{numPersons}}</p>
-                    </div>
-                    <div class="d-flex flex-row justify-content-between arithmetic">
-                        <p>Αριθμός κρεβατιών:</p>
-                        <p>{{numBeds}}</p>
+                        <input type="number" class="form-control"/>             
                     </div>
                     <div class="d-flex flex-row justify-content-between arithmetic">
                         <p>Αριθμός μπάνιων:</p>
-                        <p>{{numBaths}}</p>
+                        <input type="number" class="form-control"/>             
                     </div>
                     <div class="d-flex flex-row justify-content-between arithmetic">
                         <p>Αριθμός κρεβατιών:</p>
-                        <p>{{numBedrooms}}</p>
+                        <input type="number" class="form-control"/>             
                     </div>
                     <div class="d-flex flex-row justify-content-between arithmetic">
                         <p>Αριθμός υπνοδωματίων:</p>
-                        <p>{{numBedrooms}}</p>
+                        <input type="number" class="form-control"/>             
                     </div>
                 </div>
             </div>
@@ -701,6 +699,25 @@ Icon.Default.mergeOptions({
     height: 24px;
 }
 
+.form-control{
+    width: 60px;
+    height: 24px;    
+    border-radius: 3px;
+
+    /* background-color: #759296; */
+    color: white;
+}
+
+.form-check-input{
+    position: relative;
+    bottom:5px;
+    left: 20px;
+}
+
+.checktext{
+    position: relative;
+    left: 30px;
+}
 
 
 </style>
