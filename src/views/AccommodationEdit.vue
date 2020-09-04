@@ -4,10 +4,17 @@
         <div class="contentLeft d-flex flex-column justify-content-start">
             <!-- τίτλος  -->
             <div class="d-flex flex-row align-items-center">
-                <h2 class="title">Τίτλος χώρου</h2>
+                <h2 id="title" class="title" :contentEditable="titleEdit">{{title}}</h2>
                 <div class="d-flex justify-content-center">
-                <b-link class = "messagebutton d-flex align-items-center " to="">
-                    Επεξεργασία
+                <b-link class = "messagebutton d-flex align-items-center " 
+                    @click="focus('title')"
+                    @change.prevent="titleEdit=false">
+                    <div v-if="titleEdit==false">
+                        Επεξεργασία
+                    </div>
+                    <div v-if="titleEdit==true">
+                        Αποθήκευση
+                    </div>
                     <span class="iconify startspace" data-icon="ion-build"></span>
                 </b-link>
             </div>
@@ -246,6 +253,9 @@ Icon.Default.mergeOptions({
 
     data() {
         return {
+            titleEdit: false,
+            title: "Title",
+
             slide: 0,
             sliding: null,
             
@@ -355,6 +365,19 @@ Icon.Default.mergeOptions({
         },
         boundsUpdated (bounds) {
             this.bounds = bounds;
+        },
+
+        focus(id){
+            if(this.titleEdit == false){
+                this.titleEdit = true;
+                document.getElementById(id).style.border = "1px solid #4E7378";
+            }
+            else{
+                if(this.title != ""){
+                    this.titleEdit = false;
+                    document.getElementById(id).style.border = "0px solid #4E7378";
+                }
+            }
         }
     },
      computed: {
