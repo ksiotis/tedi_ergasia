@@ -111,8 +111,7 @@ export default {
                 { value: '+30', text: 'EL' },
                 { value: '+44', text: 'EN' },
             ],
-            errormessage: "Προέκυψε κάποιο σφάλμα, δοκιμάστε ξανά",
-            user: ''
+            errormessage: "Προέκυψε κάποιο σφάλμα, δοκιμάστε ξανά"
         }
     },
     methods: {
@@ -185,8 +184,8 @@ export default {
                     username: this.form.username,
                     password: this.form.password,
                 });
-                localStorage.token = response.data.token;
-                this.user = await this.$jwt.decode(response.data.token).user;
+                this.$store.commit('updateToken', response.data.token);
+                await this.$nextTick();
                 
                 if (this.user.Role === 'admin')
                     this.$router.push('/admin').catch(() => {});
@@ -210,8 +209,18 @@ export default {
                     (this.password_state === false));
         },
         logged_in: function() {
-            return localStorage.getItem('token') ? true : false;
-        }
+            return this.$store.state.token ? true : false;
+        },
+        user() {
+			if (this.$store.state.user)
+				return this.$store.state.user;
+			else if (this.$store.state.token) {
+				this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
+				return this.$store.state.user;
+			}
+			else
+				return '';
+		}
     }
 }
 </script>

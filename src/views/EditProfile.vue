@@ -50,8 +50,8 @@
 
                 <div class="d-flex set-width flex-column">
                     <b-form-group label="Ρόλος" label-for="role" label-size="sm" class="set-width">
-                        <span class="mr-2">{{rolenames[user.Role][0]}}</span>
-                        <span class="iconify" :data-icon="rolenames[user.Role][1]"/>
+                        <span class="mr-2">{{roleName}}</span>
+                        <span class="iconify" :data-icon="roleIcon"/>
                         <button v-if="user.Role === 'tenant'" @click.prevent="changeRole" class="mybutton">Γίνετε Οικοδεσπότης</button>
                     </b-form-group>
                 </div>
@@ -85,35 +85,27 @@ export default {
                 phone: '',
                 file: null,
             },
-            user: '',
             options: [
                 { value: null, text: '...', disabled: true},
                 { value: '+1', text: 'US'},
                 { value: '+30', text: 'EL' },
                 { value: '+44', text: 'EN' },
             ],
-            rolenames: {
-                tenant: ['Ενοικιαστής', 'ion-briefcase'],
-                unaproved: ['Ενοικιαστής', 'ion-briefcase'],
-                aproved: ['Οικοδεσπότης', 'ion-home-sharp'],
-                admin: ['Διαχειριστής', 'ion-build'],
-            },
-            errormessage: "Προέκυψε κάποιο σφάλμα, δοκιμάστε ξανά"
+            errormessage: "Προέκυψε κάποιο σφάλμα, δοκιμάστε ξανά",
+            roleName: '',
+            roleIcon: ''
         }
     },
     created() {
-        if (localStorage.token) {
-            this.user = this.$jwt.decode(localStorage.token).user;
-            this.form.username = this.user.Username;
-            this.form.name = this.user.Name;
-            this.form.surname = this.user.Surname;
-            this.form.email = this.user.Email;
-            this.form.code = this.user.Telephone.split(')')[0].substring(1);
-            this.form.phone = this.user.Telephone.split(')')[1];
-        }
+        this.form.username = this.user.Username;
+        this.form.name = this.user.Name;
+        this.form.surname = this.user.Surname;
+        this.form.email = this.user.Email;
+        this.form.code = this.user.Telephone.split(')')[0].substring(1);
+        this.form.phone = this.user.Telephone.split(')')[1];
     },
     computed: {
-        profilePic: function () {
+        profilePic() {
             if (this.form.file === null) {
                 let filename = 'default.png';
     
@@ -125,10 +117,20 @@ export default {
                 return URL.createObjectURL(this.form.file);
             }
         },
-        submit_disabled: function() {
+        submit_disabled() {
             return ((this.username_state === false) ||
                     (this.email_state === false) ||
                     (this.password_state === false));
+        },
+        user() {
+            if (this.$store.state.user)
+                return this.$store.state.user;
+            else if (this.$store.state.token) {
+                this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
+                return this.$store.state.user;
+            }
+            else
+                return '';
         },
     },
     methods: {
@@ -144,17 +146,18 @@ export default {
                 formData.append("picture", this.form.file);
 
                 let response = await this.$axios.post('/userupdate', formData, {
-                    headers: { "authorization": 'Bearer ' + localStorage.getItem('token') }
+                    headers: { "authorization": 'Bearer ' + this.$store.state.token }
                 });
-                delete localStorage.token;
-                alert("Τα στοιχεία του λογαριασμού άλλαξαν επιτυχώς!\nΠαρακαλώ συνδεθείτε ξανά στον λογαριασμό σας.");
+                alert("Τα στοιχεία του λογαριασμού άλλαξαν επιτυχώς!");
+                this.$store.commit('updateUser', ''); //delete old user
+
 
                 response = await this.$axios.post('/login', {
                     username: this.form.username,
                     password: this.form.password,
                 });
-                this.user = this.$jwt.decode(response.data.token).user;
-                localStorage.token = response.data.token;
+                this.$store.commit('updateToken', response.data.token);
+                await this.$nextTick();
                 
                 // if (this.user.Role === 'admin')
                 //     this.$router.push('/admin').catch(() => {});
@@ -162,7 +165,9 @@ export default {
                 //     this.$router.push('/TODO').catch(() => {});
                 // else
                 //     this.$router.push('/').catch(() => {});
-                this.$router.push('/');
+                // this.$router.push('/');
+                let query = { username: this.user.Username };
+                this.$router.push({ path: `/profile`, query: query}).catch(() => {});
             } catch(error) {
                 if (error == 'Error: Request failed with status code 403') {
                     alert('Λάθος κωδικός πρόσβασης!');
@@ -233,12 +238,12 @@ export default {
                     role: 2,
                     username: null
                 }, {
-                    headers: { "authorization": 'Bearer ' + localStorage.getItem('token')}
+                    headers: { "authorization": 'Bearer ' + this.$store.state.token}
                 });
-
-                delete localStorage.token;
                 alert('Το αίτημα αλλαγής ρόλου καταχωρήθηκε. Θα σας ενημερώσουμε όταν το εξετάσει ένας διαχειριστής');
                 console.log(response.data);
+
+                
             } catch(error) {
                 this.username_state = false;
                 alert(this.errormessage);

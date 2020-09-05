@@ -76,7 +76,6 @@ export default {
 	data() {
 		return {
 			new_messages: false,
-			user: '',
 			form: {
 				username: '',
 				password: ''
@@ -92,10 +91,15 @@ export default {
 			}
 			return require(`../assets/profile_pics/${fileName}`);
 		},
-	},
-	created() {
-		if (localStorage.token) {
-			this.user = this.$jwt.decode(localStorage.token).user;
+		user() {
+			if (this.$store.state.user)
+				return this.$store.state.user;
+			else if (this.$store.state.token) {
+				this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
+				return this.$store.state.user;
+			}
+			else
+				return '';
 		}
 	},
 	methods: {
@@ -107,9 +111,10 @@ export default {
 						password: this.form.password
 					});
 
-					localStorage.token = response.data.token;
-					this.user = this.$jwt.decode(response.data.token).user;
-					this.$refs['login-modal'].hide()
+					this.$store.commit('updateToken', response.data.token);
+					await this.$nextTick();
+
+					this.$refs['login-modal'].hide();
 
 					if (this.user.Role === 'admin')
 						this.$router.push('/admin').catch(() => {});
@@ -130,8 +135,8 @@ export default {
 			this.$router.push({ path: `/profile`, query: query}).catch(() => {});
 		},
 		logout() {
-			this.user = '';
-			localStorage.removeItem('token');
+			this.$store.commit('updateToken', '');
+			this.$store.commit('updateUser', '');
 			this.$router.push('/').catch(() => {});
 		}
 	}

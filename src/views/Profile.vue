@@ -25,12 +25,12 @@
                     </span>
                     
                     <span class="mt-2">
-                        Ρόλος: <span class="semitransparenttext">{{rolenames[user.Role][0]}}</span> <span class="iconify" :data-icon="rolenames[user.Role][1]"/>
+                        Ρόλος: <span class="semitransparenttext">{{roleName}}</span> <span class="iconify" :data-icon="roleIcon"/>
                     </span>
                 </div>
             </div>
             <div id="bottom" class="d-flex flex-column">
-                <div v-if="user.loggedin" class="d-flex align-items-center">
+                <div v-if="user && user.loggedin && !user.same" class="d-flex align-items-center">
                     <a class="d-flex"><span class="iconify" data-icon="ion-chatbubble-ellipses-outline"/></a>
                     <span class="mt-3 ml-3">Αποστολή Μηνύματος</span>
                 </div>
@@ -61,12 +61,8 @@ export default {
     data() {
         return {
             user: '',
-            rolenames: {
-                tenant: ['Ενοικιαστής', 'ion-briefcase'],
-                unaproved: ['Ενοικιαστής', 'ion-briefcase'],
-                aproved: ['Οικοδεσπότης', 'ion-home-sharp'],
-                admin: ['Διαχειριστής', 'ion-build'],
-            }
+            roleName: '',
+            roleIcon: ''
         }
     },
     computed: {
@@ -77,20 +73,31 @@ export default {
                 filename = this.user.ProfilePicPath;
             return require(`../assets/profile_pics/${filename}`);
         },
-
+        // user() {
+		// 	if (this.$store.state.user)
+		// 		return this.$store.state.user;
+		// 	else if (this.$store.state.token) {
+		// 		this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
+		// 		return this.$store.state.user;
+		// 	}
+		// 	else
+		// 		return '';
+		// }
     },
     methods: {
         
     },
-    async created() {
+    async mounted() {
         let targetProfile = this.$route.query.username;
         
         let url = `/profile?username=${targetProfile}`;
         let response = await this.$axios.get(url, {
-            headers: { "authorization": 'Bearer ' + localStorage.getItem('token') }
+            headers: { "authorization": 'Bearer ' + this.$store.state.token }
         });
 
         this.user = response.data;
+        this.roleName = this.$store.state.rolenames[this.user.Role][0];
+        this.roleIcon = this.$store.state.rolenames[this.user.Role][1];
     }
 }
 </script>
