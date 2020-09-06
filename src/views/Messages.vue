@@ -1,36 +1,50 @@
 <template>
-    <div class="container my-4">
-        <div id="top-part">
-            <div class="title">
-                Μηνύματα
-                <span class="iconify" data-icon="ion-mail-outline"/>
+    <div class="d-flex flex-column align-items-center my-3">
+        <div v-if="user" class="" @>
+            <div id="top-part">
+                <div class="title">
+                    Μηνύματα
+                    <span class="iconify" data-icon="ion-mail-outline"/>
+                </div>
+                <div id="mail-buttons" class="d-flex mt-2">
+                    <button class="mr-2 my-button" :class="{active:incoming}" @click="selectInHandle" ref="inboxbtn">Εισερχόμενα</button>
+                    <button class="mr-5 my-button" :class="{active:outgoing}" @click="selectOutHandle">Εξερχόμενα</button>
+                    <button @click="$router.push('newmessage')" id="new-mail" class="d-flex ml-auto">
+                        <span class="mr-2 " >Νέο Μήνυμα</span>
+                        <span class="iconify" data-icon="ion-mail-unread-outline" />
+                    </button>
+                </div>
             </div>
-            <div id="mail-buttons" class="d-flex mt-2">
-                <button id="incoming" class="mr-2">Εισερχόμενα</button>
-                <button id="outgoing" class=" mr-auto">Εξερχόμενα</button>
-                <button @click="$router.push('newmessage')" id="new-mail" class="d-flex">
-                    <span class="mr-2" >Νέο Μήνυμα</span>
-                    <span class="iconify" data-icon="ion-mail-unread-outline" />
-                </button>
+            <div id="table">
+                <table class="my-5">
+                <tr>
+                    <th>Θέμα</th>
+                    <th>{{secondaryColumnName}}</th>
+                    <th>Ημερομηνία</th>
+                </tr>
+                <tr v-for="(message, message_index) in items" :key="message_index">
+                    <td @click="displayMessage(message_index)">{{message.Subject}}</td>
+                    <td @click="displayMessage(message_index)">{{message.Secondary}}</td>
+                    <td @click="displayMessage(message_index)">{{message.Datetime}}</td>
+                </tr>
+                </table>
+
+                <div @click="in_out_handler">
+                    <b-pagination 
+                    v-model="currentPage"
+                    :total-rows="rows"
+                    :per-page="perPage"
+                    ></b-pagination>
+                </div>
             </div>
-        </div>
-        <div id="table">
-            <table class="my-5">
-            <tr>
-                <th>Θέμα</th>
-                <th>Από</th>
-                <th>Ημερομηνία</th>
-            </tr>
-            <tr v-for="message in mymessages" :key="message.index">
-                <td>{{message.subject}}</td>
-                <td>{{message.from}}</td>
-                <td>{{message.when}}</td>
-            </tr>
-            </table>
         </div>
 
-        
+        <div v-else @click="$router.push('/').catch(() => {})" id="not-logged-in" class="d-flex flex-column">
+            <div>Για να δείτε τα μηνύματά σας, πρέπει να συνδεθείτε...</div>
+            <a class="orange-link mt-auto mb-5">Επιστροφή στην αρχική σελίδα</a>
+        </div>
     </div>
+        
 </template>
 
 <script>
@@ -38,27 +52,119 @@ export default {
     name: "Messages",
     data() {
         return {
-            user: {
-                username: "quirkygirl85"
-            },
-            mymessages: [
-                {
-                    subject: "why coronavirus is a semetic lie and how to protect yourself from it",
-                    from: "quirkygirl85",
-                    when: "22/1/1999",
-                },
-                {
-                    subject: "Nigerian prince wants to give you money hon",
-                    from: "quirkygirl85",
-                    when: "22/1/1999",
-                }
-            ],
+            incoming: false,
+            outgoing: false,
+            currentPage: 1,
+            rows: 0,
+            perPage: 10,
+            items: [],
+            errormessage: "Προέκυψε κάποιο σφάλμα, δοκιμάστε ξανά"
+        }
+    },
+    computed: {
+        user() {
+			if (this.$store.state.user)
+				return this.$store.state.user;
+			else if (this.$store.state.token) {
+				this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
+				return this.$store.state.user;
+			}
+			else
+				return '';
+        },
+        secondaryColumnName() {
+            return this.outgoing ? 'Προς' : 'Από';
         }
     },
     methods: {
-        send() {
+        async selectIn() {
+            try {
+                this.incoming = true;
+                this.outgoing = false;
+
+                let url = `/messages?page=${this.currentPage}&perpage=${this.perPage}&inbox=1`;
+                let response = await this.$axios.get(url, {
+                    headers: { "authorization": 'Bearer ' + this.$store.state.token }
+                });
+
+                this.rows = response.data[0];
+                this.items = response.data[1];
+
+                for (var i = 0; i < this.items.length; i++) {
+                    let current_datetime = new Date(Date.parse(this.items[i].Datetime));
+                    this.items[i].Datetime = current_datetime.getFullYear() + "-" + 
+                    (current_datetime.getMonth() + 1) + "-" + current_datetime.getDate() + 
+                    " " + current_datetime.getHours() + ":" + current_datetime.getMinutes() + 
+                    ":" + current_datetime.getSeconds();
+                }
+                for (var i = this.items.length; i < 10; i++) {
+                    this.items.push({
+                        Datetime: '',
+                        Message: '',
+                        Secondary: '',
+                        Subject: ''
+                    });
+                }
+            } catch(error) {
+                alert(this.errormessage)
+                console.log(error);
+            }
 
         },
+        async selectOut() {
+            try {
+                this.outgoing = true;
+                this.incoming = false;
+    
+                let url = `/messages?page=${this.currentPage}&perpage=${this.perPage}&inbox=0`;
+                let response = await this.$axios.get(url, {
+                    headers: { "authorization": 'Bearer ' + this.$store.state.token }
+                });
+    
+                this.rows = response.data[0];
+                this.items = response.data[1];
+    
+                for (var i = 0; i < this.items.length; i++) {
+                    let current_datetime = new Date(Date.parse(this.items[i].Datetime));
+                    this.items[i].Datetime = current_datetime.getFullYear() + "-" + 
+                    (current_datetime.getMonth() + 1) + "-" + current_datetime.getDate() + 
+                    " " + current_datetime.getHours() + ":" + current_datetime.getMinutes() + 
+                    ":" + current_datetime.getSeconds();
+                }
+                for (var i = this.items.length; i < 10; i++) {
+                    this.items.push({
+                        Datetime: '',
+                        Message: '',
+                        Secondary: '',
+                        Subject: ''
+                    });
+                }
+            } catch(error) {
+                alert(this.errormessage)
+                console.log(error);
+            }
+        },
+        async in_out_handler() {
+            if (this.incoming)
+                await selectIn();
+            else if (this.outgoing)
+                await this.selectOut();
+        },
+        async selectInHandle() {
+            this.currentPage = 1;
+            await this.selectIn();
+        },
+        async selectOutHandle() {
+            this.currentPage = 1;
+            await this.selectOut();
+        },
+        displayMessage(message_index) {
+            alert(this.items[message_index].Message);
+        }
+    },
+    mounted() {
+        this.$nextTick();
+        this.$refs.inboxbtn.click();
     }
 }
 </script>
@@ -81,19 +187,19 @@ export default {
     border-radius: 5px;
 }
 
-#incoming {
-    background-color: #194A50;
+.active {
+    background-color: #194A50 !important;
 }
 
-#incoming:hover {
-    background-color: #0d2629;
+.active:hover {
+    background-color: #0d2629 !important;
 }
 
-#outgoing {
+.my-button {
     background-color: #759296;
 }
 
-#outgoing:hover {
+.my-button:hover {
     background-color: #46676B;
 }
 
@@ -111,21 +217,22 @@ export default {
     height: 20px;
 }
 
-/* table th:nth-child(1) td:nth-child(1) {
-    width:10px !important;
+table th:nth-child(1) {
+    width: 500px;
 }
 
 table th:nth-child(2) {
-    width:10px !important;
+    width:200px;
 }
 
 table th:nth-child(3) {
-    width:10px !important;
-} */
+    width:300px;
+}
 
 table {
+    width: 1000px;
     border: solid 1px black;
-    width: 100%;
+    text-overflow: ellipsis;
 }
 
 td {
@@ -179,6 +286,27 @@ th {
     color: white;
     border-radius: 90px;
     padding: 1px 20px;
+}
+
+#not-logged-in {
+    background-color: #194A50;
+    color: white;
+    border-radius: 15px;
+    padding: 20px;
+    font-size: 18px;
+    height: 500px;
+    width: 500px;
+    font-size: 30px;
+    text-align: center;
+}
+
+.orange-link {
+    color: #D37556;
+}
+
+#not-logged-in:hover .orange-link {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 </style>

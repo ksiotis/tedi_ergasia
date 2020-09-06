@@ -506,7 +506,6 @@ app.post('/changerole', async (req, res) => {
             `UPDATE users SET Role = ? WHERE users.idUsers = ?`, 
             [req.body.role, targetuserid]
         );
-        console.log(result);
         
         if (result[0].affectedRows === 0) { //if update did not succeed
             res.sendStatus(500);
@@ -525,27 +524,127 @@ app.post('/changerole', async (req, res) => {
     }
 })
 
-// function verifyToken(req, res, next) {
-//     let bearer = req.headers.authorization.split(' ')[1];
-//     req.token = bearer;
-//     if ()
-//     let user = jwt.verify(bearer, secretKey);
+app.get('/messages', async(req, res) => { //get info of target user
+    try {
+        if (req.query.page === "" || req.query.perpage === "" || req.query.inbox === "")
+            return;
+            
+        console.log(`/messages ${req.query.inbox != 0 ? 'inbox' : 'sent'}`);
+            
+        if (isNaN(parseInt(req.query.page)) || isNaN(parseInt(req.query.perpage)) || isNaN(parseInt(req.query.inbox)))
+            res.sendStatus(400);
+            
+        let token = req.headers.authorization.split(' ')[1];
+        let user = null;
+        if (token !== 'null' && token !== 'undefined') {
+            user = jwt.verify(token, secretKey);
+            if (user) user = user.user;
+        }
 
-//     console.log(user);
-//     next();
-// }
+        let target = user.idUsers;
+        let startRow = (req.query.page - 1) * req.query.perpage;
+        let perPage = parseInt(req.query.perpage);
+        
+        let results = [];
+        if (req.query.inbox != 0) {
+            let result = await db.query(
+                `SELECT COUNT(*) AS Count FROM messages m WHERE m.To = ?`,
+                [target]
+            );
+            results.push(result[0][0].Count);
+            
+            result = await db.query(
+                `SELECT m.Subject, m.Message, m.Datetime, u.Username AS 'Secondary' 
+                FROM messages m, users u 
+                WHERE m.From = u.idUsers AND m.To = ? 
+                ORDER BY m.Datetime DESC 
+                LIMIT ?,?`, 
+                [target, startRow, perPage]
+            );
+            results.push(result[0]);
+        }
+        else {
+            let result = await db.query(
+                `SELECT COUNT(*) AS Count FROM messages m WHERE m.From = ?`,
+                [target]
+            );
+            results.push(result[0][0].Count);
 
-// app.get('/lines/', async (req,res) => {
-//     let sql = `SELECT code as 'name' FROM grammes ORDER BY code ASC`;
-//     try {
-//         let results = await db.query(sql);            
-//         res.send(results[0]);
-//         // console.log(sql);        
-//     } catch (error) {
-//         console.error(error);       
-//         res.sendStatus(500);
-//     }
-// })
+            result = await db.query(
+                `SELECT m.Subject, m.Message, m.Datetime, u.Username AS 'Secondary' 
+                FROM messages m, users u 
+                WHERE m.To = u.idUsers AND m.From = ? 
+                ORDER BY m.Datetime DESC 
+                LIMIT ?,?`, 
+                [target, startRow, perPage]
+            );
+            results.push(result[0]);
+        }
+
+        res.send(results);
+    } catch (error) {
+        res.sendStatus(403);
+        console.error(error)
+    }
+})
+
+app.post('/newmessage', async (req, res) => {
+    try {
+        if (req.body.to === "" || req.body.subject === "" || req.body.message === "")
+            return;
+        
+        let token = req.headers.authorization.split(' ')[1];
+        let user = null;
+        if (token !== 'null' && token !== 'undefined') {
+            user = jwt.verify(token, secretKey);
+            if (user) user = user.user;
+        }
+        else {
+            res.sendStatus(400);
+            return;
+        }
+
+        if (req.body.to === user.Username) {
+            res.sendStatus(400);
+            return;
+        }
+
+        console.log(`/newmessage by ${user.Username} to ${req.body.to}`);
+
+        let result = await db.query(
+            `SELECT idUsers FROM users 
+            WHERE Username = ?`, [req.body.to]
+        );
+        if (result[0].length === 0) { //if user does not exist
+            res.sendStatus(404);
+            return;
+        }
+        let targetuserid = result[0][0].idUsers;
+        let datetime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
+        result = await db.query(
+            `INSERT INTO messages 
+            VALUES (?, ?, ?, ?, ?) `, 
+            [user.idUsers, targetuserid, req.body.subject, req.body.message, datetime]
+        );
+        console.log(result);
+        
+        // if (result[0].affectedRows === 0) { //if update did not succeed
+        //     res.sendStatus(500);
+        //     return;
+        // }
+        // if (result[0].affectedRows > 1) { //if updated more rows
+        //     console.error(`Updated multiple rows with id: ${targetuserid}`)
+        //     res.sendStatus(500);
+        //     return;
+        // }
+
+        res.sendStatus(200);
+    } catch (error) {
+        res.sendStatus(403);
+        console.error(error)
+    }
+})
 
 // app.get('/linestops', async (req,res) => {
 //     let sql = `

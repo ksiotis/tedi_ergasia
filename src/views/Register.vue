@@ -72,6 +72,7 @@
                 <b-button id="register-btn" type="submit" class="ml-auto mr-5 px-5 py-2" :disabled="submit_disabled">Δημιουργία Λογαριασμού</b-button>
             </div>
         </b-form>
+        
         <div v-else @click="$router.push('/').catch(() => {})" id="already-logged-in" class="d-flex flex-column">
             <div> Έχετε ήδη λογαριασμό χρήστη. Παρακαλώ αποσυνδεθείτε για να συνεχίσετε ή πατήστε τον παρακάτω σύνδεσμο...</div>
             <a class="orange-link mt-auto mb-5">Επιστροφή στην αρχική σελίδα</a>
@@ -274,7 +275,7 @@ export default {
     color: #D37556;
 }
 
-.orange-link:hover {
+#already-logged-in:hover .orange-link {
     text-decoration: underline;
     cursor: pointer;
 }
