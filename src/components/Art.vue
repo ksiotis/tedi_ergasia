@@ -136,9 +136,14 @@ export default {
 		},
 		logout() {
 			this.$store.commit('updateToken', '');
+			delete localStorage.Token;
 			this.$store.commit('updateUser', '');
 			this.$router.push('/').catch(() => {});
 		}
+	},
+	created() {
+		if (localStorage.Token)
+			this.$store.commit('updateToken', localStorage.Token);
 	}
 };
 </script>

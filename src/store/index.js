@@ -17,6 +17,7 @@ export default new Vuex.Store({
   mutations: {
     updateToken (state, payload) {
       state.token = payload;
+      localStorage.Token = payload;
     },
     updateUser (state, payload) {
       state.user = payload;
