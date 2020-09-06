@@ -136,16 +136,18 @@
                 <i class="iconify hosticon startspace endspace" data-icon="ion-star"></i>
                 <a class="subtitle startspace">{{total_reviews}} κριτικές</a>
             </div>
-            <p>Επισκευθήκατε τον χώρο αυτό; Περιγράψτε μας την εμπειρία σας.</p>
-            <star-rating v-model="userRating" class="element stars" :starSize="25"></star-rating>
-            <div class="input-group">
-                <textarea class="form-control"  v-model="newReview"></textarea>
-            </div>
-            <div class="d-flex justify-content-center ml-auto">
-                <b-link class = "messagebutton d-flex align-items-center " to="/results">
-                    Υποβολή
-                    <span class="iconify startspace" data-icon="ion-send"></span>
-                </b-link>
+            <div v-if="user">
+                <p>Επισκευθήκατε τον χώρο αυτό; Περιγράψτε μας την εμπειρία σας.</p>
+                <star-rating v-model="newRating" class="element stars" :starSize="25"></star-rating>
+                <div class="input-group">
+                    <textarea class="form-control"  v-model="newReview"></textarea>
+                </div>
+                <div class="d-flex justify-content-center ml-auto">
+                    <b-link class = "messagebutton d-flex align-items-center " @click="submit_review()">
+                        Υποβολή
+                        <span class="iconify startspace" data-icon="ion-send"></span>
+                    </b-link>
+                </div>
             </div>
             <div class="element smallCarousel">
                 <b-carousel
@@ -305,9 +307,10 @@ Icon.Default.mergeOptions({
             reviewScore: 2.6,
             reviewNum: 68,
             userReviews: [],
-            userRating: 0,
-            newReview: "",
             reviewBG: require("../assets/review background.png"),
+            
+            newRating: 0,
+            newReview: "",
             
             locationText: "",
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -337,7 +340,13 @@ Icon.Default.mergeOptions({
         boundsUpdated (bounds) {
             this.bounds = bounds;
         },
-        
+
+        submit_review(){
+            // console.log("CALLED");
+            if(this.newReview != ""){
+             
+            }
+        },
         assign_characteristics(characteristics){
             let final = [
                 {
@@ -558,6 +567,17 @@ Icon.Default.mergeOptions({
 
         total_reviews(){
             return this.userReviews.length;
+        },
+
+        user() {
+			if (this.$store.state.user)
+				return this.$store.state.user;
+			else if (this.$store.state.token) {
+				this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
+				return this.$store.state.user;
+			}
+			else
+				return '';
         },
     },
 
