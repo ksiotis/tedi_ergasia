@@ -357,6 +357,29 @@ app.post('/view', async (req, res) => {
     }
 })
 
+app.post('/review', async (req, res) => {
+    try {
+        console.log('I ENTERED REVIEW');
+        if(req.body.AccId == "" || req.body.UserId == "" || req.body.Rating == null || req.body.Text == ""){
+            res.sendStatus(400);
+            return;
+        }
+        else{
+            results = await db.query(
+                `INSERT INTO accomodationreview VALUES (?, ?, ?, ?)`, 
+                [req.body.UserId, req.body.AccId, req.body.Rating, req.body.Text]
+            );
+        }
+        res.sendStatus(200);
+    } 
+    catch(error) {
+        res.sendStatus(500);
+        console.error(error);
+    }
+})
+
+
+
 //ENDING THOMAS
 
 app.post('/login', async (req, res) => {

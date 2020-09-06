@@ -136,14 +136,14 @@
                 <i class="iconify hosticon startspace endspace" data-icon="ion-star"></i>
                 <a class="subtitle startspace">{{total_reviews}} κριτικές</a>
             </div>
-            <div v-if="user">
+            <div v-if="user && canReview==true">
                 <p>Επισκευθήκατε τον χώρο αυτό; Περιγράψτε μας την εμπειρία σας.</p>
                 <star-rating v-model="newRating" class="element stars" :starSize="25"></star-rating>
                 <div class="input-group">
                     <textarea class="form-control"  v-model="newReview"></textarea>
                 </div>
                 <div class="d-flex justify-content-center ml-auto">
-                    <b-link class = "messagebutton d-flex align-items-center " @click="submit_review()">
+                    <b-link class = "messagebutton d-flex align-items-center ml-auto" @click="submit_review()">
                         Υποβολή
                         <span class="iconify startspace" data-icon="ion-send"></span>
                     </b-link>
@@ -309,7 +309,8 @@ Icon.Default.mergeOptions({
             userReviews: [],
             reviewBG: require("../assets/review background.png"),
             
-            newRating: 0,
+            canReview: true,
+            newRating: null,
             newReview: "",
             
             locationText: "",
@@ -341,12 +342,6 @@ Icon.Default.mergeOptions({
             this.bounds = bounds;
         },
 
-        submit_review(){
-            // console.log("CALLED");
-            if(this.newReview != ""){
-             
-            }
-        },
         assign_characteristics(characteristics){
             let final = [
                 {
@@ -470,9 +465,20 @@ Icon.Default.mergeOptions({
 
         assign_reviews(reviews, reviewers){
             let userReviews = [];
+            
+            console.log(this.$store.state.user.idUsers);
+
             for( let i=0 ; i < reviews.length ; i++ ){
                 var username;
                 let path = "default.png";
+
+                console.log(reviews[i].Users_idUsers);
+                //decide wether curr user can review
+                if(reviews[i].Users_idUsers == this.$store.state.user.idUsers) {
+                    console.log("This user has already submitted a review");
+                    this.canReview = false;
+                }
+
                 for(let  j=0 ; j < reviewers.length ; j++){
                     if(reviews[i].Users_idUsers == reviewers[j].idUsers){
                         username = reviewers[j].Username;
@@ -491,6 +497,19 @@ Icon.Default.mergeOptions({
                 userReviews.push(temp);
             }
             return userReviews;
+        },
+
+         async submit_review(){
+            // console.log("CALLED");
+            if(this.newReview != ""){
+                console.log(this.$store.state.user);
+                let response = await this.$axios.post('/review', {
+                    AccId: this.id,
+                    UserId: this.$store.state.user.idUsers,
+                    Rating: this.newRating,
+                    Text: this.newReview
+                });
+            }
         },
 
         async view() {
