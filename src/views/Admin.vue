@@ -14,22 +14,25 @@
         <div id="botpage" class="d-flex">
             <div id="column1">
                 <div class="box mr-5 mb-3">
-                    <a v-for="user in users" :key="user.index" class="d-flex user-box flex-fill my-1 mx-1 px-2 py-1">
-                        <img :src="user.profilepicpath" width="32px" height="32px" class="rounded-circle profile-pic">
-                        <span class="d-flex ml-2 mr-auto overflow-hide">{{user.username}}</span>
-                        <span class="iconify" data-icon="ion-briefcase"/>
+                    <a v-for="(user, user_index) in users" :key="user_index" 
+                    class="d-flex user-box flex-fill my-1 mx-1 px-2 py-1" 
+                    @click="pushProfile(user.Username)">
+                        <img :src="getpic(user.ProfilePicPath)" width="32px" height="32px" class="rounded-circle profile-pic">
+                        <span class="d-flex ml-2 mr-auto overflow-hide">{{user.Username}}</span>
+                        <span class="iconify" :data-icon="getRoleIcon(user.Role)"/>
                     </a>
                 </div>
                 <a id="export" v-b-modal.export-modal class="">Εξαγωγή δεδομένων<span v-b-tooltip.hover="{ variant: 'light' }" title="Lorem ipsum dolor arsenal en La Plata"><span class="iconify" data-icon="ion-information-circle-outline"/></span></a>
             </div>
             <div id="column2">
                 <div class="half-box ml-3">
-                    <div v-for="user in requests" :key="user.index" class="d-flex user-box flex-fill my-1 mx-1 px-2 py-1">
-                        <img :src="user.profilepicpath" width="32px" height="32px" class="rounded-circle profile-pic">
-                        <span class="d-flex ml-2 mr-auto overflow-hide">{{user.username}}</span>
-                        <button class="btn accept mr-1 ">Αποδοχή</button>
-                        <button class="btn reject">Απόρριψη</button>
-                    </div>
+                    <a v-for="(user, user_index) in requests" :key="user_index" 
+                    class="d-flex user-box flex-fill my-1 mx-1 px-2 py-1">
+                        <img :src="getpic(user.ProfilePicPath)" width="32px" height="32px" class="rounded-circle profile-pic">
+                        <span class="d-flex ml-2 mr-auto overflow-hide">{{user.Username}}</span>
+                        <button class="btn accept mr-1" @click="aprove(user_index)">Αποδοχή</button>
+                        <button class="btn reject" @click="reject(user_index)">Απόρριψη</button>
+                    </a>
                 </div>
                 <img id="logo2" src="../assets/homies-logo2 1.png" class="align-self-center">
             </div>
@@ -73,30 +76,114 @@ export default {
                 { value: 'XML', text: 'XML' },
                 { value: 'JSON', text: 'JSON' },
             ],
-            users: [
-                {
-                    username: "quirkygirl85",
-                    surname: "Adams",
-                    name: "Anna",
-                    profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
-                },
-                {
-                    username: "kostass00",
-                    surname: "Σιώτης",
-                    name: "Κωνσταντίνος",
-                    profilepicpath: require("../assets/profile_pics/default.png"),
-                },
-            ],
-            requests: [
-                {
-                    username: "kostass001234",
-                    surname: "Σιώτης",
-                    name: "Κωνσταντίνος",
-                    profilepicpath: require("../assets/profile_pics/default.png"),
-                },
-            ]
-
+            users: [],
+            requests: [],
+            errormessage: "Προέκυψε κάποιο σφάλμα, δοκιμάστε ξανά"
         }
+    },
+    computed: {
+        user() {
+            if (this.$store.state.user)
+                return this.$store.state.user;
+            else if (this.$store.state.token) {
+                this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
+                return this.$store.state.user;
+            }
+            else
+                return '';
+        },
+    },
+    async mounted() {
+        await this.$nextTick();
+        let response = await this.$axios.get(`/users`, {
+            headers: { "authorization": 'Bearer ' + this.$store.state.token }
+        });
+
+        this.users = response.data;
+
+        response = await this.$axios.get(`/unaproved`, {
+            headers: { "authorization": 'Bearer ' + this.$store.state.token }
+        });
+
+        this.requests = response.data;
+    },
+    methods: {
+        getpic(picname) {
+            if (picname == null) {
+                return require('../assets/profile_pics/default.png');
+            }
+            else {
+                return require('../assets/profile_pics/' + picname);
+            }
+        },
+        pushProfile(username, parent) {
+            try {
+                let query = { username };
+                this.$router.push({ path: `/profile`, query: query}).catch(() => {});
+            } catch(error) {
+                alert(this.errormessage)
+                console.log(error);
+            }
+        },
+        getRoleIcon(role) {
+            return this.$store.state.rolenames[role][1];
+        },
+        async changeRole(role, username, parent) {
+            try {
+                let response = await parent.$axios.post('/changerole', {
+                    role,
+                    username
+                }, {
+                    headers: { "authorization": 'Bearer ' + parent.$store.state.token}
+                });
+                alert('Το αίτημα αλλαγής ρόλου καταχωρήθηκε. Θα σας ενημερώσουμε όταν το εξετάσει ένας διαχειριστής');
+                console.log(response.data);
+
+                
+            } catch(error) {
+                this.username_state = false;
+                alert(this.errormessage);
+                console.log(error);
+            }
+        },
+        aprove: async function(user_index) {
+            await this.$nextTick();
+            try {
+                let role = 3;
+                let username = this.requests[user_index].Username;
+                let response = await this.$axios.post('/changerole', {
+                    role,
+                    username
+                }, {
+                    headers: { "authorization": 'Bearer ' + this.$store.state.token}
+                });
+                
+                location.reload();
+            } catch(error) {
+                this.username_state = false;
+                alert(this.errormessage);
+                console.log(error);
+            }
+        },
+        reject: async function(user_index) {
+            await this.$nextTick();
+            try {
+                let role = 1;
+                let username = this.requests[user_index].Username;
+                let response = await this.$axios.post('/changerole', {
+                    role,
+                    username
+                }, {
+                    headers: { "authorization": 'Bearer ' + this.$store.state.token}
+                });
+                
+                location.reload();
+            } catch(error) {
+                this.username_state = false;
+                alert(this.errormessage);
+                console.log(error);
+            }
+        },
     }
 }
 </script>

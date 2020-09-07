@@ -669,21 +669,66 @@ app.post('/newmessage', async (req, res) => {
     }
 })
 
-// app.get('/linestops', async (req,res) => {
-//     let sql = `
-//     SELECT s.name, s.amea 
-//     FROM stops s, lines_has_stops ls, grammes l
-//     WHERE s.id = ls.stops_id && ls.lines_id = l.id && l.code = '${req.query.code}'
-//     ORDER BY ls.index ASC`;
-//     try {        
-//         let results = await db.query(sql);
-//         res.send(results[0]);
-//         // console.log('/linestops');
-//     } catch (error) {
-//         console.error(error);
-//         res.sendStatus(500);
-//     }
-// })
+app.get('/users', async (req,res) => {
+    try {
+        let token = req.headers.authorization.split(' ')[1];
+        let user = null;
+        if (token !== 'null' && token !== 'undefined') {
+            user = jwt.verify(token, secretKey);
+            if (user) user = user.user;
+        }
+        else {
+            res.sendStatus(400);
+            return;
+        }
+
+        if (user.Role !== 'admin') {
+            res.sendStatus(403);
+            return;
+        }
+        
+        console.log(`/users`);
+
+        let result = await db.query(
+            `SELECT u.* FROM users u 
+            ORDER BY u.Role DESC, u.Username ASC`);
+        res.send(result[0]);
+    } catch (error) {
+        console.error(error);
+        res.sendStatus(500);
+    }
+})
+
+app.get('/unaproved', async (req,res) => {
+    try {
+        let token = req.headers.authorization.split(' ')[1];
+        let user = null;
+        if (token !== 'null' && token !== 'undefined') {
+            user = jwt.verify(token, secretKey);
+            if (user) user = user.user;
+        }
+        else {
+            res.sendStatus(400);
+            return;
+        }
+
+        if (user.Role !== 'admin') {
+            res.sendStatus(403);
+            return;
+        }
+        
+        console.log(`/unaproved`);
+
+        let result = await db.query(
+            `SELECT u.* FROM users u 
+            WHERE u.Role = 'unaproved' 
+            ORDER BY u.Username ASC`);
+        res.send(result[0]);
+    } catch (error) {
+        console.error(error);
+        res.sendStatus(500);
+    }
+})
 
 // app.get('/linestop', async (req,res) => {
 //     let sql = `
