@@ -30,7 +30,7 @@
                 </div>
             </div>
             <div id="bottom" class="d-flex flex-column">
-                <div v-if="user && user.loggedin && !user.same" class="d-flex align-items-center">
+                <div v-if="user && user.loggedin && !user.same" class="d-flex align-items-center" @click="pushmessage">
                     <a class="d-flex"><span class="iconify" data-icon="ion-chatbubble-ellipses-outline"/></a>
                     <span class="mt-3 ml-3">Αποστολή Μηνύματος</span>
                 </div>
@@ -73,19 +73,13 @@ export default {
                 filename = this.user.ProfilePicPath;
             return require(`../assets/profile_pics/${filename}`);
         },
-        // user() {
-		// 	if (this.$store.state.user)
-		// 		return this.$store.state.user;
-		// 	else if (this.$store.state.token) {
-		// 		this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
-		// 		return this.$store.state.user;
-		// 	}
-		// 	else
-		// 		return '';
-		// }
     },
     methods: {
-        
+        pushmessage() {
+            let targetUsername = this.user.Username;
+            let query = { to: targetUsername };
+            this.$router.push({ path: `/newmessage`, query: query}).catch(() => {});
+        }
     },
     async mounted() {
         let targetProfile = this.$route.query.username;

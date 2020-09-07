@@ -63,14 +63,14 @@ export default {
     },
     computed: {
         user() {
-			if (this.$store.state.user)
-				return this.$store.state.user;
-			else if (this.$store.state.token) {
-				this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
-				return this.$store.state.user;
-			}
-			else
-				return '';
+            if (this.$store.state.user)
+                return this.$store.state.user;
+            else if (this.$store.state.token) {
+                this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
+                return this.$store.state.user;
+            }
+            else
+                return '';
         },
         secondaryColumnName() {
             return this.outgoing ? 'Προς' : 'Από';

@@ -24,11 +24,15 @@
                     <textarea type="textarea" id="textarea-large" v-model="form.message" required/>
                 </b-form-group>
 
-            
-                <button id="send-button" class="d-flex mt-5 px-4 py-2 ml-auto mr-3 align-items-center" :disabled="send_state">
-                    <span class="mr-2">Αποστολή</span>
-                    <span class="iconify" data-icon="ion-send"/>
-                </button>
+                <div class="d-flex">
+                    <button id="cancel-button" @click.prevent="$router.go(-1)" class="d-flex px-4 py-2 ml-auto mr-3 align-items-center">
+                        <span class="mr-2">Ακύρωση</span>
+                    </button>
+                    <button id="send-button" class="d-flex px-4 py-2 mr-3 align-items-center" :disabled="send_state">
+                        <span class="mr-2">Αποστολή</span>
+                        <span class="iconify" data-icon="ion-send"/>
+                    </button>
+                </div>
             </b-form>
         </div>
         <div v-else @click="$router.push('/').catch(() => {})" id="not-logged-in" class="d-flex flex-column">
@@ -98,6 +102,11 @@ export default {
                 console.log(error);
             }
         }
+    },
+    mounted() {
+        let targetProfile = this.$route.query.to;
+
+        this.form.to = targetProfile;
     }
 }
 </script>
@@ -134,6 +143,17 @@ input, textarea {
 
 #send-button:hover {
     background-color: #9C533B;
+}
+
+#cancel-button {
+    border: none;
+    color: white;
+    background-color: #4E7378;
+    border-radius: 90px !important;
+}
+
+#cancel-button:hover {
+    background-color: #46676B;
 }
 
 #not-logged-in {
