@@ -316,7 +316,7 @@ app.post('/view', async (req, res) => {
         );
 
         let host = await db.query(
-            `SELECT u.Name, u.Surname, u.ProfilePicPath  
+            `SELECT u.Name, u.Surname, u.ProfilePicPath, u.Username  
             FROM users u
             WHERE u.idUsers = ?`,
             [result[0][0].idHost]

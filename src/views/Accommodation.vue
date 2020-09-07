@@ -125,7 +125,7 @@
                 <img :src="require(`@/assets/profile_pics/${hostImagePath}`)" width="40px" height="40px" class="rounded-circle endspace">
                 <p class="hostName">{{hostName}}</p>
                 <div class="d-flex justify-content-center">
-                    <b-link class = "messagebutton d-flex align-items-center " to="/results">
+                    <b-link class = "messagebutton d-flex align-items-center " @click="pushmessage">
                         Μύνημα
                         <span class="iconify startspace" data-icon="ion-mail"></span>
                     </b-link>
@@ -302,6 +302,7 @@ Icon.Default.mergeOptions({
             reservationPrice: 0,
             reservedDates: [],
 
+            hostUsername: "",
             hostName: "Νίκος Νιωτς",
             hostImagePath: "default.png",
             reviewScore: 2.6,
@@ -340,6 +341,12 @@ Icon.Default.mergeOptions({
         },
         boundsUpdated (bounds) {
             this.bounds = bounds;
+        },
+
+        pushmessage(){
+            let targetUsername = this.hostUsername;
+            let query = { to: targetUsername };
+            this.$router.push({ path: `/newmessage`, query: query}).catch(() => {});
         },
 
         assign_characteristics(characteristics){
@@ -509,6 +516,7 @@ Icon.Default.mergeOptions({
                     Rating: this.newRating,
                     Text: this.newReview
                 });
+                this.canReview = false;
             }
         },
 
@@ -538,6 +546,7 @@ Icon.Default.mergeOptions({
 
                 this.reservedDates = this.disable_dates(response.data.Reservations);
                 
+                this.hostUsername = response.data.Host.Username;
                 this.hostName = response.data.Host.Name + " " + response.data.Host.Surname;
                 if(response.data.Host.ProfilePicPath != null){
                     this.hostImagePath = response.data.Host.ProfilePicPath;
