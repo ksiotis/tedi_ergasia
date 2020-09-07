@@ -185,35 +185,15 @@
                 <input type="text" v-model="content.address" class="form-control area" style="width: 400px; height: 30px;"/>             
                 <p>/διεύθυνση</p>
             </div>
-            <div class="d-flex flex-row justify-content-between">
-                <div class="d-flex flex-row">
-                    <p style="
-                    font-style: normal;
-                    font-size: 18px;
-                    line-height: 21px;
-                    color: #4E7378;">
-                        Γεωγραφικό πλάτος:</p>
-                    <input type="number" v-model="content.markerLatLng[0]" min="0" class="form-control" style="width: 80px;"/>
-                </div>
-                <div class="d-flex flex-row">
-                    <p style="
-                    font-style: normal;
-                    font-size: 18px;
-                    line-height: 21px;
-                    color: #4E7378;">
-                        Γεωγραφικό μήκος:</p>
-                    <input type="number" v-model="content.markerLatLng[1]" min="0" class="form-control" style="width: 80px;"/>
-                </div>             
-            </div>
             
-            <div style="height: 500px;">
+            <div style="height: 400px;">
                 <!-- <div class="info" style="height: 15%">
                     <span>Center: {{ center }}</span>
                     <span>Zoom: {{ zoom }}</span>
                     <span>Bounds: {{ bounds }}</span>
                 </div> -->
                 <l-map
-                    style="height: 80%; width: 100%"
+                    style="height: 100%; width: 100%"
                     :zoom="zoom"
                     :center="center"
                     @update:zoom="zoomUpdated"
@@ -223,15 +203,52 @@
                     <l-marker :lat-lng="content.markerLatLng" ></l-marker>
                     <l-tile-layer :url="url"></l-tile-layer>
                 </l-map>
-            </div>    
+            </div>
+            <div class="d-flex flex-row justify-content-around">
+                <div class="d-flex flex-row">
+                    <p style="
+                    font-style: normal;
+                    font-size: 18px;
+                    line-height: 21px;
+                    color: #4E7378;">
+                        Γεωγραφικό πλάτος:</p>
+                    <input type="number" v-model="content.markerLatLng[0]" class="form-control" style="width: 80px;"/>
+                </div>
+                <div class="d-flex flex-row">
+                    <p style="
+                    font-style: normal;
+                    font-size: 18px;
+                    line-height: 21px;
+                    color: #4E7378;">
+                        Γεωγραφικό μήκος:</p>
+                    <input type="number" v-model="content.markerLatLng[1]" class="form-control" style="width: 80px;"/>
+                </div>             
+            </div>
+            <b-link class = "messagebutton d-flex align-items-center ml-auto" style="margin-bottom: 40px; margin-top: 40px;"> 
+                    <div v-if="content.id==null">
+                        Δημιουργία χώρου
+                    </div>
+                    <div v-if="content.id!=null">
+                        Αποθήκευση αλλαγών
+                    </div>
+                    <span class="iconify startspace" data-icon="ion-home"></span>
+            </b-link>    
         </div>
 
         
         <!-- scrolling form -->
-        <form class="d-flex flex-column justify-content-start reservationForm">
+        <form class="d-flex flex-column justify-content-start  reservationForm">
             <span class="reservationHeader">
-                <h3 class="subtitle" style="color: white;" > Σύνοψη κράτησης </h3>
-            </span>               
+                <h3 class="subtitle" style="color: white;" > Οι χώροι μου </h3>
+            </span>
+            <div 
+            class="d-flex flex-row allign-content-baseline justify-content-between space"
+            v-for="(s, index) in spaces"
+            v-bind:key="index">
+                <p style="margin-bottom: 0px;">{{s.name}}</p>
+    	        <p class="iconify" data-icon="ion-home" style="height: 24px; width: 24px;"></p>
+            </div>
+
         </form>
     </div>
 </template>
@@ -266,6 +283,7 @@ Icon.Default.mergeOptions({
     data() {
         return {
             content:{
+                id: null,
                 title: "Εισάγετε τίτλο χώρου",
                 description: "Εισάγετε περιγραφή χώρου",
                 images:[],
@@ -344,7 +362,7 @@ Icon.Default.mergeOptions({
             center: [47.413220, -1.219482],
             bounds: null,
 
-
+            spaces: [],
         }
     },
     methods: {
@@ -417,17 +435,35 @@ Icon.Default.mergeOptions({
             }
         },
 
-        
+        async get_spaces(){
+            if(this.user){
+                console.log("I AM LOGGED IN");
+                let response = await this.$axios.post('/spaces', {
+                    id: this.$store.state.user.idUsers,
+                });
+                // console.log(response);
+                this.spaces = response.data;
+            }
+        },
     },
     computed: {
-       
+        user() {
+            if (this.$store.state.user)
+                return this.$store.state.user;
+            else if (this.$store.state.token) {
+                this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
+                return this.$store.state.user;
+            }
+            else
+                return '';
+        },
     },
 
     mounted() {
         this.$refs.datePicker.showDatepicker();
-        this.$nextTick(() => {
-            this.$refs.myMap.mapObject.test();
-        });
+        // this.$nextTick(() => {
+        //     this.$refs.myMap.mapObject.test();
+        // });
     },
 
     updated() {
@@ -436,6 +472,9 @@ Icon.Default.mergeOptions({
 
     beforeUpdate(){
         this.$refs.datePicker.showDatepicker();
+    },
+    created(){
+        this.get_spaces();
     }
   }
 </script>
@@ -633,7 +672,7 @@ Icon.Default.mergeOptions({
     height: 323px;
     border: 1px solid #4E7378;
     background-color: white;
-    color: #194A50;
+    color: #8ac1c9;
 
     position: sticky;
     top: 50px;
@@ -738,6 +777,23 @@ Icon.Default.mergeOptions({
 .checktext{
     position: relative;
     left: 30px;
+}
+
+.space{
+    margin: 0 5px;
+    margin-top: 5px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding: 0 10px;
+
+    color:white;
+    background: #4E7378;
+    border-radius: 3px;
+}
+
+.space:hover{
+    cursor: pointer;
+    background: #334D51;
 }
 
 
