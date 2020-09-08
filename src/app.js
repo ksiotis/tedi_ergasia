@@ -757,21 +757,58 @@ app.get('/unaproved', async (req,res) => {
     }
 })
 
-// app.get('/linestop', async (req,res) => {
-//     let sql = `
-//     SELECT s.name
-//     FROM stops s, lines_has_stops ls, grammes l
-//     WHERE s.id = ls.stops_id && ls.lines_id = l.id && l.code = '${req.query.code}'
-//     ORDER BY ls.index ASC`;
-//     try {        
-//         let results = await db.query(sql);
-//         res.send(results[0]);
-//         // console.log('/linestops');
-//     } catch (error) {
-//         console.error(error);
-//         res.sendStatus(500);
-//     }
-// })
+app.get('/dbdownload', async (req,res) => {
+    try {
+        let token = req.headers.authorization.split(' ')[1];
+        let user = null;
+        if (token !== 'null' && token !== 'undefined') {
+            user = jwt.verify(token, secretKey);
+            if (user) user = user.user;
+        }
+        else {
+            res.sendStatus(400);
+            return;
+        }
+
+        if (user.Role !== 'admin') {
+            res.sendStatus(403);
+            return;
+        }
+        
+        console.log(`/dbdownload`);
+
+        let queries = [
+            `SELECT * FROM accomodationphotos`,
+            `SELECT * FROM accomodationreview`,
+            `SELECT * FROM accomodations`,
+            `SELECT * FROM accomodations_has_characteristics`,
+            `SELECT * FROM availabilitydates`,
+            `SELECT * FROM characteristics`,
+            `SELECT * FROM messages`,
+            `SELECT * FROM reservations`,
+            `SELECT * FROM searches`,
+            `SELECT * FROM users`,
+        ]
+        let temp = await Promise.all(queries.map((q) => db.query(q)));
+        results = {
+            accomodationphotos: temp[0][0],
+            accomodationreview: temp[1][0],
+            accomodations: temp[2][0],
+            accomodations_has_characteristics: temp[3][0],
+            availabilitydates: temp[4][0],
+            characteristics: temp[5][0],
+            messages: temp[6][0],
+            reservations: temp[7][0],
+            searches: temp[8][0],
+            users: temp[9][0]
+        };
+
+        res.send(results);
+    } catch (error) {
+        console.error(error);
+        res.sendStatus(500);
+    }
+})
 
 // app.get('/stopline', async (req, res) => {
 //     let sql = `

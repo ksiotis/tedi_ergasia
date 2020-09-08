@@ -58,7 +58,7 @@
 			</b-form-group>
 
 			<template v-slot:modal-footer="" class="d-flex justify-content-start widen">
-				<b-button id="export-btn" type="submit" class="widen">Κατέβασμα</b-button>    
+				<b-button id="export-btn" type="submit" class="widen" @click="download">Κατέβασμα</b-button>
 			</template>
 
 		</b-modal>
@@ -66,6 +66,8 @@
 </template>
 
 <script>
+import convert from 'xml-js'
+
 export default {
     name: "Admin",
     data() {
@@ -73,8 +75,8 @@ export default {
             selected: "",
             options: [
                 { value: null, text: 'Please select an option', disabled: true },
-                { value: 'XML', text: 'XML' },
                 { value: 'JSON', text: 'JSON' },
+                { value: 'XML', text: 'XML' },
             ],
             users: [],
             requests: [],
@@ -184,6 +186,39 @@ export default {
                 console.log(error);
             }
         },
+        async download() {
+            if (this.selected !== 'XML' && this.selected !== 'JSON')
+                return;
+
+            try {
+                let response = await this.$axios.get('/dbdownload', {
+                    headers: { "authorization": 'Bearer ' + this.$store.state.token}
+                });
+                let data = '';
+
+                if (this.selected === 'XML') {
+                    var options = {compact: true, spaces: 4};
+                    data = '<?xml version="1.0" encoding="UTF-8"?>\n' + convert.json2xml(response.data, options);
+                }
+                else {
+                    data = JSON.stringify(response.data, null, '  ');
+                }
+
+                const blob = new Blob([data], {type: 'text/plain'});
+                const e = document.createEvent('MouseEvents'), a = document.createElement('a');
+                a.download = `homies_db.${this.selected === 'XML' ? 'xml' : 'json'}`;
+                a.href = window.URL.createObjectURL(blob);
+                a.dataset.downloadurl = [`text/plain`, a.download, a.href].join(':');
+                e.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                a.dispatchEvent(e);
+            } catch(error) {
+                this.username_state = false;
+                alert(this.errormessage);
+                console.log(error);
+            }
+            
+        },
+
     }
 }
 </script>
