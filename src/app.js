@@ -316,7 +316,7 @@ app.post('/view', async (req, res) => {
         );
 
         let host = await db.query(
-            `SELECT u.Name, u.Surname, u.ProfilePicPath  
+            `SELECT u.Name, u.Surname, u.ProfilePicPath, u.Username  
             FROM users u
             WHERE u.idUsers = ?`,
             [result[0][0].idHost]
@@ -378,8 +378,35 @@ app.post('/review', async (req, res) => {
     }
 })
 
-
-
+app.post('/spaces', async (req, res) => {
+    try {
+        console.log('I ENTERED SPACES');
+      
+        results = await db.query(
+            `SELECT a.idAccomodation, a.Name  
+            FROM accomodations a
+            WHERE a.idHost = ?`,
+            [req.body.id] 
+        );
+        // console.log(results);
+        let final = [];
+        for(let i=0 ; i < results[0].length ; i++){
+            let item = {
+                id: results[0][i].idAccomodation,
+                name: results[0][i].Name
+            }
+            final.push(item);
+        }
+        
+        res.send(final);
+        
+        res.sendStatus(200);
+    } 
+    catch(error) {
+        res.sendStatus(500);
+        console.error(error);
+    }
+})
 //ENDING THOMAS
 
 app.post('/login', async (req, res) => {

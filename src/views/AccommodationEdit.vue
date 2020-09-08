@@ -4,20 +4,20 @@
         <div class="contentLeft d-flex flex-column justify-content-start">
             <!-- τίτλος  -->
             <div class="d-flex flex-row align-items-center">
-                <h2 id="title" class="title" :contentEditable="titleEdit">{{title}}</h2>
+                <h2 id="title" class="title" :contentEditable="titleEdit">{{content.title}}</h2>
                 <div class="d-flex justify-content-center">
-                <b-link class = "messagebutton d-flex align-items-center " 
-                    @click="focus('title')"
-                    @change.prevent="titleEdit=false">
-                    <div v-if="titleEdit==false">
-                        Επεξεργασία
-                    </div>
-                    <div v-if="titleEdit==true">
-                        Αποθήκευση
-                    </div>
-                    <span class="iconify startspace" data-icon="ion-build"></span>
-                </b-link>
-            </div>
+                    <b-link class = "messagebutton d-flex align-items-center " 
+                        @click="titleFocus()"
+                        @change.prevent="titleEdit=false">
+                        <div v-if="titleEdit==false">
+                            Επεξεργασία
+                        </div>
+                        <div v-if="titleEdit==true">
+                            Αποθήκευση
+                        </div>
+                        <span class="iconify startspace" data-icon="ion-build"></span>
+                    </b-link>
+                </div>
 
                 
             </div>
@@ -36,10 +36,11 @@
                     @sliding-start="onSlideStart"
                     @sliding-end="onSlideEnd"
                 >
-                    <b-carousel-slide img-src="https://picsum.photos/1024/480/?image=52"/>
-                    <b-carousel-slide img-src="https://picsum.photos/1024/480/?image=53"/>
-                    <b-carousel-slide img-src="https://picsum.photos/1024/480/?image=54"/>
-                    <b-carousel-slide img-src="https://picsum.photos/1024/480/?image=55"/>
+                    <b-carousel-slide
+                        style="height: 335px; width: 690px;" 
+                        v-for="(p, index) in content.images"
+                        v-bind:key="index"
+                        :img-src="require(`@/assets/accommodation_pics/${p}`)"/>
             
                 </b-carousel>
             </div>
@@ -50,12 +51,19 @@
 
             <!-- περιγραφή -->
             <h3 class="subtitle element">Περιγραφή</h3>
-            <p> {{placeholderText}} </p>
+            <p id="description" :contentEditable="descriptionEdit"> {{content.description}} </p>
             <div class="d-flex justify-content-center element">
-                <b-link class = "messagebutton d-flex align-items-center ml-auto" to="">
-                    Επεξεργασία
-                    <span class="iconify startspace" data-icon="ion-build"></span>
-                </b-link>
+                <b-link class = "messagebutton d-flex align-items-center ml-auto" 
+                        @click="descriptionFocus()"
+                        @change.prevent="descriptionEdit=false">
+                        <div v-if="descriptionEdit==false">
+                            Επεξεργασία
+                        </div>
+                        <div v-if="descriptionEdit==true">
+                            Αποθήκευση
+                        </div>
+                        <span class="iconify startspace" data-icon="ion-build"></span>
+                    </b-link>
             </div>
             
             <!-- χαρακτηρηστικά -->
@@ -65,24 +73,20 @@
                     
                     <h3 class="subtitle element">Χαρακτηρηστικά</h3>
                     <div class="d-flex flex-row align-items-baseline">
-                        <p class="area">{{area}}</p>
+                        <input type="number" v-model="content.area" min="0" class="area form-control" style="width: 80px;"/>
                         <p>/τ.μ.</p>
-                        <span class="iconify startspace addImageIcon" data-icon="ion-build"></span>
                     </div>
 
                     <div class="characteristicsContainer">
                         <h3 class="subtitle">Παροχές</h3>
                         <form 
                             class="d-flex flex-column"
-                            v-for="(characteristic, index) in characteristics"
+                            v-for="(characteristic, index) in content.characteristics"
                             v-bind:key="index">
-                                <div 
-                                    class="d-flex flex-row align-items-center justify-content-start characterisitc"
-                                    v-if="characteristic.status"
-                                    >
-                                        <input type="checkbox" class="form-check-input"/>
-                                        <span class="checktext">{{ characteristic.name }}</span>
-                                        <i aria-hidden="true" class="iconify mr-2 ml-auto" v-bind:data-icon="characteristic.icon" />
+                                <div class="d-flex flex-row align-items-center justify-content-start characterisitc">
+                                    <input type="checkbox" v-model="characteristic.status" class="form-check-input"/>
+                                    <span class="checktext">{{ characteristic.name }}</span>
+                                    <i aria-hidden="true" class="iconify mr-2 ml-auto" v-bind:data-icon="characteristic.icon" />
                                 </div>
                         </form>
                     </div>
@@ -92,58 +96,63 @@
 
                     <h3 class="subtitle element">Ελάχιστη τιμή</h3>
                     <div class="d-flex flex-row align-items-baseline">
-                        <p class="area">{{price}}</p>
+                        <input type="number" v-model="content.price" min="0" class="area form-control" style="width: 80px;"/>
                         <p class="area">€</p>
                         <p>/διανυκτέρευση</p>
-                        <span class="iconify startspace addImageIcon" data-icon="ion-build"></span>
                     </div>
 
                     <h3 class="subtitle">Επιπλέον κόστος</h3>
                     <div class="d-flex flex-row align-items-baseline">
-                        <p class="area">{{extraCost}}</p>
+                        <input type="number" v-model="content.extraCost" min="0" class="area form-control" style="width: 80px;"/>
                         <p class="area">€</p>
                         <p>/ανά άτομο</p>
-                        <span class="iconify startspace addImageIcon" data-icon="ion-build"></span>
                     </div>
 
                     <!-- αριθμητικά -->
                     
                     <div class="d-flex flex-row justify-content-between arithmetic">
                         <p>Ελάχιστες μέρες:</p>
-                        <input type="number" class="form-control"/>             
+                        <input type="number" v-model="content.minDays" min="0" class="form-control"/>             
                     </div>
                     <div class="d-flex flex-row justify-content-between arithmetic">
                         <p>Αριθμός ατόμων:</p>
-                        <input type="number" class="form-control"/>             
+                        <input type="number" v-model="content.maxPersons" min="0" class="form-control"/>             
                     </div>
                     <div class="d-flex flex-row justify-content-between arithmetic">
                         <p>Αριθμός μπάνιων:</p>
-                        <input type="number" class="form-control"/>             
+                        <input type="number" v-model="content.numBaths" min="0" class="form-control"/>             
                     </div>
                     <div class="d-flex flex-row justify-content-between arithmetic">
                         <p>Αριθμός κρεβατιών:</p>
-                        <input type="number" class="form-control"/>             
+                        <input type="number" v-model="content.numBeds" min="0" class="form-control"/>             
                     </div>
                     <div class="d-flex flex-row justify-content-between arithmetic">
                         <p>Αριθμός υπνοδωματίων:</p>
-                        <input type="number" class="form-control"/>             
+                        <input type="number" v-model="content.numBedrooms" min="0" class="form-control"/>             
                     </div>
                 </div>
             </div>
             
             <!-- κανόνες -->
             <h3 class="subtitle element">Κανόνες</h3>
-            <p> {{placeholderText}} </p>
+            <p id="rules" :contentEditable="rulesEdit" > {{content.rules}} </p>
             <div class="d-flex justify-content-center element">
-                <b-link class = "messagebutton d-flex align-items-center ml-auto" to="">
-                    Επεξεργασία
-                    <span class="iconify startspace" data-icon="ion-build"></span>
-                </b-link>
+                 <b-link class = "messagebutton d-flex align-items-center ml-auto" 
+                        @click="rulesFocus()"
+                        @change.prevent="rulesEdit=false">
+                        <div v-if="rulesEdit==false">
+                            Επεξεργασία
+                        </div>
+                        <div v-if="rulesEdit==true">
+                            Αποθήκευση
+                        </div>
+                        <span class="iconify startspace" data-icon="ion-build"></span>
+                    </b-link>
             </div>
 
             <!-- Διαθεσιμότητα -->
             <h3 class="subtitle element">Διαθεσιμότητα</h3>
-            <p>Προσθέστε τις ημερομηνίες του ταξιδιού σας, για να δείτε συγκεκριμένη τιμή.</p>
+            <p>Όλες οι κρατήσεις σας.</p>
             <div class="calendarContainer">
                 <HotelDatePicker 
                     class="dateinputbox" 
@@ -156,70 +165,90 @@
 
             <!-- τοποθεσία -->
             <h3 class="subtitle element">Τοποθεσία</h3>
-            <p> {{placeholderText}} </p>
+            <p id="location" :contentEditable="locationEdit"> {{content.location}} </p>
             <div class="d-flex justify-content-center element">
-                <b-link class = "messagebutton d-flex align-items-center ml-auto" to="">
-                    Επεξεργασία
+                <b-link class = "messagebutton d-flex align-items-center ml-auto" 
+                    @click="locationFocus()"
+                    @change.prevent="locationEdit=false">
+                    <div v-if="locationEdit==false">
+                        Επεξεργασία
+                    </div>
+                    <div v-if="locationEdit==true">
+                        Αποθήκευση
+                    </div>
                     <span class="iconify startspace" data-icon="ion-build"></span>
                 </b-link>
             </div>
 
             <div class="d-flex flex-row align-items-baseline">
                 <span class="iconify addressIcon startspace" data-icon="ion-location"></span>
-                <p class="area">{{address}}</p>
+                <input type="text" v-model="content.address" class="form-control area" style="width: 400px; height: 30px;"/>             
                 <p>/διεύθυνση</p>
             </div>
             
-            <div style="height: 500px;">
+            <div style="height: 400px;">
                 <!-- <div class="info" style="height: 15%">
                     <span>Center: {{ center }}</span>
                     <span>Zoom: {{ zoom }}</span>
                     <span>Bounds: {{ bounds }}</span>
                 </div> -->
                 <l-map
-                    style="height: 80%; width: 100%"
+                    style="height: 100%; width: 100%"
                     :zoom="zoom"
                     :center="center"
                     @update:zoom="zoomUpdated"
                     @update:center="centerUpdated"
                     @update:bounds="boundsUpdated"
                     >
-                    <l-marker :lat-lng="markerLatLng" ></l-marker>
+                    <l-marker :lat-lng="content.markerLatLng" ></l-marker>
                     <l-tile-layer :url="url"></l-tile-layer>
                 </l-map>
-            </div>    
+            </div>
+            <div class="d-flex flex-row justify-content-around">
+                <div class="d-flex flex-row">
+                    <p style="
+                    font-style: normal;
+                    font-size: 18px;
+                    line-height: 21px;
+                    color: #4E7378;">
+                        Γεωγραφικό πλάτος:</p>
+                    <input type="number" v-model="content.markerLatLng[0]" class="form-control" style="width: 80px;"/>
+                </div>
+                <div class="d-flex flex-row">
+                    <p style="
+                    font-style: normal;
+                    font-size: 18px;
+                    line-height: 21px;
+                    color: #4E7378;">
+                        Γεωγραφικό μήκος:</p>
+                    <input type="number" v-model="content.markerLatLng[1]" class="form-control" style="width: 80px;"/>
+                </div>             
+            </div>
+            <b-link class = "messagebutton d-flex align-items-center ml-auto" style="margin-bottom: 40px; margin-top: 40px;"> 
+                    <div v-if="content.id==null">
+                        Δημιουργία χώρου
+                    </div>
+                    <div v-if="content.id!=null">
+                        Αποθήκευση αλλαγών
+                    </div>
+                    <span class="iconify startspace" data-icon="ion-home"></span>
+            </b-link>    
         </div>
 
         
         <!-- scrolling form -->
-        <form class="d-flex flex-column justify-content-start reservationForm">
+        <form class="d-flex flex-column justify-content-start  reservationForm">
             <span class="reservationHeader">
-                <h3 class="subtitle" style="color: white;" > Σύνοψη κράτησης </h3>
+                <h3 class="subtitle" style="color: white;" > Οι χώροι μου </h3>
             </span>
-            <div class="reservationContent d-flex flex-column justify-content-start">
-                <div class="d-flex flex-row justify-content-between">
-                    <h5 class="endspace" style="color: black; font-weight: normal;" >Τελική τιμή:</h5>
-                    <div class="d-flex flex-row">
-                        <p class="sumArea">{{total.toFixed(2)}}</p>
-                        <p class="sumArea">€</p>
-                    </div>
-                </div>
-                <div class="d-flex flex-row justify-content-between">
-                    <h5 class="endspace" style="color: black; font-weight: normal;" >Ημέρες:</h5>
-                    <p class="sumArea">{{nights}}</p>
-                </div>
-                <div class="d-flex flex-row justify-content-between">
-                    <h5 class="endspace" style="color: black; font-weight: normal;" >Άτομα:</h5>
-                    <p class="sumArea">1</p>
-                </div>
+            <div 
+            class="d-flex flex-row allign-content-baseline justify-content-between space"
+            v-for="(s, index) in spaces"
+            v-bind:key="index">
+                <p style="margin-bottom: 0px;">{{s.name}}</p>
+    	        <p class="iconify" data-icon="ion-home" style="height: 24px; width: 24px;"></p>
             </div>
 
-            <div class="d-flex justify-content-center">
-                <b-link class = "reservationButton d-flex align-items-center " to="/results">
-                    Κράτηση
-                    <span class="iconify startspace" data-icon="ion-card"></span>
-                </b-link>
-            </div>
         </form>
     </div>
 </template>
@@ -253,100 +282,87 @@ Icon.Default.mergeOptions({
 
     data() {
         return {
+            content:{
+                id: null,
+                title: "Εισάγετε τίτλο χώρου",
+                description: "Εισάγετε περιγραφή χώρου",
+                images:[],
+                area: 0,
+                price: 0,
+                extraCost: 0,
+                minDays: 0,
+                maxPersons: 0,
+                numBaths: 0,
+                numBeds: 0,
+                numBedrooms: 0,
+                reservationPrice: 0,
+                
+                characteristics: [
+                    {
+                        name: 'Wifi',
+                        icon: 'ion-wifi',
+                        status: true,
+                    },
+                    {
+                        name: 'Ψύξη',
+                        icon: 'ion-snow',
+                        status: true,
+                    },
+                    {
+                        name: 'Θέρμανση',
+                        icon: 'ion-thermometer',
+                        status: true,
+                    },
+                    {
+                        name: 'Κουζίνα',
+                        icon: 'ion-fast-food',
+                        status: true,
+                    },
+                    {
+                        name: 'Τηλεόραση',
+                        icon: 'ion-tv',
+                        status: true,
+                    },
+                    {
+                        name: 'Χώρος στάθμευσης',
+                        icon: 'ion-car',
+                        status: true,
+                    },
+                    {
+                        name: 'Ανελκυστήρας',
+                        icon: 'ion-arrow-up',
+                        status: true,
+                    },
+                    {
+                        name: 'Καθιστικό',
+                        icon: 'ion-happy-outline',
+                        status: true,
+                    },
+                ],
+                rules: "Εισάγετε κανόνες χώρου",
+
+                location: "Εισάγετε οδηγίες μεταφοράς σε χώρο",
+                address: "Εισάγετε διεύθυνση χώρου",
+                markerLatLng: [37.9838, 23.7275],
+
+            },
             titleEdit: false,
-            title: "Title",
+            descriptionEdit: false,
+            rulesEdit: false,
+            locationEdit: false,
 
+
+            //img carousel
             slide: 0,
-            sliding: null,
+            sliding: null,            
             
-            placeholderText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam quam sapien, rutrum viverra nunc et, tincidunt sagittis libero. Curabitur dictum tellus sit amet arcu ultrices, in accumsan ipsum ultricies. Donec blandit ac felis id varius. Vestibulum quam tortor, ullamcorper ut euismod et, feugiat et nisl.',
-            
-            area: "46",
-            price: 68,
-            extraCost: 55,
-            
-            minDays: "5",
-            numPersons: "3",
-            numBeds: "3",
-            numBaths: "4",
-            numBedrooms: "1",
-            characteristics: [
-                {
-                    name: 'Wifi',
-                    icon: 'ion-wifi',
-                    status: true,
-                },
-                {
-                    name: 'Ψύξη',
-                    icon: 'ion-snow',
-                    status: true,
-                },
-                {
-                    name: 'Θέρμανση',
-                    icon: 'ion-thermometer',
-                    status: true,
-                },
-                {
-                    name: 'Κουζίνα',
-                    icon: 'ion-fast-food',
-                    status: true,
-                },
-                {
-                    name: 'Τηλεόραση',
-                    icon: 'ion-tv',
-                    status: true,
-                },
-                {
-                    name: 'Χώρος στάθμευσης',
-                    icon: 'ion-car',
-                    status: true,
-                },
-                {
-                    name: 'Ανελκυστήρας',
-                    icon: 'ion-arrow-up',
-                    status: true,
-                },
-                {
-                    name: 'Καθιστικό',
-                    icon: 'ion-happy-outline',
-                    status: true,
-                },
-            ],
-
-            date1: "",
-            date2: "",
-            reservationPrice: 0,
-
-            hostName: "Νίκος Νιωτς",
-            hostImagePath: require("../assets/profile_pics/quirkygirl85.jpg"),
-            reviewScore: 2.6,
-            reviewNum: 68,
-            userReviews: [
-                {
-                    text: 'Sed sodales, nulla sed interdum accumsan, est nulla convallis orci, quis rhoncus nisi diam vitae libero. Nulla nec porttitor purus. Nullam tincidunt interdum interdum. Ut suscipit tellus eget orci efficitur, sit amet feugiat ante posuere. Mauris malesuada, dolor imperdiet vulputate sagittis, ante magna accumsan arcu, sed mollis lectus massa a ante. Sed tincidunt consequat erat ut imperdiet. Nulla ornare magna at nisi porta, sed tempus augue pellentesque.',
-                    score: 3.5,
-                    user: 'Kostkuber',
-                    profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
-                },
-                {
-                    text: 'Sed sodales, nulla sed interdum accumsan, est nulla convallis orci, quis rhoncus nisi diam vitae libero. Nulla nec porttitor purus. Nullam tincidunt interdum interdum. Ut suscipit tellus eget orci efficitur, sit amet feugiat ante posuere. Mauris malesuada, dolor imperdiet vulputate sagittis, ante magna accumsan arcu, sed mollis lectus massa a ante. Sed tincidunt consequat erat ut imperdiet. Nulla ornare magna at nisi porta, sed tempus augue pellentesque.',
-                    score: 3,
-                    user: 'Kostkuber',
-                    profilepicpath: require("../assets/profile_pics/quirkygirl85.jpg"),
-                },
-            ],
-            userRating: 0,
-            newReview: "",
-            reviewBG: require("../assets/review background.png"),
-            
+            //map
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             zoom: 3,
             center: [47.413220, -1.219482],
             bounds: null,
-            address: "Παπαντωνίου 10, Αθήνα",
-            markerLatLng: [37.9838, 23.7275],
 
-
+            spaces: [],
         }
     },
     methods: {
@@ -367,71 +383,87 @@ Icon.Default.mergeOptions({
             this.bounds = bounds;
         },
 
-        focus(id){
+        titleFocus(){
             if(this.titleEdit == false){
                 this.titleEdit = true;
-                document.getElementById(id).style.border = "1px solid #4E7378";
+                document.getElementById("title").style.border = "1px solid #4E7378";
             }
             else{
-                if(this.title != ""){
+                if(this.content.title != ""){
                     this.titleEdit = false;
-                    document.getElementById(id).style.border = "0px solid #4E7378";
+                    document.getElementById("title").style.border = "0px solid #4E7378";
                 }
             }
-        }
-    },
-     computed: {
-        total() {
-            let s = 0;
-            // let days = 1;
-			if(this.date1 != '' && this.date2 != ''){
-                console.log(this.date2);
-                console.log(this.date2);
-                let time = this.date2.getTime() - this.date1.getTime();
-                let days = time / (1000 * 3600 * 24) -1;
-                console.log(days);
-                s = this.price + days * this.extraCost;
-            }
-			return s;
         },
-        
-        average_score() {
-            let counter = 0;
-            let totalScore = 0;
-            var r;
-            for(r of this.userReviews){
-                // console.log(r.score);
-                totalScore = totalScore + r.score;
-                counter = counter + 1;
-            }
-            if(totalScore == 0){
-                return 0;
+
+        descriptionFocus(){
+            if(this.descriptionEdit == false){
+                this.descriptionEdit = true;
+                document.getElementById("description").style.border = "1px solid #4E7378";
             }
             else{
-                return totalScore/counter;
+                if(this.content.description != ""){
+                    this.descriptionEdit = false;
+                    document.getElementById("description").style.border = "0px solid #4E7378";
+                }
             }
         },
 
-        nights() {
-            let d = 0;
-            // let days = 1;
-			if(this.date1 != '' && this.date2 != ''){
-                let time = this.date2.getTime() - this.date1.getTime();
-                d = time / (1000 * 3600 * 24) -1;
+        rulesFocus(){
+            if(this.rulesEdit == false){
+                this.rulesEdit = true;
+                document.getElementById("rules").style.border = "1px solid #4E7378";
             }
-			return d;
+            else{
+                if(this.content.rules != ""){
+                    this.rulesEdit = false;
+                    document.getElementById("rules").style.border = "0px solid #4E7378";
+                }
+            }
         },
 
-        total_reviews(){
-            return this.userReviews.length;
-        }
+        locationFocus(){
+            if(this.locationEdit == false){
+                this.locationEdit = true;
+                document.getElementById("location").style.border = "1px solid #4E7378";
+            }
+            else{
+                if(this.content.location != ""){
+                    this.locationEdit = false;
+                    document.getElementById("location").style.border = "0px solid #4E7378";
+                }
+            }
+        },
+
+        async get_spaces(){
+            if(this.user){
+                console.log("I AM LOGGED IN");
+                let response = await this.$axios.post('/spaces', {
+                    id: this.$store.state.user.idUsers,
+                });
+                // console.log(response);
+                this.spaces = response.data;
+            }
+        },
+    },
+    computed: {
+        user() {
+            if (this.$store.state.user)
+                return this.$store.state.user;
+            else if (this.$store.state.token) {
+                this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
+                return this.$store.state.user;
+            }
+            else
+                return '';
+        },
     },
 
     mounted() {
         this.$refs.datePicker.showDatepicker();
-        this.$nextTick(() => {
-            this.$refs.myMap.mapObject.test();
-        });
+        // this.$nextTick(() => {
+        //     this.$refs.myMap.mapObject.test();
+        // });
     },
 
     updated() {
@@ -440,6 +472,9 @@ Icon.Default.mergeOptions({
 
     beforeUpdate(){
         this.$refs.datePicker.showDatepicker();
+    },
+    created(){
+        this.get_spaces();
     }
   }
 </script>
@@ -637,7 +672,7 @@ Icon.Default.mergeOptions({
     height: 323px;
     border: 1px solid #4E7378;
     background-color: white;
-    color: #194A50;
+    color: #8ac1c9;
 
     position: sticky;
     top: 50px;
@@ -726,9 +761,11 @@ Icon.Default.mergeOptions({
     width: 60px;
     height: 24px;    
     border-radius: 3px;
-
+    padding-right: 0px;
+    padding-left: 6px;
+    text-overflow: ellipsis;
     /* background-color: #759296; */
-    color: white;
+    color: black;
 }
 
 .form-check-input{
@@ -740,6 +777,23 @@ Icon.Default.mergeOptions({
 .checktext{
     position: relative;
     left: 30px;
+}
+
+.space{
+    margin: 0 5px;
+    margin-top: 5px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding: 0 10px;
+
+    color:white;
+    background: #4E7378;
+    border-radius: 3px;
+}
+
+.space:hover{
+    cursor: pointer;
+    background: #334D51;
 }
 
 
