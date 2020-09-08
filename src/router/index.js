@@ -13,6 +13,7 @@ import Messages from '../views/Messages.vue'
 import NMessage from '../views/NewMessage.vue'
 import EditProfile from '../views/EditProfile.vue'
 import AccommodationEdit from '../views/AccommodationEdit.vue'
+import Payment from '../views/Payment.vue'
 
 Vue.use(VueRouter)
 
@@ -76,6 +77,11 @@ Vue.use(VueRouter)
         path: '/accommodation-edit',
         name: 'AccommodationEdit',
         component: AccommodationEdit
+    },
+    {
+      path: '/payment',
+      name: 'Payment',
+      component: Payment
     }
   ]
 

@@ -29,9 +29,8 @@
 					<b-dropdown-item v-else @click="$router.push('/becomehost').catch(() => {})">Γίνετε Οικοδεσπότης</b-dropdown-item>
 					
 					<b-dropdown-item @click="$router.push('/messages').catch(() => {})">Μηνύματα</b-dropdown-item>
-					<b-dropdown-item @click="$router.push('/favorites').catch(() => {})">Αγαπημένα</b-dropdown-item>
 					<b-dropdown-divider/>
-					<b-dropdown-item @click="$router.push('/profile').catch(() => {})">Βοήθεια</b-dropdown-item>
+					<b-dropdown-item @click="$router.push('/help').catch(() => {})">Βοήθεια</b-dropdown-item>
 					<b-dropdown-item @click="logout">Αποσύνδεση</b-dropdown-item>
 				</b-dropdown>
 			</div>
