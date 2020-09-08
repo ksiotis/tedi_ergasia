@@ -4,22 +4,7 @@
         <div class="contentLeft d-flex flex-column justify-content-start">
             <!-- τίτλος  -->
             <div class="d-flex flex-row align-items-center">
-                <h2 id="title" class="title" :contentEditable="titleEdit">{{content.title}}</h2>
-                <div class="d-flex justify-content-center">
-                    <b-link class = "messagebutton d-flex align-items-center " 
-                        @click="titleFocus()"
-                        @change.prevent="titleEdit=false">
-                        <div v-if="titleEdit==false">
-                            Επεξεργασία
-                        </div>
-                        <div v-if="titleEdit==true">
-                            Αποθήκευση
-                        </div>
-                        <span class="iconify startspace" data-icon="ion-build"></span>
-                    </b-link>
-                </div>
-
-                
+                <input required class="form-control form-control-lg title" type="text" placeholder="Εισάγεται τίτλο..." v-model="content.title" style="width: 690px; height: 60px; color: #194A50">
             </div>
             <!-- εικόνες -->
             <div class="element">
@@ -45,25 +30,15 @@
                 </b-carousel>
             </div>
             <div class="d-flex flex-row align-items-center">
-                <a class="addImageText">Προσθήκη εικόνας</a>
-                <span class="iconify startspace addImageIcon" data-icon="ion-camera"></span>
+                <div class="form-group">
+                    <b-form-file id="file-input" multiple @input="loadFile" v-model="newImage" accept="image/jpeg, image/png" placeholder="Επιλογή Εικόνας..."></b-form-file>
+                </div>
             </div>
 
             <!-- περιγραφή -->
             <h3 class="subtitle element">Περιγραφή</h3>
-            <p id="description" :contentEditable="descriptionEdit"> {{content.description}} </p>
-            <div class="d-flex justify-content-center element">
-                <b-link class = "messagebutton d-flex align-items-center ml-auto" 
-                        @click="descriptionFocus()"
-                        @change.prevent="descriptionEdit=false">
-                        <div v-if="descriptionEdit==false">
-                            Επεξεργασία
-                        </div>
-                        <div v-if="descriptionEdit==true">
-                            Αποθήκευση
-                        </div>
-                        <span class="iconify startspace" data-icon="ion-build"></span>
-                    </b-link>
+            <div class="form-group">
+                <textarea required class="form-control" id="exampleFormControlTextarea1" rows="20" v-model="content.description" placeholder="Εισάγεται περιγραφή..." style="width: 690px; height: 180px; color: #194A50"></textarea>
             </div>
             
             <!-- χαρακτηρηστικά -->
@@ -130,26 +105,21 @@
                         <p>Αριθμός υπνοδωματίων:</p>
                         <input type="number" v-model="content.numBedrooms" min="0" class="form-control"/>             
                     </div>
+                    <div class="d-flex flex-row justify-content-between arithmetic">
+                        <p>Τύπος χώρου:</p>
+                        <select class="form-control" id="exampleFormControlSelect1" style="height: 35px; width: 100px;"  v-model="content.type">
+                            <option>Οικεία</option>
+                            <option>Δωμάτιο</option>
+                        </select>             
+                    </div>
                 </div>
             </div>
             
             <!-- κανόνες -->
             <h3 class="subtitle element">Κανόνες</h3>
-            <p id="rules" :contentEditable="rulesEdit" > {{content.rules}} </p>
-            <div class="d-flex justify-content-center element">
-                 <b-link class = "messagebutton d-flex align-items-center ml-auto" 
-                        @click="rulesFocus()"
-                        @change.prevent="rulesEdit=false">
-                        <div v-if="rulesEdit==false">
-                            Επεξεργασία
-                        </div>
-                        <div v-if="rulesEdit==true">
-                            Αποθήκευση
-                        </div>
-                        <span class="iconify startspace" data-icon="ion-build"></span>
-                    </b-link>
+             <div class="form-group">
+                <textarea required class="form-control" id="exampleFormControlTextarea1" rows="20" v-model="content.rules" placeholder="Εισάγεται κανόνες..." style="width: 690px; height: 180px; color: #194A50"></textarea>
             </div>
-
             <!-- Διαθεσιμότητα -->
             <h3 class="subtitle element">Διαθεσιμότητα</h3>
             <p>Όλες οι κρατήσεις σας.</p>
@@ -165,24 +135,13 @@
 
             <!-- τοποθεσία -->
             <h3 class="subtitle element">Τοποθεσία</h3>
-            <p id="location" :contentEditable="locationEdit"> {{content.location}} </p>
-            <div class="d-flex justify-content-center element">
-                <b-link class = "messagebutton d-flex align-items-center ml-auto" 
-                    @click="locationFocus()"
-                    @change.prevent="locationEdit=false">
-                    <div v-if="locationEdit==false">
-                        Επεξεργασία
-                    </div>
-                    <div v-if="locationEdit==true">
-                        Αποθήκευση
-                    </div>
-                    <span class="iconify startspace" data-icon="ion-build"></span>
-                </b-link>
+            <div class="form-group">
+                <textarea required class="form-control" id="exampleFormControlTextarea1" rows="20" v-model="content.location" placeholder="Εισάγεται οδηγίες πρόσβασης..." style="width: 690px; height: 180px; color: #194A50"></textarea>
             </div>
 
             <div class="d-flex flex-row align-items-baseline">
                 <span class="iconify addressIcon startspace" data-icon="ion-location"></span>
-                <input type="text" v-model="content.address" class="form-control area" style="width: 400px; height: 30px;"/>             
+                <input required type="text" v-model="content.address" class="form-control area" style="width: 400px; height: 30px;" placeholder="Εισάγεται διεύθυνση..."/>             
                 <p>/διεύθυνση</p>
             </div>
             
@@ -212,7 +171,7 @@
                     line-height: 21px;
                     color: #4E7378;">
                         Γεωγραφικό πλάτος:</p>
-                    <input type="number" v-model="content.markerLatLng[0]" class="form-control" style="width: 80px;"/>
+                    <input required type="number" v-model="content.markerLatLng[0]" class="form-control" style="width: 80px;"/>
                 </div>
                 <div class="d-flex flex-row">
                     <p style="
@@ -221,10 +180,10 @@
                     line-height: 21px;
                     color: #4E7378;">
                         Γεωγραφικό μήκος:</p>
-                    <input type="number" v-model="content.markerLatLng[1]" class="form-control" style="width: 80px;"/>
+                    <input required type="number" v-model="content.markerLatLng[1]" class="form-control" style="width: 80px;"/>
                 </div>             
             </div>
-            <b-link class = "messagebutton d-flex align-items-center ml-auto" style="margin-bottom: 40px; margin-top: 40px;"> 
+            <b-link class = "messagebutton d-flex align-items-center ml-auto" style="margin-bottom: 40px; margin-top: 40px;" @click="submit_edit()"> 
                     <div v-if="content.id==null">
                         Δημιουργία χώρου
                     </div>
@@ -244,7 +203,8 @@
             <div 
             class="d-flex flex-row allign-content-baseline justify-content-between space"
             v-for="(s, index) in spaces"
-            v-bind:key="index">
+            v-bind:key="index"
+            @click="fetch(s.id)">
                 <p style="margin-bottom: 0px;">{{s.name}}</p>
     	        <p class="iconify" data-icon="ion-home" style="height: 24px; width: 24px;"></p>
             </div>
@@ -282,10 +242,12 @@ Icon.Default.mergeOptions({
 
     data() {
         return {
+            newImage: null,
+
             content:{
                 id: null,
-                title: "Εισάγετε τίτλο χώρου",
-                description: "Εισάγετε περιγραφή χώρου",
+                title: "",
+                description: "",
                 images:[],
                 area: 0,
                 price: 0,
@@ -295,7 +257,7 @@ Icon.Default.mergeOptions({
                 numBaths: 0,
                 numBeds: 0,
                 numBedrooms: 0,
-                reservationPrice: 0,
+                type: "",
                 
                 characteristics: [
                     {
@@ -339,18 +301,13 @@ Icon.Default.mergeOptions({
                         status: true,
                     },
                 ],
-                rules: "Εισάγετε κανόνες χώρου",
+                rules: "",
 
-                location: "Εισάγετε οδηγίες μεταφοράς σε χώρο",
-                address: "Εισάγετε διεύθυνση χώρου",
+                location: "",
+                address: "",
                 markerLatLng: [37.9838, 23.7275],
 
             },
-            titleEdit: false,
-            descriptionEdit: false,
-            rulesEdit: false,
-            locationEdit: false,
-
 
             //img carousel
             slide: 0,
@@ -366,6 +323,11 @@ Icon.Default.mergeOptions({
         }
     },
     methods: {
+        loadFile() {
+            // this.content.images.push(URL.createObjectURL(this.newImage));
+            // console.log(image);
+        },
+
         onSlideStart() {
             this.sliding = true
         },
@@ -383,58 +345,6 @@ Icon.Default.mergeOptions({
             this.bounds = bounds;
         },
 
-        titleFocus(){
-            if(this.titleEdit == false){
-                this.titleEdit = true;
-                document.getElementById("title").style.border = "1px solid #4E7378";
-            }
-            else{
-                if(this.content.title != ""){
-                    this.titleEdit = false;
-                    document.getElementById("title").style.border = "0px solid #4E7378";
-                }
-            }
-        },
-
-        descriptionFocus(){
-            if(this.descriptionEdit == false){
-                this.descriptionEdit = true;
-                document.getElementById("description").style.border = "1px solid #4E7378";
-            }
-            else{
-                if(this.content.description != ""){
-                    this.descriptionEdit = false;
-                    document.getElementById("description").style.border = "0px solid #4E7378";
-                }
-            }
-        },
-
-        rulesFocus(){
-            if(this.rulesEdit == false){
-                this.rulesEdit = true;
-                document.getElementById("rules").style.border = "1px solid #4E7378";
-            }
-            else{
-                if(this.content.rules != ""){
-                    this.rulesEdit = false;
-                    document.getElementById("rules").style.border = "0px solid #4E7378";
-                }
-            }
-        },
-
-        locationFocus(){
-            if(this.locationEdit == false){
-                this.locationEdit = true;
-                document.getElementById("location").style.border = "1px solid #4E7378";
-            }
-            else{
-                if(this.content.location != ""){
-                    this.locationEdit = false;
-                    document.getElementById("location").style.border = "0px solid #4E7378";
-                }
-            }
-        },
-
         async get_spaces(){
             if(this.user){
                 console.log("I AM LOGGED IN");
@@ -443,6 +353,27 @@ Icon.Default.mergeOptions({
                 });
                 // console.log(response);
                 this.spaces = response.data;
+            }
+        },
+
+        async fetch(id){
+            if(this.user){
+                console.log("FETCHING" + id);
+                let response = await this.$axios.post('/fetch', {
+                    id: id,
+                });
+                console.log(response);
+                this.content = response.data;
+            }
+        },
+
+        async submit_edit(){
+            if(this.user){
+                console.log("SUBMIT EDIT");
+                let response = await this.$axios.post('/submit_edit', {
+                    content: this.content,
+                    idHost: this.$store.state.user.idUsers,
+                });
             }
         },
     },
