@@ -10,6 +10,8 @@ const secretKey = 'shhhhh'
 
 const multer  = require('multer');
 const { allowedNodeEnvironmentFlags } = require('process');
+
+//profile pics
 const pathBase = './src/assets/profile_pics/';
 const storage = multer.diskStorage({
     destination: function(req, file,cb) {
@@ -32,6 +34,22 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
     storage: storage,
+    fileFilter: fileFilter
+});
+
+//accomodation pics
+const pathBase2 =  './src/assets/accommodation_pics/';
+const storage2 = multer.diskStorage({
+    destination: function(req, file,cb) {
+        cb(null, pathBase2)
+    },
+    filename: function(req, file, cb) {
+        cb(null, (req.body.username) + (req.body.length));
+    }
+});
+
+const upload2 = multer({
+    storage: storage2,
     fileFilter: fileFilter
 });
 
@@ -550,6 +568,107 @@ app.post('/fetch', async (req, res) => {
         console.error(error);
     }
 })
+
+app.post('/submit_edit', async (req, res) => {
+    try {
+        console.log('I ENTERED REVIEW');
+        // console.log(req.body);
+        
+        var type;
+        if(req.body.content.type == 'Δωμάτιο'){
+            type = 'room';
+        }
+        else{
+            type = 'house';
+        }
+        
+        //create new entry
+        if(req.body.content.id == null){
+            
+
+            results = await db.query(
+                `INSERT INTO accomodations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+                [
+                    null,
+                    req.body.idHost, 
+                    req.body.content.title, 
+                    type,
+                    req.body.content.location,
+                    req.body.content.price,
+                    req.body.content.maxPersons,
+                    req.body.content.area,
+                    req.body.content.numBedrooms,
+                    req.body.content.numBeds,
+                    req.body.content.numBaths,
+                    req.body.content.minDays,
+                    req.body.content.description,
+                    req.body.content.extraCost,
+                    req.body.content.markerLatLng[1],
+                    req.body.content.markerLatLng[0],
+                    req.body.content.location,
+                    req.body.content.address,
+                    req.body.content.rules
+                ]
+            );
+        }
+        //updating existing entry
+        else{
+
+            results = await db.query(
+                `UPDATE accomodations 
+                SET 
+                    idHost = ?,
+                    Name = ?,
+                    Type = ?,
+                    Directions = ?,
+                    PricePerNight = ?,
+                    Persons = ?,
+                    Area = ?,
+                    Bedrooms = ?,
+                    Beds = ?,
+                    Bathrooms = ?,
+                    MinimumDays = ?,
+                    Description = ?,
+                    ExtraCostPerPerson = ?,
+                    Longtitude = ?,
+                    Latitude = ?,
+                    Location = ?,
+                    Address = ?,
+                    Rules = ?
+                WHERE idAccomodation = ?;`, 
+                [
+                    req.body.idHost, 
+                    req.body.content.title, 
+                    type,
+                    req.body.content.location,
+                    req.body.content.price,
+                    req.body.content.maxPersons,
+                    req.body.content.area,
+                    req.body.content.numBedrooms,
+                    req.body.content.numBeds,
+                    req.body.content.numBaths,
+                    req.body.content.minDays,
+                    req.body.content.description,
+                    req.body.content.extraCost,
+                    req.body.content.markerLatLng[1],
+                    req.body.content.markerLatLng[0],
+                    req.body.content.location,
+                    req.body.content.address,
+                    req.body.content.rules,
+                    req.body.content.id, 
+                ]
+            );
+
+        }
+        res.sendStatus(200);
+    } 
+    catch(error) {
+        res.sendStatus(500);
+        console.error(error);
+    }
+})
+
+
 
 
 //ENDING THOMAS
