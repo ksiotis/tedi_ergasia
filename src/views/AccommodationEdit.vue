@@ -130,6 +130,13 @@
                         <p>Αριθμός υπνοδωματίων:</p>
                         <input type="number" v-model="content.numBedrooms" min="0" class="form-control"/>             
                     </div>
+                    <div class="d-flex flex-row justify-content-between arithmetic">
+                        <p>Τύπος χώρου:</p>
+                        <select class="form-control" id="exampleFormControlSelect1" style="height: 35px; width: 100px;"  v-model="content.type">
+                            <option>Οικεία</option>
+                            <option>Δωμάτιο</option>
+                        </select>             
+                    </div>
                 </div>
             </div>
             
@@ -244,7 +251,8 @@
             <div 
             class="d-flex flex-row allign-content-baseline justify-content-between space"
             v-for="(s, index) in spaces"
-            v-bind:key="index">
+            v-bind:key="index"
+            @click="fetch(s.id)">
                 <p style="margin-bottom: 0px;">{{s.name}}</p>
     	        <p class="iconify" data-icon="ion-home" style="height: 24px; width: 24px;"></p>
             </div>
@@ -295,7 +303,7 @@ Icon.Default.mergeOptions({
                 numBaths: 0,
                 numBeds: 0,
                 numBedrooms: 0,
-                reservationPrice: 0,
+                type: "",
                 
                 characteristics: [
                     {
@@ -445,6 +453,19 @@ Icon.Default.mergeOptions({
                 this.spaces = response.data;
             }
         },
+
+        async fetch(id){
+            if(this.user){
+                console.log("FETCHING" + id);
+                let response = await this.$axios.post('/fetch', {
+                    id: id,
+                });
+                console.log(response);
+                this.content = response.data;
+            }
+        },
+
+
     },
     computed: {
         user() {

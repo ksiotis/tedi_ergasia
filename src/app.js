@@ -407,6 +407,151 @@ app.post('/spaces', async (req, res) => {
         console.error(error);
     }
 })
+
+app.post('/fetch', async (req, res) => {
+    try {
+        // console.log('I ENTERED SPACES');
+      
+        results = await db.query(
+            `SELECT a.*  
+            FROM accomodations a
+            WHERE a.idAccomodation = ?`,
+            [req.body.id] 
+        );
+        // console.log(results[0]);
+        var type;
+        if(results[0][0].Type == 'room'){
+            type = "Δωμάτιο";
+        }
+        else{
+            type = "Οικεία"
+        }
+
+        images = await db.query(
+            `SELECT a.Path  
+            FROM accomodationphotos a
+            WHERE a.idAccomodation = ?`,
+            [req.body.id] 
+        );
+        // console.log(images[0]);
+        let pictures = [];
+        for(let i = 0 ; i < images[0].length ; i++){
+            pictures.push(images[0][i].Path);
+        }
+
+        let chars = await db.query(
+            `SELECT c.Characteristics_idCharacteristics  
+            FROM accomodations_has_characteristics c
+            WHERE c.Accomodations_idAccomodation = ?`,
+            [req.body.id]
+        );
+        console.log(chars[0]);
+        let temp = [
+            {
+                name: 'Wifi',
+                icon: 'ion-wifi',
+                status: false,
+            },
+            {
+                name: 'Ψύξη',
+                icon: 'ion-snow',
+                status: false,
+            },
+            {
+                name: 'Θέρμανση',
+                icon: 'ion-thermometer',
+                status: false,
+            },
+            {
+                name: 'Κουζίνα',
+                icon: 'ion-fast-food',
+                status: false,
+            },
+            {
+                name: 'Τηλεόραση',
+                icon: 'ion-tv',
+                status: false,
+            },
+            {
+                name: 'Χώρος στάθμευσης',
+                icon: 'ion-car',
+                status: false,
+            },
+            {
+                name: 'Ανελκυστήρας',
+                icon: 'ion-arrow-up',
+                status: false,
+            },
+            {
+                name: 'Καθιστικό',
+                icon: 'ion-happy-outline',
+                status: false,
+            },
+        ];
+
+        for(let i=0 ; i < chars[0].length ; i++){
+            if(chars[0][i].Characteristics_idCharacteristics == 0){
+                temp[0].status = true;
+            }
+            else if(chars[0][i].Characteristics_idCharacteristics == 1){
+                temp[1].status = true;
+            }
+            else if(chars[0][i].Characteristics_idCharacteristics == 2){
+                temp[2].status = true;
+            }
+            else if(chars[0][i].Characteristics_idCharacteristics == 3){
+                temp[3].status = true;
+            }
+            else if(chars[0][i].Characteristics_idCharacteristics == 4){
+                temp[4].status = true;
+            }
+            else if(chars[0][i].Characteristics_idCharacteristics == 5){
+                temp[5].status = true;
+            }
+            else if(chars[0][i].Characteristics_idCharacteristics == 6){
+                temp[6].status = true;
+            }
+            else if(chars[0][i].Characteristics_idCharacteristics == 7){
+                temp[7].status = true;
+            }
+        }
+        
+        let content = {
+            id: req.body.id,
+            title: results[0][0].Name,
+            description: results[0][0].Description,
+            images: pictures,
+            area: results[0][0].Area,
+            price: results[0][0].PricePerNight,
+            extraCost: results[0][0].ExtraCostPerPerson,
+            minDays: results[0][0].MinimumDays,
+            maxPersons: results[0][0].Persons,
+            numBaths: results[0][0].Bathrooms,
+            numBeds: results[0][0].Beds,
+            numBedrooms: results[0][0].Bedrooms,
+            type: type,
+            
+            characteristics: temp,
+            rules: results[0][0].Rules,
+
+            location: results[0][0].Directions,
+            address: results[0][0].Address,
+            markerLatLng: [results[0][0].Latitude, results[0][0].Longtitude],
+
+        }
+    
+        
+        res.send(content);
+        
+        res.sendStatus(200);
+    } 
+    catch(error) {
+        res.sendStatus(500);
+        console.error(error);
+    }
+})
+
+
 //ENDING THOMAS
 
 app.post('/login', async (req, res) => {
