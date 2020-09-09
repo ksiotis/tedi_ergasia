@@ -209,20 +209,21 @@ app.post('/search', async (req, res) => {
         // console.log(req);
 
         let results = await db.query(
-            `SELECT a.idAccomodation, a.Name, a.Type, a.Beds, a.PricePerNight, a.Latitude, a.Longtitude  
+            `SELECT a.idAccomodation, a.Name, a.Type, a.Beds, a.PricePerNight, a.Latitude, a.Longtitude, a.Persons  
              FROM accomodations a`, 
         );
         
         let accepted = [];
+        console.log("RESULTS " + results[0].length);
+        console.log(results[0]);
 
-        console.log(results);
         for(i = 0 ; i < results[0].length ; i++) {
-            console.log("HERE");
+            console.log("EXAMINING " + results[0][i].idAccomodation);
 
             if( req.body.south <= results[0][i].Latitude && results[0][i].Latitude <= req.body.north &&
                 req.body.west <= results[0][i].Longtitude && results[0][i].Longtitude <= req.body.east &&
-                req.body.persons <= results[0][i].Beds){
-                console.log("WITHIN BOUNDS");
+                req.body.persons <= results[0][i].Persons){
+                console.log("WITHIN BOUNDS "  + results[0][i].idAccomodation);
                 
                 let date1 = new Date(req.body.date1);
                 let date2 = new Date(req.body.date2);
@@ -232,12 +233,12 @@ app.post('/search', async (req, res) => {
                     WHERE r.Accomodations_idAccomodation = ?`,
                     [results[0][i].idAccomodation]
                 );
-                console.log(reservations);
+                // console.log(reservations);
                 let flag = true;
 
                 var j;
                 for(j = 0 ; j<reservations[0].length ; j ++){
-                    console.log(reservations[0]);
+                    // console.log(reservations[0]);
                     let from = reservations[0][j].From;
                     let to = reservations[0][j].To;
                     from = new Date(from);
@@ -250,6 +251,7 @@ app.post('/search', async (req, res) => {
                     }
                 }  
                 if(flag == true){
+                    console.log("AVAILIABLE " + results[0][i].idAccomodation);
                     let picture = await db.query(
                         `SELECT p.Path  
                         FROM accomodationphotos p
@@ -594,7 +596,7 @@ app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
         }
         // console.log(charEntries);
 
-        console.log(req.files[0].filename);
+        // console.log(req.files[0].filename);
         
         //create new entry
         if (body.content.id == null) {

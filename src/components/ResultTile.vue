@@ -16,7 +16,7 @@
          <div class="textrow d-flex justify-content-between">
             <div class="characteristics">
                 <p>{{preview_package.roomType}} </p>
-                <p>{{preview_package.beds}} κρεβατιών </p>
+                <p>{{preview_package.beds}} κρεβάτιά </p>
             </div>
 
             <div class="priceContainer d-flex flex-row"> 
