@@ -593,6 +593,7 @@ app.post('/fetch', async (req, res) => {
             markerLatLng: [results[0][0].Latitude, results[0][0].Longtitude],
 
             disabledDates: dates,
+            newReservedDates: [],
         }
     
         
@@ -678,6 +679,14 @@ app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
                 );
             }
 
+            //adding disables dates
+            for(let i = 0 ; i < body.content.newReservedDates.length ; i++){
+                let newDates = await db.query(
+                    `INSERT INTO availabilitydates VALUES (?, ?, ?, ?)`, 
+                    [null, results[0].insertId, body.content.newReservedDates[i].From, body.content.newReservedDates[i].To]
+                );
+            }
+
 
         }
         //updating existing entry
@@ -747,6 +756,14 @@ app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
                 let newPics = await db.query(
                     `INSERT INTO accomodationphotos VALUES (?, ?, ?)`, 
                     [null, body.content.id, req.files[i].filename]
+                );
+            }
+
+            //adding disables dates
+            for(let i = 0 ; i < body.content.newReservedDates.length ; i++){
+                let newDates = await db.query(
+                    `INSERT INTO availabilitydates VALUES (?, ?, ?, ?)`, 
+                    [null, body.content.id, body.content.newReservedDates[i].From, body.content.newReservedDates[i].To]
                 );
             }
 

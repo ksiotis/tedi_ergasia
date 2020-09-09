@@ -134,6 +134,10 @@
                     v-on:check-in-changed="date1 = $event;"
                     v-on:check-out-changed="date2 = $event;"/>
             </div>
+            <b-link class = "messagebutton d-flex align-items-center ml-auto" style="margin-bottom: 40px; margin-top: 40px;" @click="add_disabled_dates()"> 
+                    Αποκλείστε επιλεγμένες ημέρες
+                    <span class="iconify startspace" data-icon="ion-calendar"></span>
+            </b-link>
 
             <!-- τοποθεσία -->
             <h3 class="subtitle element">Τοποθεσία</h3>
@@ -210,7 +214,6 @@
                 <p style="margin-bottom: 0px;">{{s.name}}</p>
     	        <p class="iconify" data-icon="ion-home" style="height: 24px; width: 24px;"></p>
             </div>
-
         </form>
     </div>
 </template>
@@ -312,6 +315,8 @@ Icon.Default.mergeOptions({
                 location: "",
                 address: "",
                 markerLatLng: [37.9838, 23.7275],
+
+                newReservedDates:[],
             },
 
             //img carousel
@@ -350,17 +355,13 @@ Icon.Default.mergeOptions({
             this.bounds = bounds;
         },
 
-        getDates(startDate, endDate) {
-            var dates = [],
-                currentDate = startDate,
-                addDays = function(days) {
-                    var date = new Date(this.valueOf());
-                    date.setDate(date.getDate() + days);
-                    return date;
-                };
-            while (currentDate <= endDate) {
-                dates.push(currentDate);
-                currentDate = addDays.call(currentDate, 1);
+        getDates(startDate, endDate){
+            let dates = []
+            //to avoid modifying the original date
+            const theDate = new Date(startDate);
+            while (theDate < endDate) {
+                dates = [...dates, new Date(theDate)];
+                theDate.setDate(theDate.getDate() + 1);
             }
             return dates;
         },
@@ -373,6 +374,7 @@ Icon.Default.mergeOptions({
                 let from = new Date(reservations[i].From);
                 let to = new Date(reservations[i].To);
 
+
                 // from = from.toISOString().split('T')[0];
                 // to = to.toISOString().split('T')[0]
 
@@ -384,6 +386,32 @@ Icon.Default.mergeOptions({
             }
             console.log(final);
             return final;
+        },
+
+        add_disabled_dates(){
+            if(this.date1 != "" && this.date2 != ""){
+
+                let final = [];
+                let from = new Date(this.date1);
+                let to = new Date(this.date2);
+
+
+
+                let temp = {
+                    From: from.toISOString().split('T')[0],
+                    To: to.toISOString().split('T')[0],
+                }
+                this.content.newReservedDates.push(temp);
+
+                final = final.concat(this.getDates(from, to));
+                console.log(final);
+
+                for(let i = 0 ; i < final.length ; i++){
+                    final[i] = final[i].toISOString().split('T')[0];
+                }
+
+                this.reservedDates = this.reservedDates.concat(final);
+            }
         },
 
         async get_spaces() {
