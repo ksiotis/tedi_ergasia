@@ -233,14 +233,24 @@ app.post('/search', async (req, res) => {
                     WHERE r.Accomodations_idAccomodation = ?`,
                     [results[0][i].idAccomodation]
                 );
+
+                let availabilitydates = await db.query(
+                    `SELECT r.From, r.To  
+                    FROM availabilitydates r
+                    WHERE idAccomodation = ?`,
+                    [results[0][i].idAccomodation]
+                );
+                
+                let calendar = reservations[0].concat(availabilitydates[0]);
+
                 // console.log(reservations);
                 let flag = true;
 
                 var j;
-                for(j = 0 ; j<reservations[0].length ; j ++){
+                for(j = 0 ; j < calendar.length ; j ++){
                     // console.log(reservations[0]);
-                    let from = reservations[0][j].From;
-                    let to = reservations[0][j].To;
+                    let from = calendar[j].From;
+                    let to = calendar[j].To;
                     from = new Date(from);
                     to = new Date(to);
                     
@@ -335,6 +345,13 @@ app.post('/view', async (req, res) => {
             [req.body.id]
         );
 
+        let availabilitydates = await db.query(
+            `SELECT r.From, r.To  
+            FROM availabilitydates r
+            WHERE idAccomodation = ?`,
+            [req.body.id]
+        );
+
         let host = await db.query(
             `SELECT u.Name, u.Surname, u.ProfilePicPath, u.Username  
             FROM users u
@@ -361,7 +378,7 @@ app.post('/view', async (req, res) => {
             Reviewers: reviewers,
             Path: photos[0],
             Characteristics: chars[0],
-            Reservations: reservations[0],
+            Reservations: reservations[0].concat(availabilitydates[0]),
             Host: host[0][0],
         };
 
@@ -535,7 +552,24 @@ app.post('/fetch', async (req, res) => {
                 temp[7].status = true;
             }
         }
-        
+
+        let reservations = await db.query(
+            `SELECT r.From, r.To  
+            FROM reservations r
+            WHERE r.Accomodations_idAccomodation = ?`,
+            [req.body.id]
+        );
+
+        let availabilitydates = await db.query(
+            `SELECT r.From, r.To  
+            FROM availabilitydates r
+            WHERE idAccomodation = ?`,
+            [req.body.id]
+        );
+        // console.log(reservations[0]);
+        let dates = reservations[0].concat(availabilitydates[0]);
+
+
         let content = {
             id: req.body.id,
             title: results[0][0].Name,
@@ -558,6 +592,7 @@ app.post('/fetch', async (req, res) => {
             address: results[0][0].Address,
             markerLatLng: [results[0][0].Latitude, results[0][0].Longtitude],
 
+            disabledDates: dates,
         }
     
         

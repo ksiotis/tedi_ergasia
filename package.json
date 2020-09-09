@@ -22,6 +22,7 @@
     "mysql2": "^2.1.0",
     "vue": "^2.6.11",
     "vue-hotel-datepicker": "^3.0.10",
+    "vue-hotel-datepicker2": "^0.9.4",
     "vue-router": "^3.2.0",
     "vue-star-rating": "^1.6.1",
     "vue2-leaflet": "^2.5.2",

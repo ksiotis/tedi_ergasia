@@ -127,7 +127,9 @@
                 <HotelDatePicker 
                     class="dateinputbox" 
                     ref="datePicker" 
+                    :alwaysVisible="true" 
                     :closeDatepickerOnClickOutside="false"
+                    :disabledDates="reservedDates"
                     format="DD/MM/YYYY"
                     v-on:check-in-changed="date1 = $event;"
                     v-on:check-out-changed="date2 = $event;"/>
@@ -216,8 +218,8 @@
 
 
 <script>
-import HotelDatePicker from 'vue-hotel-datepicker'
-import StarRating from 'vue-star-rating'
+import HotelDatePicker from 'vue-hotel-datepicker2';
+import StarRating from 'vue-star-rating';
 import { LMap, LTileLayer, LMarker } from 'vue2-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
@@ -243,6 +245,10 @@ Icon.Default.mergeOptions({
     data() {
         return {
             newImage: null,
+            reservedDates: [],
+
+            date1: "",
+            date2: "",
 
             images:[],
             content:{
@@ -306,7 +312,6 @@ Icon.Default.mergeOptions({
                 location: "",
                 address: "",
                 markerLatLng: [37.9838, 23.7275],
-
             },
 
             //img carousel
@@ -345,6 +350,42 @@ Icon.Default.mergeOptions({
             this.bounds = bounds;
         },
 
+        getDates(startDate, endDate) {
+            var dates = [],
+                currentDate = startDate,
+                addDays = function(days) {
+                    var date = new Date(this.valueOf());
+                    date.setDate(date.getDate() + days);
+                    return date;
+                };
+            while (currentDate <= endDate) {
+                dates.push(currentDate);
+                currentDate = addDays.call(currentDate, 1);
+            }
+            return dates;
+        },
+
+        disable_dates(reservations){
+            // console.log(reservations);
+            let final = [];
+            var i;
+            for(i=0 ; i < reservations.length ; i++){
+                let from = new Date(reservations[i].From);
+                let to = new Date(reservations[i].To);
+
+                // from = from.toISOString().split('T')[0];
+                // to = to.toISOString().split('T')[0]
+
+                final = final.concat(this.getDates(from, to));
+
+            }
+            for(let i = 0 ; i < final.length ; i++){
+                final[i] = final[i].toISOString().split('T')[0];
+            }
+            console.log(final);
+            return final;
+        },
+
         async get_spaces() {
             if (this.user) {
                 console.log("I AM LOGGED IN");
@@ -364,6 +405,7 @@ Icon.Default.mergeOptions({
                 });
                 console.log(response);
                 this.content = response.data;
+                this.reservedDates = this.disable_dates(response.data.disabledDates);
             }
         },
 
@@ -415,7 +457,7 @@ Icon.Default.mergeOptions({
         this.$refs.datePicker.showDatepicker();
     },
 
-    beforeUpdate() {
+    beforeUpdate(){
         this.$refs.datePicker.showDatepicker();
     },
     created() {

@@ -108,7 +108,8 @@
             <div class="calendarContainer">
                 <HotelDatePicker 
                     class="dateinputbox" 
-                    ref="datePicker" 
+                    ref="datePicker"
+                    :alwaysVisible="true" 
                     :closeDatepickerOnClickOutside="false"
                     :disabledDates="reservedDates"
                     format="DD/MM/YYYY"
@@ -249,8 +250,8 @@
 
 
 <script>
-import HotelDatePicker from 'vue-hotel-datepicker'
-import StarRating from 'vue-star-rating'
+import HotelDatePicker from 'vue-hotel-datepicker2';
+import StarRating from 'vue-star-rating';
 import { LMap, LTileLayer, LMarker } from 'vue2-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Icon } from 'leaflet';
@@ -450,9 +451,9 @@ Icon.Default.mergeOptions({
                 final = final.concat(this.getDates(from, to));
 
             }
-            // for(let i = 0 ; i < final.length ; i++){
-            //     final[i] = final[i].toISOString().split('T')[0];
-            // }
+            for(let i = 0 ; i < final.length ; i++){
+                final[i] = final[i].toISOString().split('T')[0];
+            }
             console.log(final);
             return final;
         },

@@ -125,7 +125,9 @@ option{
     filter: brightness(100%) saturate(0%);
 }
 
-.datepicker__month-day--disabled{
+.datepicker__month-button{
     /* background-color: #194A50; */
+    /* fill: #194A50; */
+    color:  #194A50;
 }
 </style>
