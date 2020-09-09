@@ -572,12 +572,11 @@ app.post('/fetch', async (req, res) => {
 app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
     try {
         // console.log('I ENTERED REVIEW');
-        console.log(req.files.length);
         let body = {
             content: JSON.parse(req.body.content)
         };
-        console.log(req.files.length);
         
+        //room type
         var type;
         if(body.content.type == 'Δωμάτιο') {
             type = 'room';
@@ -585,12 +584,20 @@ app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
         else{
             type = 'house';
         }
+
+        //assign characteristics
+        let charEntries = [];
+        for(let i=0 ; i < body.content.characteristics.length ; i++){
+            if(body.content.characteristics[i].status == true){
+                charEntries.push(i);
+            } 
+        }
+        // console.log(charEntries);
         
         //create new entry
         if (body.content.id == null) {
-            
 
-            results = await db.query(
+            let results = await db.query(
                 `INSERT INTO accomodations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
                 [
                     null,
@@ -614,37 +621,19 @@ app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
                     body.content.rules
                 ]
             );
-
-            console.log(req.files.length);
-            // let result2 = await db.query(
-            //     `INSERT INTO accomodations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-            //     [
-            //         null,
-            //         req.body.idHost, 
-            //         body.content.title, 
-            //         type,
-            //         body.content.location,
-            //         body.content.price,
-            //         body.content.maxPersons,
-            //         body.content.area,
-            //         body.content.numBedrooms,
-            //         body.content.numBeds,
-            //         body.content.numBaths,
-            //         body.content.minDays,
-            //         body.content.description,
-            //         body.content.extraCost,
-            //         body.content.markerLatLng[1],
-            //         body.content.markerLatLng[0],
-            //         body.content.location,
-            //         body.content.address,
-            //         body.content.rules
-            //     ]
-            // );
+            // console.log(results);
+            
+            for(let i = 0 ; i < charEntries.length ; i++){
+                let newChar = await db.query(
+                    `INSERT INTO accomodations_has_characteristics VALUES (?, ?)`, 
+                    [results[0].insertId, charEntries[i]]
+                );
+            }
         }
         //updating existing entry
         else {
 
-            results = await db.query(
+            let results = await db.query(
                 `UPDATE accomodations 
                 SET 
                     idHost = ?,
@@ -688,8 +677,18 @@ app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
                     body.content.id, 
                 ]
             );
-            
-            // console.log(req.files.length);
+
+            let deleted = await db.query(
+                `DELETE FROM accomodations_has_characteristics WHERE Accomodations_idAccomodation = ?;`,
+                [body.content.id]
+            );
+
+            for(let i = 0 ; i < charEntries.length ; i++){
+                let newChar = await db.query(
+                    `INSERT INTO accomodations_has_characteristics VALUES (?, ?)`, 
+                    [body.content.id, charEntries[i]]
+                );
+            }
         }
         res.sendStatus(200);
     } 

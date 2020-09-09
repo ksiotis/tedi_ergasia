@@ -388,6 +388,7 @@ Icon.Default.mergeOptions({
                     }
                 );
             }
+            location.reload();
         },
     },
     computed: {
