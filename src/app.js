@@ -44,7 +44,7 @@ const storage2 = multer.diskStorage({
         cb(null, pathBase2)
     },
     filename: function(req, file, cb) {
-        cb(null, (req.body.username) + (req.body.length));
+        cb(null, Date.now() + '-' + (req.body.idHost) + "." + file.originalname.slice(-3));
     }
 });
 
@@ -569,13 +569,17 @@ app.post('/fetch', async (req, res) => {
     }
 })
 
-app.post('/submit_edit', async (req, res) => {
+app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
     try {
-        console.log('I ENTERED REVIEW');
-        // console.log(req.body);
+        // console.log('I ENTERED REVIEW');
+        console.log(req.files.length);
+        let body = {
+            content: JSON.parse(req.body.content)
+        };
+        console.log(req.files.length);
         
         var type;
-        if(req.body.content.type == 'Δωμάτιο'){
+        if(body.content.type == 'Δωμάτιο') {
             type = 'room';
         }
         else{
@@ -583,7 +587,7 @@ app.post('/submit_edit', async (req, res) => {
         }
         
         //create new entry
-        if(req.body.content.id == null){
+        if (body.content.id == null) {
             
 
             results = await db.query(
@@ -591,28 +595,54 @@ app.post('/submit_edit', async (req, res) => {
                 [
                     null,
                     req.body.idHost, 
-                    req.body.content.title, 
+                    body.content.title, 
                     type,
-                    req.body.content.location,
-                    req.body.content.price,
-                    req.body.content.maxPersons,
-                    req.body.content.area,
-                    req.body.content.numBedrooms,
-                    req.body.content.numBeds,
-                    req.body.content.numBaths,
-                    req.body.content.minDays,
-                    req.body.content.description,
-                    req.body.content.extraCost,
-                    req.body.content.markerLatLng[1],
-                    req.body.content.markerLatLng[0],
-                    req.body.content.location,
-                    req.body.content.address,
-                    req.body.content.rules
+                    body.content.location,
+                    body.content.price,
+                    body.content.maxPersons,
+                    body.content.area,
+                    body.content.numBedrooms,
+                    body.content.numBeds,
+                    body.content.numBaths,
+                    body.content.minDays,
+                    body.content.description,
+                    body.content.extraCost,
+                    body.content.markerLatLng[1],
+                    body.content.markerLatLng[0],
+                    body.content.location,
+                    body.content.address,
+                    body.content.rules
                 ]
             );
+
+            console.log(req.files.length);
+            // let result2 = await db.query(
+            //     `INSERT INTO accomodations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+            //     [
+            //         null,
+            //         req.body.idHost, 
+            //         body.content.title, 
+            //         type,
+            //         body.content.location,
+            //         body.content.price,
+            //         body.content.maxPersons,
+            //         body.content.area,
+            //         body.content.numBedrooms,
+            //         body.content.numBeds,
+            //         body.content.numBaths,
+            //         body.content.minDays,
+            //         body.content.description,
+            //         body.content.extraCost,
+            //         body.content.markerLatLng[1],
+            //         body.content.markerLatLng[0],
+            //         body.content.location,
+            //         body.content.address,
+            //         body.content.rules
+            //     ]
+            // );
         }
         //updating existing entry
-        else{
+        else {
 
             results = await db.query(
                 `UPDATE accomodations 
@@ -638,27 +668,28 @@ app.post('/submit_edit', async (req, res) => {
                 WHERE idAccomodation = ?;`, 
                 [
                     req.body.idHost, 
-                    req.body.content.title, 
+                    body.content.title, 
                     type,
-                    req.body.content.location,
-                    req.body.content.price,
-                    req.body.content.maxPersons,
-                    req.body.content.area,
-                    req.body.content.numBedrooms,
-                    req.body.content.numBeds,
-                    req.body.content.numBaths,
-                    req.body.content.minDays,
-                    req.body.content.description,
-                    req.body.content.extraCost,
-                    req.body.content.markerLatLng[1],
-                    req.body.content.markerLatLng[0],
-                    req.body.content.location,
-                    req.body.content.address,
-                    req.body.content.rules,
-                    req.body.content.id, 
+                    body.content.location,
+                    body.content.price,
+                    body.content.maxPersons,
+                    body.content.area,
+                    body.content.numBedrooms,
+                    body.content.numBeds,
+                    body.content.numBaths,
+                    body.content.minDays,
+                    body.content.description,
+                    body.content.extraCost,
+                    body.content.markerLatLng[1],
+                    body.content.markerLatLng[0],
+                    body.content.location,
+                    body.content.address,
+                    body.content.rules,
+                    body.content.id, 
                 ]
             );
-
+            
+            // console.log(req.files.length);
         }
         res.sendStatus(200);
     } 

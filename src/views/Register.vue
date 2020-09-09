@@ -191,7 +191,7 @@ export default {
                 if (this.user.Role === 'admin')
                     this.$router.push('/admin').catch(() => {});
                 else if (this.user.Role === 'aproved')
-                    this.$router.push('/TODO').catch(() => {});
+                    this.$router.push('/accommodation-edit').catch(() => {});
                 else
                     this.$router.push('/').catch(() => {});
             } catch(error) {

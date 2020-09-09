@@ -118,7 +118,7 @@ export default {
 					if (this.user.Role === 'admin')
 						this.$router.push('/admin').catch(() => {});
 					else if (this.user.Role === 'aproved')
-						this.$router.push('/TODO').catch(() => {});
+						this.$router.push('/accommodation-edit').catch(() => {});
 				} catch(error) {
 					if (error == 'Error: Request failed with status code 403') {
 						alert('Λάθος όνομα χρήστη ή κωδικός πρόσβασης!');

@@ -31,7 +31,7 @@
             </div>
             <div class="d-flex flex-row align-items-center">
                 <div class="form-group">
-                    <b-form-file id="file-input" multiple @input="loadFile" v-model="newImage" accept="image/jpeg, image/png" placeholder="Επιλογή Εικόνας..."></b-form-file>
+                    <b-form-file id="file-input" multiple @input="loadFile" v-model="images" accept="image/jpeg, image/png" placeholder="Επιλογή Εικόνας..."></b-form-file>
                 </div>
             </div>
 
@@ -244,11 +244,11 @@ Icon.Default.mergeOptions({
         return {
             newImage: null,
 
+            images:[],
             content:{
                 id: null,
                 title: "",
                 description: "",
-                images:[],
                 area: 0,
                 price: 0,
                 extraCost: 0,
@@ -311,7 +311,7 @@ Icon.Default.mergeOptions({
 
             //img carousel
             slide: 0,
-            sliding: null,            
+            sliding: null,
             
             //map
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -345,8 +345,8 @@ Icon.Default.mergeOptions({
             this.bounds = bounds;
         },
 
-        async get_spaces(){
-            if(this.user){
+        async get_spaces() {
+            if (this.user) {
                 console.log("I AM LOGGED IN");
                 let response = await this.$axios.post('/spaces', {
                     id: this.$store.state.user.idUsers,
@@ -356,8 +356,8 @@ Icon.Default.mergeOptions({
             }
         },
 
-        async fetch(id){
-            if(this.user){
+        async fetch(id) {
+            if (this.user) {
                 console.log("FETCHING" + id);
                 let response = await this.$axios.post('/fetch', {
                     id: id,
@@ -367,13 +367,26 @@ Icon.Default.mergeOptions({
             }
         },
 
-        async submit_edit(){
-            if(this.user){
+        async submit_edit() {
+            if (this.user) {
                 console.log("SUBMIT EDIT");
-                let response = await this.$axios.post('/submit_edit', {
-                    content: this.content,
-                    idHost: this.$store.state.user.idUsers,
-                });
+                let formData = new FormData();
+                formData.append('content', JSON.stringify(this.content));
+                formData.append('idHost', this.$store.state.user.idUsers);
+                for (var i = 0; i < this.images.length; i++) {
+                    var file = this.images[i];
+                    formData.append('images', file);
+                }
+
+                let response = await this.$axios.post('/submit_edit',
+                    formData, 
+                    {
+                        headers: {
+                            crossdomain: true,
+                            'Content-Type': 'undefined'
+                        }
+                    }
+                );
             }
         },
     },
@@ -401,10 +414,10 @@ Icon.Default.mergeOptions({
         this.$refs.datePicker.showDatepicker();
     },
 
-    beforeUpdate(){
+    beforeUpdate() {
         this.$refs.datePicker.showDatepicker();
     },
-    created(){
+    created() {
         this.get_spaces();
     }
   }
