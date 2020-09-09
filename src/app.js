@@ -593,6 +593,8 @@ app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
             } 
         }
         // console.log(charEntries);
+
+        console.log(req.files[0].filename);
         
         //create new entry
         if (body.content.id == null) {
@@ -623,12 +625,23 @@ app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
             );
             // console.log(results);
             
+            //adding characteristics
             for(let i = 0 ; i < charEntries.length ; i++){
                 let newChar = await db.query(
                     `INSERT INTO accomodations_has_characteristics VALUES (?, ?)`, 
                     [results[0].insertId, charEntries[i]]
                 );
             }
+            
+            //adding images
+            for(let i = 0 ; i < req.files.length ; i++){
+                let newPics = await db.query(
+                    `INSERT INTO accomodationphotos VALUES (?, ?, ?)`, 
+                    [null, results[0].insertId, req.files[i].filename]
+                );
+            }
+
+
         }
         //updating existing entry
         else {
@@ -677,18 +690,29 @@ app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
                     body.content.id, 
                 ]
             );
-
+            
+            //deleting old characteristics
             let deleted = await db.query(
                 `DELETE FROM accomodations_has_characteristics WHERE Accomodations_idAccomodation = ?;`,
                 [body.content.id]
             );
-
+            
+            // adding new characteristics
             for(let i = 0 ; i < charEntries.length ; i++){
                 let newChar = await db.query(
                     `INSERT INTO accomodations_has_characteristics VALUES (?, ?)`, 
                     [body.content.id, charEntries[i]]
                 );
             }
+
+            //adding images
+            for(let i = 0 ; i < req.files.length ; i++){
+                let newPics = await db.query(
+                    `INSERT INTO accomodationphotos VALUES (?, ?, ?)`, 
+                    [null, body.content.id, req.files[i].filename]
+                );
+            }
+
         }
         res.sendStatus(200);
     } 
