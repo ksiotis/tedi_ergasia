@@ -197,8 +197,11 @@ export default {
                 let data = '';
 
                 if (this.selected === 'XML') {
-                    var options = {compact: true, spaces: 4};
-                    data = '<?xml version="1.0" encoding="UTF-8"?>\n' + convert.json2xml(response.data, options);
+                    var options = {compact: true, spaces: 2};
+                    data = '<?xml version="1.0" encoding="UTF-8"?>\n' + 
+                    '<homies>\n' +
+                    convert.json2xml(response.data, options) +
+                    '\n</homis>';
                 }
                 else {
                     data = JSON.stringify(response.data, null, '  ');
