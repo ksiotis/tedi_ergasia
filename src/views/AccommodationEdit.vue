@@ -356,13 +356,16 @@ Icon.Default.mergeOptions({
         },
 
         getDates(startDate, endDate){
-            let dates = []
+            // console.log(startDate + " " + endDate);
+            let dates = [];
             //to avoid modifying the original date
             const theDate = new Date(startDate);
-            while (theDate < endDate) {
-                dates = [...dates, new Date(theDate)];
+            while (theDate <= endDate) {
+                console.log(theDate);
                 theDate.setDate(theDate.getDate() + 1);
+                dates = [...dates, new Date(theDate)];
             }
+            // console.log(dates);
             return dates;
         },
 
@@ -374,7 +377,6 @@ Icon.Default.mergeOptions({
                 let from = new Date(reservations[i].From);
                 let to = new Date(reservations[i].To);
 
-
                 // from = from.toISOString().split('T')[0];
                 // to = to.toISOString().split('T')[0]
 
@@ -384,7 +386,7 @@ Icon.Default.mergeOptions({
             for(let i = 0 ; i < final.length ; i++){
                 final[i] = final[i].toISOString().split('T')[0];
             }
-            console.log(final);
+            // console.log(final);
             return final;
         },
 
@@ -403,7 +405,7 @@ Icon.Default.mergeOptions({
                 }
                 this.content.newReservedDates.push(temp);
 
-                final = final.concat(this.getDates(from, to));
+                final = this.getDates(from, to);
                 console.log(final);
 
                 for(let i = 0 ; i < final.length ; i++){
