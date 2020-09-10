@@ -777,6 +777,29 @@ app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
 })
 
 
+app.post('/reserve', async (req, res) => {
+    try {
+        console.log('I ENTERED RESERVE');
+        console.log(req.body);
+        if(req.body.AccId == "" || req.body.UserId == "" || req.body.Date1 == "" || req.body.Date2 == "" || req.body.Price == null){
+            res.sendStatus(400);
+            return;
+        }
+        else{
+            results = await db.query(
+                `INSERT INTO reservations VALUES (?, ?, ?, ?, ?, ?)`, 
+                [req.body.UserId, req.body.AccId, req.body.Date1, req.body.Date2, req.body.Persons, req.body.Price]
+            );
+        }
+        res.sendStatus(200);
+    } 
+    catch(error) {
+        res.sendStatus(500);
+        console.error(error);
+    }
+})
+
+
 
 
 //ENDING THOMAS

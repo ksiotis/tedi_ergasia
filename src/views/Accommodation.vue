@@ -263,7 +263,7 @@
 
 
                 <div class="d-flex justify-content-center">
-                    <b-link class = "reservationButton d-flex align-items-center " to="/results">
+                    <b-link class = "reservationButton d-flex align-items-center " @click="submit()">
                         Κράτηση
                         <span class="iconify startspace" data-icon="ion-card"></span>
                     </b-link>
@@ -594,10 +594,31 @@ Icon.Default.mergeOptions({
                 console.log(error);
             }
         },
+        submit(){
+            // accId: null,
+            // title: "",
+            // address: "",
+            // host: "",
+            // total: 0,
+            // persons: 0,
+            // date1: "",
+            // date2: "",
+            // nights: 0,
+
+            let query = {   accId : this.id, title : this.title, address : this.address, host: this.hostName, total: this.total.toFixed(2) , 
+                            persons: this.searchPersons, date1 : this.date1.toISOString().split('T')[0] , date2: this.date2.toISOString().split('T')[0], 
+                            nights: this.nights };
+            
+            // query.date1 = query.date1.toISOString();
+            // query.date2 = query.date2.toISOString();
+
+            this.$router.push({ path: '/payment', query: query}).catch(() => {});
+            
+        }
     },
      computed: {
          
-         nights() {
+        nights() {
              var timeDiff = Math.abs(this.date2.getTime() - this.date1.getTime());
             var numberOfNights = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
 
@@ -844,7 +865,10 @@ Icon.Default.mergeOptions({
 
     position: sticky;
     top: 50px;
+    /* bottom: 250px; */
     margin-top: 73px;
+    margin-bottom: 150px;
+
 
     /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); */
 }

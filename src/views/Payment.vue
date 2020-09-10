@@ -37,29 +37,60 @@
 
             <div class="d-flex align-items-center justify-content-end mt-5">
                 <a id="back" class="mr-3" @click.prevent="$router.go(-1)">Πίσω</a>
-                <button id="pay" class="p-2">Πληρωμή και Κράτηση</button>
+                <button id="pay" class="p-2" @click.prevent="submit_reservation()">Πληρωμή και Κράτηση</button>
             </div>
         </b-form>
 
         <div class="vertical-line align-self-center mx-5"> </div>
 
-        <div id="details" class="mx-5 mt-4 p-3 ">
-            <div class="title">Τίτλος χώρου</div>
-            <div>Διεύθυνση, Τοποθεσία<a  class="iconify mx-1" data-icon="ion-location-sharp"/></div>
-            <div>Οικοδεσπότης<span class="iconify mx-1" data-icon="ion-home-sharp"/></div>
+        <form class="d-flex flex-column reservationForm">
+            <span class="reservationHeader d-flex justify-content-center" >
+                <p class style="color: white; font-size: 24px; margin-bottom: 0px;" > Σύνοψη κράτησης </p>
+            </span>
+            <div class="reservationContent d-flex flex-column justify-content-start">
+                <div class="d-flex flex-row">
+                    <p style="font-size: 24px; color: #194A50;  margin-bottom: 5px;">{{title}}</p>
+                </div>
+                <div class="d-flex flex-row align-items-baseline" >
+                    <p class="reservationText">{{address}}</p>
+                    <span class="iconify startspace"  style="font-size: 18px; color: #194A50;" data-icon="ion-location"></span>
+                </div>
+                <div class="d-flex flex-row align-items-baseline" >
+                    <p class="reservationText">{{host}}</p>
+                    <span class="iconify startspace"  style="font-size: 18px; color: #194A50;" data-icon="ion-briefcase"></span>
+                </div>
 
-            <div class="mt-4 mb-2 horizontal-line"></div>
+                <hr style="border: 1px solid #ACBEC0; width: 99%;">
 
-            <div class="title">Λεπτομέρειες Πληρωμής</div>
-            <div class="d-flex">
-                <div class="mr-auto">{{pricePerNight}}€ X {{nights}} διανυκτερεύσεις</div>
-                <div class="mr-auto">{{BaseCost}}€</div>
+                <div class="d-flex flex-row">
+                    <p style="font-size: 24px; color: #194A50;  margin-bottom: 5px;">Στοιχεία κράτησης</p>
+                </div>
+
+                <div class="d-flex flex-row align-items-baseline justify-content-between" >
+                    <p class="reservationText">Tελική τιμή</p>
+                    <div class="d-flex flex-row">
+                        <p class="sumArea">{{total}}</p>
+                        <p class="sumArea">€</p>
+                    </div>
+                </div>
+                <div class="d-flex flex-row align-items-baseline justify-content-start" >
+                    <p class="sumArea">{{persons}}</p>
+                    <p class="reservationText startspace">άτομα</p>
+                    <span class="iconify startspace"  style="font-size: 18px; color: #194A50;" data-icon="ion-person"></span>
+                </div>
+                <div class="d-flex flex-row align-items-baseline justify-content-between" >
+                    <p v-if="date1 != ''" class="sumArea startspace">{{date1}}</p>
+                    <span class="iconify"  style="font-size: 18px; color: #194A50;" data-icon="ion-arrow-forward"></span>
+                    <p v-if="date2 != ''" class="sumArea startspace">{{date2}}</p>
+                </div>
+                <div class="d-flex flex-row align-items-baseline justify-content-start" >
+                    <p class="sumArea">{{nights}}</p>
+                    <p class="reservationText startspace">διανυκτέρευσεις</p>
+                    <span class="iconify startspace"  style="font-size: 18px; color: #194A50;" data-icon="ion-cloudy-night"></span>
+                </div>
             </div>
-            <div class="d-flex mt-5 align-items-center ">
-                <h3 class="mr-auto">Σύνολο:</h3>
-                <h2 class="mr-auto">{{TotalPrice}}€</h2>
-            </div>
-        </div>
+
+        </form>
     </div>
 </template>
 
@@ -74,18 +105,56 @@ export default {
             pricePerNight: 15,
             nights: 5,
             months: [1,2,3,4,5,6,7,8,9,10,11,12],
-            years: []
+            years: [],
+
+            accId: null,
+            title: "",
+            address: "",
+            host: "",
+            total: 0,
+            persons: 0,
+            date1: "",
+            date2: "",
+            nights: 0,
+
         }
     },
     computed: {
-        BaseCost() {
-            return this.pricePerNight * this.nights;
+        // BaseCost() {
+        //     return this.pricePerNight * this.nights;
+        // },
+        // TotalPrice() {
+        //     return this.BaseCost;
+        // },
+        user() {
+			if (this.$store.state.user)
+				return this.$store.state.user;
+			else if (this.$store.state.token) {
+				this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
+				return this.$store.state.user;
+			}
+			else
+				return '';
         },
-        TotalPrice() {
-            return this.BaseCost;
-        }
     },
     methods: {
+        async submit_reservation(){
+            if(this.user){
+                console.log("RESERVING");
+                if(this.newReview != ""){
+
+                    let response = await this.$axios.post('/reserve', {
+                        AccId: this.accId,
+                        UserId: this.$store.state.user.idUsers,
+                        Date1: this.date1,
+                        Date2: this.date2,
+                        Persons: this.persons,
+                        Price: this.total,
+                    });
+
+                }
+            }
+        },
 
     },
     mounted() {
@@ -94,6 +163,22 @@ export default {
 
         for (var i = thisyear - 3; i < thisyear + 10; i++) {
             this.years.push(i);
+        }
+    },
+
+     created(){
+        console.log(this.$route.query);
+        if(this.$route.query.accId!=null){
+
+            this.accId = this.$route.query.accId;
+            this.title = this.$route.query.title;
+            this.address = this.$route.query.address;
+            this.host = this.$route.query.host;
+            this.total = this.$route.query.total;
+            this.persons = this.$route.query.persons;
+            this.date1 = this.$route.query.date1;
+            this.date2 = this.$route.query.date2;
+            this.nights = this.$route.query.nights;
         }
     }
 }
@@ -171,6 +256,87 @@ export default {
 #pay:hover {
     cursor: pointer;
     background-color: #9C533B;
+}
+
+.reservationForm{
+    width: 484px;
+    height: 323px;
+    background-color: white;
+    color: #194A50;   
+    /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); */
+}
+
+.contentLeft{
+    width: 690px;
+    
+}
+
+.sumArea{
+    font-style: normal;
+    font-weight: bold;
+    font-size:  18px;
+    height: 18px;
+
+    color: #484A4A;
+}
+
+.reservationHeader{
+    background-color: #194A50;
+
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;   
+}
+
+.reservationContent{
+    border: 3px solid #ACBEC0;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.reservationButton{
+    border-radius: 90px;
+    width: 90%;
+
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    background: none;
+	color: white;
+    background-color: #D37556;
+	cursor: pointer;
+
+    border: none;
+    outline: none;
+    
+    height: 40px;
+    padding: 0 90px;
+}
+
+
+.reservationButton:hover{
+    background-color: #9C533B;
+    color: white;
+    text-decoration: none;   
+}
+
+.reservationText{
+    font-size: 18px; 
+    color: black; 
+    /* width: 200px; */
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+    text-overflow: ellipsis;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+.startspace{
+    margin-left: 5px;
 }
 
 </style>
