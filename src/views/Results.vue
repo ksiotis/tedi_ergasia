@@ -1,6 +1,6 @@
 <template>
 	<div class="d-flex justify-content-start background">
-        <form class="filterform d-flex justify-content-start flex-column">
+        <form class="filterform d-flex justify-content-start flex-column" @input="resultFlag = false;">
             <!-- row with location input -->
             <!-- <div class="forminputbox">
                 <input  class="forminput" placeholder="Εισάγετε τοποθεσία..." v-model="searchForm.location">
@@ -9,7 +9,8 @@
             <geoInput class="forminputbox" style="width: 310px;" v-model="searchForm.geo_package"/>
             
             <!-- row with date input -->
-            <HotelDatePicker 
+            <HotelDatePicker
+                @input="resultFlag = false;" 
                 id = "datepicker"
                 class="dateinputbox"
                 format="DD/MM/YYYY"
@@ -20,6 +21,7 @@
             <!-- row with persons and sort as option -->
             <div class="d-flex justify-content-between">               
                 <select 
+                    @input="resultFlag = false;"
                     class="forminputbox" 
                     v-model="searchForm.persons"
                 >
@@ -47,32 +49,32 @@
             <!-- filters row -->
             <p style="color: white;">Φίλτρα:</p>
             <!-- checkboxes -->
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input">
+            <div class="form-check" >
+                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Wifi</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input">
+                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Ψύξη</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input">
+                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Θέρμανση</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input">
+                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Κουζίνα</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input">
+                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Τηλεόραση</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input">
+                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Parking</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input">
+                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Ανελκυστήρας</label>
             </div>
             <!-- search button -->
@@ -90,8 +92,11 @@
                     v-for="(result, index) in results"
                     v-bind:key="index"
                     class="col col-6">
-                        <div class="panel">
-                            <ResultTile 
+                        <div class="panel" v-if="resultFlag == true">
+                            <ResultTile
+                                :date1="searchForm.date1"
+                                :date2="searchForm.date2"
+                                :searchPersons="Number(searchForm.persons)" 
                                 :preview_package="result"/>
                         </div>
                 </div> 
@@ -115,6 +120,8 @@ export default {
 
     data() {
       return {
+        resultFlag: true,
+
         results: [],
 
         searchForm: {
@@ -216,6 +223,7 @@ export default {
 
         async search() {
             // evt.preventDefault();
+            this.resultFlag = true;
             try {
                 
                 this.results = [];

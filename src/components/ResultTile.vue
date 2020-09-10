@@ -83,8 +83,11 @@ export default {
                     name: String,
                     status: Boolean,
                 },
-            ]
-        }
+            ],
+        },
+        searchPersons: Number,
+        date1: Date,
+        date2: Date,
     },
 	data() {
 		return {
@@ -93,10 +96,10 @@ export default {
 	methods: {
         submit(){
 
-            let query = { id : this.preview_package.id };
+            let query = { id : this.preview_package.id, searchPersons : this.searchPersons, date1 : this.date1 , date2: this.date2 };
             
-            // query.date1 = query.date1.toISOString();
-            // query.date2 = query.date2.toISOString();
+            query.date1 = query.date1.toISOString();
+            query.date2 = query.date2.toISOString();
 
             this.$router.push({ path: '/accommodation', query: query}).catch(() => {});
         }

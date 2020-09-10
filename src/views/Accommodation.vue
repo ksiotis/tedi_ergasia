@@ -215,34 +215,61 @@
 
         
         <!-- scrolling form -->
-        <form class="d-flex flex-column justify-content-start reservationForm">
-            <span class="reservationHeader">
-                <h3 class="subtitle" style="color: white;" > Σύνοψη κράτησης </h3>
+        <form class="d-flex flex-column reservationForm">
+            <span class="reservationHeader d-flex justify-content-center" >
+                <p class style="color: white; font-size: 24px; margin-bottom: 0px;" > Σύνοψη κράτησης </p>
             </span>
             <div class="reservationContent d-flex flex-column justify-content-start">
-                <div class="d-flex flex-row justify-content-between">
-                    <h5 class="endspace" style="color: black; font-weight: normal;" >Τελική τιμή:</h5>
+                <div class="d-flex flex-row">
+                    <p style="font-size: 24px; color: #194A50;  margin-bottom: 5px;">{{title}}</p>
+                </div>
+                <div class="d-flex flex-row align-items-baseline" >
+                    <p class="reservationText">{{address}}</p>
+                    <span class="iconify startspace"  style="font-size: 18px; color: #194A50;" data-icon="ion-location"></span>
+                </div>
+                <div class="d-flex flex-row align-items-baseline" >
+                    <p class="reservationText">{{hostName}}</p>
+                    <span class="iconify startspace"  style="font-size: 18px; color: #194A50;" data-icon="ion-briefcase"></span>
+                </div>
+
+                <hr style="border: 1px solid #ACBEC0; width: 99%;">
+
+                <div class="d-flex flex-row">
+                    <p style="font-size: 24px; color: #194A50;  margin-bottom: 5px;">Στοιχεία κράτησης</p>
+                </div>
+
+                <div class="d-flex flex-row align-items-baseline justify-content-between" >
+                    <p class="reservationText">Tελική τιμή</p>
                     <div class="d-flex flex-row">
                         <p class="sumArea">{{total.toFixed(2)}}</p>
                         <p class="sumArea">€</p>
                     </div>
                 </div>
-                <div class="d-flex flex-row justify-content-between">
-                    <h5 class="endspace" style="color: black; font-weight: normal;" >Ημέρες:</h5>
-                    <p class="sumArea">{{nights}}</p>
+                <div class="d-flex flex-row align-items-baseline justify-content-start" >
+                    <p class="sumArea">{{searchPersons}}</p>
+                    <p class="reservationText startspace">άτομα</p>
+                    <span class="iconify startspace"  style="font-size: 18px; color: #194A50;" data-icon="ion-person"></span>
                 </div>
-                <div class="d-flex flex-row justify-content-between">
-                    <h5 class="endspace" style="color: black; font-weight: normal;" >Άτομα:</h5>
-                    <p class="sumArea">1</p>
+                <div class="d-flex flex-row align-items-baseline justify-content-between" >
+                    <p v-if="date1 != ''" class="sumArea startspace">{{date1.toISOString().split('T')[0]}}</p>
+                    <span class="iconify"  style="font-size: 18px; color: #194A50;" data-icon="ion-arrow-forward"></span>
+                    <p v-if="date2 != ''" class="sumArea startspace">{{date2.toISOString().split('T')[0]}}</p>
+                </div>
+                <div class="d-flex flex-row align-items-baseline justify-content-start" >
+                    <p class="sumArea">{{nights}}</p>
+                    <p class="reservationText startspace">διανυκτέρευσεις</p>
+                    <span class="iconify startspace"  style="font-size: 18px; color: #194A50;" data-icon="ion-cloudy-night"></span>
+                </div>
+
+
+                <div class="d-flex justify-content-center">
+                    <b-link class = "reservationButton d-flex align-items-center " to="/results">
+                        Κράτηση
+                        <span class="iconify startspace" data-icon="ion-card"></span>
+                    </b-link>
                 </div>
             </div>
 
-            <div class="d-flex justify-content-center">
-                <b-link class = "reservationButton d-flex align-items-center " to="/results">
-                    Κράτηση
-                    <span class="iconify startspace" data-icon="ion-card"></span>
-                </b-link>
-            </div>
         </form>
     </div>
 </template>
@@ -277,6 +304,7 @@ Icon.Default.mergeOptions({
     data() {
         return {
             id: null,
+            searchPersons: 0,
             slide: 0,
             sliding: null,
             
@@ -568,30 +596,17 @@ Icon.Default.mergeOptions({
         },
     },
      computed: {
-        total() {
-            let s = 0;
-            // let days = 1;
-			if(this.date1 != '' && this.date2 != ''){
-                console.log(this.date2);
-                console.log(this.date2);
-                let time = this.date2.getTime() - this.date1.getTime();
-                let days = time / (1000 * 3600 * 24) -1;
-                console.log(days);
-                s = Number(this.price) + days * Number(this.extraCost);
-            }
-            // console.log(typeof s);
-            // console.log(s);
-			return s;
+         
+         nights() {
+             var timeDiff = Math.abs(this.date2.getTime() - this.date1.getTime());
+            var numberOfNights = Math.ceil(timeDiff / (1000 * 3600 * 24)); 
+
+            return numberOfNights;
         },
 
-        nights() {
-            let d = 0;
-            // let days = 1;
-			if(this.date1 != '' && this.date2 != ''){
-                let time = this.date2.getTime() - this.date1.getTime();
-                d = time / (1000 * 3600 * 24) -1;
-            }
-			return d;
+        total() {
+            console.log(Number(this.price) + (this.searchPersons-1)*Number(this.extraCost));
+            return (Number(this.price) + (this.searchPersons-1)*Number(this.extraCost)) * this.nights;
         },
 
         total_reviews(){
@@ -628,6 +643,12 @@ Icon.Default.mergeOptions({
         if(this.$route.query.id!=null){
             this.id = this.$route.query.id;
             this.view();
+            if(this.$route.query.searchPersons <= this.numPersons){
+                this.searchPersons = Number(this.$route.query.searchPersons);
+                console.log(this.$route.query.date1);
+                this.date1 =  new Date(this.$route.query.date1);
+                this.date2 =  new Date(this.$route.query.date2);
+            }
         }
     }
 }
@@ -818,7 +839,6 @@ Icon.Default.mergeOptions({
 .reservationForm{
     width: 300px;
     height: 323px;
-    border: 1px solid #4E7378;
     background-color: white;
     color: #194A50;
 
@@ -827,7 +847,6 @@ Icon.Default.mergeOptions({
     margin-top: 73px;
 
     /* filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)); */
-    border-radius: 10px;
 }
 
 .contentLeft{
@@ -846,23 +865,26 @@ Icon.Default.mergeOptions({
 
 .reservationHeader{
     background-color: #194A50;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
 
     padding-left: 10px;
-    padding-top: 10px;   
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;   
 }
 
 .reservationContent{
-    margin-top: 10px;
-    padding: 0 10px;  
+    border: 3px solid #ACBEC0;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .reservationButton{
     border-radius: 90px;
     width: 90%;
 
-    margin-top: 113px;
+    margin-top: 10px;
     margin-bottom: 10px;
 
     background: none;
@@ -882,6 +904,18 @@ Icon.Default.mergeOptions({
     background-color: #9C533B;
     color: white;
     text-decoration: none;   
+}
+
+.reservationText{
+    font-size: 18px; 
+    color: black; 
+    /* width: 200px; */
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+    text-overflow: ellipsis;
+    margin-bottom: 5px;
+    margin-right: 5px;
 }
 
 </style>
