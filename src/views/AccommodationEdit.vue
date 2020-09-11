@@ -27,7 +27,6 @@
                             v-for="(p, index) in content.images"
                             v-bind:key="index"
                             :img-src="require(`@/assets/accommodation_pics/${p}`)"/>
-                
                     </b-carousel>
                 </div>
                 <div class="d-flex flex-row align-items-center">
@@ -211,8 +210,8 @@
                 class="d-flex flex-row allign-content-baseline justify-content-between space"
                 v-for="(s, index) in spaces"
                 v-bind:key="index"
-                @click="fetch(s.id)">
-                    <p style="margin-bottom: 0px;">{{s.name}}</p>
+                @click="fetch(s.idAccomodation)">
+                    <p style="margin-bottom: 0px;">{{s.Name}}</p>
                     <p class="iconify" data-icon="ion-home" style="height: 24px; width: 24px;"></p>
                 </div>
             </form>
@@ -420,49 +419,46 @@ Icon.Default.mergeOptions({
 
         async get_spaces() {
             if (this.user) {
-                console.log("I AM LOGGED IN");
-                let response = await this.$axios.post('/spaces', {
-                    id: this.$store.state.user.idUsers,
-                });
-                // console.log(response);
+                let query = "?host=" + this.$store.state.user.idUsers;
+                let response = await this.$axios.get('/accommodations' + query);
                 this.spaces = response.data;
             }
         },
 
         async fetch(id) {
-            if (this.user) {
-                console.log("FETCHING" + id);
-                let response = await this.$axios.post('/fetch', {
-                    id: id,
-                });
-                console.log(response);
-                this.content = response.data;
-                this.reservedDates = this.disable_dates(response.data.disabledDates);
-            }
+            // if (this.user) {
+            //     console.log("FETCHING" + id);
+            //     let response = await this.$axios.post('/fetch', {
+            //         id: id,
+            //     });
+            //     console.log(response);
+            //     this.content = response.data;
+            //     this.reservedDates = this.disable_dates(response.data.disabledDates);
+            // }
         },
 
         async submit_edit() {
-            if (this.user) {
-                console.log("SUBMIT EDIT");
-                let formData = new FormData();
-                formData.append('content', JSON.stringify(this.content));
-                formData.append('idHost', this.$store.state.user.idUsers);
-                for (var i = 0; i < this.images.length; i++) {
-                    var file = this.images[i];
-                    formData.append('images', file);
-                }
+            // if (this.user) {
+            //     console.log("SUBMIT EDIT");
+            //     let formData = new FormData();
+            //     formData.append('content', JSON.stringify(this.content));
+            //     formData.append('idHost', this.$store.state.user.idUsers);
+            //     for (var i = 0; i < this.images.length; i++) {
+            //         var file = this.images[i];
+            //         formData.append('images', file);
+            //     }
 
-                let response = await this.$axios.post('/submit_edit',
-                    formData, 
-                    {
-                        headers: {
-                            crossdomain: true,
-                            'Content-Type': 'undefined'
-                        }
-                    }
-                );
-            }
-            location.reload();
+            //     let response = await this.$axios.post('/submit_edit',
+            //         formData, 
+            //         {
+            //             headers: {
+            //                 crossdomain: true,
+            //                 'Content-Type': 'undefined'
+            //             }
+            //         }
+            //     );
+            // }
+            // location.reload();
         },
     },
     computed: {

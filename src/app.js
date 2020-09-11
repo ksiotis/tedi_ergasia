@@ -215,142 +215,154 @@ app.post('/users', upload.single('picture'), async (req, res) => {
 app.get('/accommodations', async (req, res) => {
     try{
         console.log('I ENTERED /accommodations.');
-
-        if(
-            isEmpty(req.query.north)    || 
-            isEmpty(req.query.west)     || 
-            isEmpty(req.query.south)    || 
-            isEmpty(req.query.east)     || 
-            isEmpty(req.query.date1)    || 
-            isEmpty(req.query.date2)    || 
-            isEmpty(req.query.persons)  ||
-            isEmpty(req.query.north)    ||
-            isEmpty(req.query.wifi)     ||
-            isEmpty(req.query.freezer)  ||
-            isEmpty(req.query.heating)  ||
-            isEmpty(req.query.kitchen)  ||
-            isEmpty(req.query.tv)       ||
-            isEmpty(req.query.parking)  ||
-            isEmpty(req.query.lift)     ||
-            isEmpty(req.query.livingRoom)
-        ){
-            console.log('EMPTY STRING IN QUERY!');
-            req.send(400);
+        //search by host functionality
+        if(!isEmpty(req.query.host)){
+            let results = await db.query(
+                `SELECT a.idAccomodation, a.Name 
+                 FROM accomodations a
+                 WHERE a.idHost = ?`,
+                 [req.query.host] 
+            );
+            res.send(results[0]);
+            res.sendStatus(200);
         }
         else{
-            let criteria = {
-
-                north: Number(req.query.north),
-                west: Number(req.query.west),
-                south: Number(req.query.south),
-                east: Number(req.query.east),
-                date1: Date(req.query.date1),
-                date2: Date(req.query.date2),
-                persons: Number(req.query.persons),
-                wifi: Boolean(req.query.wifi === 'true'),
-                freezer: Boolean(req.query.freezer === 'true'),
-                heating: Boolean(req.query.heating === 'true'),
-                kitchen: Boolean(req.query.kitchen === 'true'),
-                tv: Boolean(req.query.tv === 'true'),
-                parking: Boolean(req.query.parking === 'true'),
-                lift: Boolean(req.query.lift === 'true'),
-                livingRoom: Boolean(req.query.livingRoom === 'true'),
+            if(
+                isEmpty(req.query.north)    || 
+                isEmpty(req.query.west)     || 
+                isEmpty(req.query.south)    || 
+                isEmpty(req.query.east)     || 
+                isEmpty(req.query.date1)    || 
+                isEmpty(req.query.date2)    || 
+                isEmpty(req.query.persons)  ||
+                isEmpty(req.query.north)    ||
+                isEmpty(req.query.wifi)     ||
+                isEmpty(req.query.freezer)  ||
+                isEmpty(req.query.heating)  ||
+                isEmpty(req.query.kitchen)  ||
+                isEmpty(req.query.tv)       ||
+                isEmpty(req.query.parking)  ||
+                isEmpty(req.query.lift)     ||
+                isEmpty(req.query.livingRoom)
+            ){
+                console.log('EMPTY STRING IN QUERY!');
+                req.send(400);
             }
-            console.log("SEARCH CRITERIA:");
-            console.log(criteria);
-
-            // getting all accommodations
-            let results = await db.query(
-                `SELECT a.idAccomodation, a.Name, a.Type, a.Beds, a.PricePerNight, a.Latitude, a.Longtitude, a.Persons  
-                 FROM accomodations a`, 
-            );
-            
-            let accepted = [];
-            
-            // going through all accommodations
-            for(let i = 0 ; i < results[0].length ; i++) {
-                console.log("EXAMINING " + results[0][i].idAccomodation);
+            else{
+                let criteria = {
+    
+                    north: Number(req.query.north),
+                    west: Number(req.query.west),
+                    south: Number(req.query.south),
+                    east: Number(req.query.east),
+                    date1: Date(req.query.date1),
+                    date2: Date(req.query.date2),
+                    persons: Number(req.query.persons),
+                    wifi: Boolean(req.query.wifi === 'true'),
+                    freezer: Boolean(req.query.freezer === 'true'),
+                    heating: Boolean(req.query.heating === 'true'),
+                    kitchen: Boolean(req.query.kitchen === 'true'),
+                    tv: Boolean(req.query.tv === 'true'),
+                    parking: Boolean(req.query.parking === 'true'),
+                    lift: Boolean(req.query.lift === 'true'),
+                    livingRoom: Boolean(req.query.livingRoom === 'true'),
+                }
+                console.log("SEARCH CRITERIA:");
+                console.log(criteria);
+    
+                // getting all accommodations
+                let results = await db.query(
+                    `SELECT a.idAccomodation, a.Name, a.Type, a.Beds, a.PricePerNight, a.Latitude, a.Longtitude, a.Persons  
+                     FROM accomodations a`, 
+                );
                 
-                // if accommodation meets geographic and numeric criteria
-                if( 
-                    criteria.south <= results[0][i].Latitude && results[0][i].Latitude <= criteria.north &&
-                    criteria.west <= results[0][i].Longtitude && results[0][i].Longtitude <= criteria.east &&
-                    criteria.persons <= results[0][i].Persons
-                ){
-                    
-                    console.log("WITHIN GEOGRAPHIC AND PEOPLE BOUNDS "  + results[0][i].idAccomodation);
-                    
-                    // getting reservations and disabled dates
-                    let reservations = await db.query(
-                        `SELECT r.From, r.To  
-                        FROM reservations r
-                        WHERE r.Accomodations_idAccomodation = ?`,
-                        [results[0][i].idAccomodation]
-                    );
-    
-                    let availabilitydates = await db.query(
-                        `SELECT r.From, r.To  
-                        FROM availabilitydates r
-                        WHERE idAccomodation = ?`,
-                        [results[0][i].idAccomodation]
-                    );
-                    let calendar = reservations[0].concat(availabilitydates[0]);
-    
-                    // flag for accepting results
-                    let flag = true;
-    
-                    for(let j = 0 ; j < calendar.length ; j ++){
+                let accepted = [];
                 
-                        let from = calendar[j].From;
-                        let to = calendar[j].To;
-                        from = new Date(from);
-                        to = new Date(to);
-                        
-                        // check if any of the accommodations is incompatible
-                        if((from <= criteria.date1 && criteria.date1 <= to) || (from <= criteria.date2 && criteria.date2 <= to)){
-                            flag = false;
-                            break;
-                        }
-                    }
+                // going through all accommodations
+                for(let i = 0 ; i < results[0].length ; i++) {
+                    console.log("EXAMINING " + results[0][i].idAccomodation);
                     
-                    // if no incompatible dates were found
-                    if(flag == true){
-                        console.log("COMPATIBLE DATES " + results[0][i].idAccomodation);
+                    // if accommodation meets geographic and numeric criteria
+                    if( 
+                        criteria.south <= results[0][i].Latitude && results[0][i].Latitude <= criteria.north &&
+                        criteria.west <= results[0][i].Longtitude && results[0][i].Longtitude <= criteria.east &&
+                        criteria.persons <= results[0][i].Persons
+                    ){
                         
-                        let chars = await db.query(
-                            `SELECT a.Characteristics_idCharacteristics
-                            FROM accomodations_has_characteristics a
-                            WHERE Accomodations_idAccomodation = ?`,
+                        console.log("WITHIN GEOGRAPHIC AND PEOPLE BOUNDS "  + results[0][i].idAccomodation);
+                        
+                        // getting reservations and disabled dates
+                        let reservations = await db.query(
+                            `SELECT r.From, r.To  
+                            FROM reservations r
+                            WHERE r.Accomodations_idAccomodation = ?`,
                             [results[0][i].idAccomodation]
                         );
-                        
-                        
-                        let currChars = [];
-                        for(let j = 0 ; j < chars[0].length ; j++){
-                            currChars.push(chars[0][j].Characteristics_idCharacteristics);
+        
+                        let availabilitydates = await db.query(
+                            `SELECT r.From, r.To  
+                            FROM availabilitydates r
+                            WHERE idAccomodation = ?`,
+                            [results[0][i].idAccomodation]
+                        );
+                        let calendar = reservations[0].concat(availabilitydates[0]);
+        
+                        // flag for accepting results
+                        let flag = true;
+        
+                        for(let j = 0 ; j < calendar.length ; j ++){
+                    
+                            let from = calendar[j].From;
+                            let to = calendar[j].To;
+                            from = new Date(from);
+                            to = new Date(to);
+                            
+                            // check if any of the accommodations is incompatible
+                            if((from <= criteria.date1 && criteria.date1 <= to) || (from <= criteria.date2 && criteria.date2 <= to)){
+                                flag = false;
+                                break;
+                            }
                         }
                         
-                        let wantedChars = [];
-                        if(criteria.wifi == true) wantedChars.push(0);
-                        if(criteria.freezer == true) wantedChars.push(1);
-                        if(criteria.heating == true) wantedChars.push(2);
-                        if(criteria.kitchen == true) wantedChars.push(3);
-                        if(criteria.tv == true) wantedChars.push(4);
-                        if(criteria.parking == true) wantedChars.push(5);
-                        if(criteria.lift == true) wantedChars.push(6);
-                        if(criteria.livingRoom == true) wantedChars.push(7);
-                        
-                        let flag = true;
-                        flag = wantedChars.every(i => currChars.includes(i)); //check if every wanted char is in the curr char
-
+                        // if no incompatible dates were found
                         if(flag == true){
-                            accepted.push(results[0][i].idAccomodation);
+                            console.log("COMPATIBLE DATES " + results[0][i].idAccomodation);
+                            
+                            let chars = await db.query(
+                                `SELECT a.Characteristics_idCharacteristics
+                                FROM accomodations_has_characteristics a
+                                WHERE Accomodations_idAccomodation = ?`,
+                                [results[0][i].idAccomodation]
+                            );
+                            
+                            
+                            let currChars = [];
+                            for(let j = 0 ; j < chars[0].length ; j++){
+                                currChars.push(chars[0][j].Characteristics_idCharacteristics);
+                            }
+                            
+                            let wantedChars = [];
+                            if(criteria.wifi == true) wantedChars.push(0);
+                            if(criteria.freezer == true) wantedChars.push(1);
+                            if(criteria.heating == true) wantedChars.push(2);
+                            if(criteria.kitchen == true) wantedChars.push(3);
+                            if(criteria.tv == true) wantedChars.push(4);
+                            if(criteria.parking == true) wantedChars.push(5);
+                            if(criteria.lift == true) wantedChars.push(6);
+                            if(criteria.livingRoom == true) wantedChars.push(7);
+                            
+                            let flag = true;
+                            flag = wantedChars.every(i => currChars.includes(i)); //check if every wanted char is in the curr char
+    
+                            if(flag == true){
+                                accepted.push(results[0][i].idAccomodation);
+                            }
                         }
                     }
                 }
+                res.send(accepted);
+                res.sendStatus(200);
             }
-            res.send(accepted);
-            res.sendStatus(200);
         }
     } 
     catch(error) {
