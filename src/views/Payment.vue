@@ -142,20 +142,16 @@ export default {
             if(this.user){
                 console.log("RESERVING");
                 if(this.newReview != ""){
-
-                    let response = await this.$axios.post('/reserve', {
-                        AccId: this.accId,
+                    let response = await this.$axios.post('/accommodations/' + this.accId + '/reservations', {
                         UserId: this.$store.state.user.idUsers,
                         Date1: this.date1,
                         Date2: this.date2,
                         Persons: this.persons,
                         Price: this.total,
                     });
-
                 }
             }
         },
-
     },
     mounted() {
         let today = new Date();

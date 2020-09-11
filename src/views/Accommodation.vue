@@ -536,16 +536,14 @@ Icon.Default.mergeOptions({
         },
 
          async submit_review(){
-            // console.log("CALLED");
-            if(this.newReview != ""){
-                console.log(this.$store.state.user);
-                let response = await this.$axios.post('/review', {
-                    AccId: this.id,
+            if(this.newReview != "" && this.newReview != null){
+                let response = await this.$axios.post('/accommodations/'+ this.id +'/reviews', {
                     UserId: this.$store.state.user.idUsers,
                     Rating: this.newRating,
                     Text: this.newReview
                 });
                 this.canReview = false;
+                location.reload();
             }
         },
 
@@ -612,7 +610,7 @@ Icon.Default.mergeOptions({
             let query = {   accId : this.id, title : this.title, address : this.address, host: this.hostName, total: this.total.toFixed(2) , 
                             persons: this.searchPersons, date1 : this.date1.toISOString().split('T')[0] , date2: this.date2.toISOString().split('T')[0], 
                             nights: this.nights };
-                            
+
             this.$router.push({ path: '/payment', query: query}).catch(() => {});
             
         }
