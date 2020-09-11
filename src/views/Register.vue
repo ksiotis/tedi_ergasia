@@ -118,7 +118,7 @@ export default {
     methods: {
         async checkusername(username) {
             let myinput = '?username=' + username;
-            let url =  '/checkusername' + myinput;
+            let url =  '/users' + myinput;
             try {
                 let response = await this.$axios.get(url);
                 console.log(response.data);
@@ -138,7 +138,7 @@ export default {
         },
         async checkemail(email) {
             let myinput = '?email=' + email;
-            let url =  '/checkemail' + myinput;
+            let url =  '/users' + myinput;
             try {
                 let response = await this.$axios.get(url);
                 console.log(response.data);
@@ -178,7 +178,7 @@ export default {
                 formData.append("telephone", "(".concat(this.form.code).concat(")").concat(this.form.phone));
                 formData.append("picture", this.form.file);
 
-                let response = await this.$axios.post('/signup', formData);
+                let response = await this.$axios.post('/users', formData);
                 alert("Η δημιουργία λογαριασμού ολοκληρώθηκε με επιτυχία!");
 
                 response = await this.$axios.post('/login', {

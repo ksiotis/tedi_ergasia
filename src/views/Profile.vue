@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex flex-column align-items-center mt-3 mb-3">
-        <div id="profile" >
+        <div id="profile">
             <div class="d-flex p-3">
                 <div id="column1" class="d-flex flex-column align-items-center mr-5">
                     <img :src="profilePic" width="150px" height="150px" class="rounded-circle ">
@@ -38,13 +38,9 @@
                     <a class="d-flex"><span class="iconify" data-icon="ion-star"/></a>
                     <span  class="mt-3 ml-3">Κριτικές Χρήστη</span>
                 </div>
-                <div v-if="user.admin || user.same" class="d-flex align-items-center">
+                <div class="d-flex align-items-center">
                     <a class="d-flex"><span class="iconify" data-icon="ion-time-outline"/></a>
                     <span  class="mt-3 ml-3">Προβολή ιστορικού ενοικιάσεων</span>
-                </div>
-                <div v-if="user && user.admin" class="d-flex align-items-center">
-                    <a class="d-flex admin-button"><span class="iconify" data-icon="ion-repeat-outline"/></a>
-                    <span  class="mt-3 ml-3">Αλλαγή ρόλου</span>
                 </div>
 
                 <button v-if="user && user.same" id="edit" @click="$router.push('editprofile')" class="px-4 py-1 align-self-end mr-5">
@@ -82,16 +78,25 @@ export default {
         }
     },
     async mounted() {
-        let targetProfile = this.$route.query.username;
+        try {
         
-        let url = `/profile?username=${targetProfile}`;
-        let response = await this.$axios.get(url, {
-            headers: { "authorization": 'Bearer ' + this.$store.state.token }
-        });
-
-        this.user = response.data;
-        this.roleName = this.$store.state.rolenames[this.user.Role][0];
-        this.roleIcon = this.$store.state.rolenames[this.user.Role][1];
+            let targetProfile = this.$route.query.username;
+            let url = `/users?username=${targetProfile}`;
+            let response = await this.$axios.get(url, {
+                headers: { "authorization": 'Bearer ' + this.$store.state.token }
+            });
+            this.user = response.data[0];
+            
+            this.roleName = this.$store.state.rolenames[this.user.Role][0];
+            this.roleIcon = this.$store.state.rolenames[this.user.Role][1];
+            
+        } catch (error) {
+            if (error == 'Error: Request failed with status code 404') {
+                alert('Ο λογαριασμός χρήστη που αναζητήσατε δεν υπάρχει!');
+                this.$router.go(-1);
+            }
+            console.log(error);
+        }
     }
 }
 </script>

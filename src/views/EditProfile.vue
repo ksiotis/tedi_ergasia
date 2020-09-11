@@ -145,7 +145,7 @@ export default {
                 formData.append("telephone", "(".concat(this.form.code).concat(")").concat(this.form.phone));
                 formData.append("picture", this.form.file);
 
-                let response = await this.$axios.post('/userupdate', formData, {
+                let response = await this.$axios.put('/users', formData, {
                     headers: { "authorization": 'Bearer ' + this.$store.state.token }
                 });
                 alert("Τα στοιχεία του λογαριασμού άλλαξαν επιτυχώς!");
@@ -188,7 +188,7 @@ export default {
             }
             console.log(this.user.Username === this.form.username);
             let myinput = '?username=' + username;
-            let url =  '/checkusername' + myinput;
+            let url =  '/users' + myinput;
             try {
                 let response = await this.$axios.get(url);
                 console.log(response.data);
@@ -214,7 +214,7 @@ export default {
                 return;
             }
             let myinput = '?email=' + email;
-            let url =  '/checkemail' + myinput;
+            let url =  '/users' + myinput;
             try {
                 let response = await this.$axios.get(url);
                 console.log(response.data);

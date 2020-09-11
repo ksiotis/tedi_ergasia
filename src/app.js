@@ -72,43 +72,101 @@ app.listen(port,() => {
     console.log(`Server started on port ${port}`)
 })
 
-app.get('/checkusername', async(req, res) => {
-    try {
-        if (req.query.username === "")
-            return;
+function isEmpty(str) {
+    return (!str || 0 === str.length);
+}
 
-        console.log(`/checkusername ${req.query.username}`);
-        let results = await db.query(
-            `SELECT u.Username FROM users u WHERE u.username = ?`, 
-            [req.query.username]
-        );
+app.get('/users', async(req, res) => {
+    try {
+        console.log(req.originalUrl);
+        let myquery = "";
+        let params = [];
+        if (!isEmpty(req.query.username)) {
+            myquery += " Username = ? AND";
+            params.push(req.query.username);
+        }
+        if (!isEmpty(req.query.email)) {
+            myquery += " Email = ? AND";
+            params.push(req.query.email);
+        }
+        if (!isEmpty(req.query.role)) {
+            myquery += " Role = ? AND";
+            params.pussh(req.query.role);
+        }
+        if (!isEmpty(req.query.id)) {
+            myquery += " idUsers = ? AND";
+            params.push(req.query.id);
+        }
+
+        let results;
+        if (myquery !== "") {
+            myquery = myquery.slice(0,-3);
+            results = await db.query(
+                `SELECT u.idUsers, u.Email, u.Username, u.Name,
+                 u.Surname, u.Telephone, u.Role, u.ProfilePicPath 
+                FROM users u 
+                WHERE` + myquery, 
+                params
+            );
+        }
+        else {
+            results = await db.query(
+                `SELECT u.idUsers, u.Email, u.Username, u.Name,
+                 u.Surname, u.Telephone, u.Role, u.ProfilePicPath 
+                FROM users u`
+            );
+        }
+
+        let token = isEmpty(req.headers.authorization) ? 'null' : req.headers.authorization.split(' ')[1];
+        let user = null;
+        if (token !== 'null' && !isEmpty(token)) {
+            user = jwt.verify(token, secretKey);
+            if (user) user = user.user;
+        }
+
+        if (user !== null) {
+            try {
+                results[0][0].loggedin = true;
+                if (user.idUsers === results[0][0].idUsers)
+                    results[0][0].same = true;
+            } catch (error) {
+                res.sendStatus(404);
+                return;
+            }
+        }
+
         res.send(results[0])
+    } catch (error) {
+        res.sendStatus(500);
+        console.error(error)
+    }
+});
+
+app.get('/users/:username', async(req, res) => { //get info of target user
+    try {
+        console.log(req.originalUrl);
+        let results = await db.query(
+            `SELECT u.idUsers, u.Email, u.Username, u.Name, 
+            u.Surname, u.Telephone, u.Role, u.ProfilePicPath 
+            FROM users u
+            WHERE u.Username = ?`, 
+            req.params.username
+        );
+        if (results[0].length) 
+            res.send(results[0]);
+        else
+            res.sendStatus(404);
     } catch (error) {
         res.sendStatus(500);
         console.error(error)
     }
 })
 
-app.get('/checkemail', async(req, res) => {
-    try {
-        if (req.query.email === "")
-            return;
 
-        console.log(`/checkemail ${req.query.email}`);
-        let results = await db.query(
-            `SELECT u.Email FROM users u WHERE u.Email = ?`, 
-            [req.query.email]
-        );
-        res.send(results[0])
-    } catch (error) {
-        res.sendStatus(500);
-        console.error(error)
-    }
-})
 
-app.post('/signup', upload.single('picture'), async (req, res) => {
+app.post('/users', upload.single('picture'), async (req, res) => {
     try {
-        console.log(`/signup ${req.body.username}`);
+        console.log(`post /users ${req.body.username}`);
         
         if (req.body.username === '' || req.body.email === '' || 
             req.body.password === '' || req.body.name === '' ||
@@ -153,51 +211,34 @@ app.post('/signup', upload.single('picture'), async (req, res) => {
     }
 })
 
-app.get('/profile', async(req, res) => { //get info of target user
+app.get('/unaproved', async (req,res) => {
     try {
-        if (req.query.username === "")
-            return;
-
-        console.log(`/profile ${req.query.username}`);
-        let result = await db.query(
-            `SELECT u.* FROM users u WHERE u.Username = ?`, 
-            [req.query.username]
-        );
-        if (result[0].length === 0) { //if user does not exist
-            res.sendStatus(400);
-            return;
-        }
-        if (result[0].length > 1) { //if found identical usernames
-            console.error(`Identical usernames found: ${result[0][0].Username}`)
-            res.sendStatus(500);
-            return;
-        }
-
         let token = req.headers.authorization.split(' ')[1];
         let user = null;
         if (token !== 'null' && token !== 'undefined') {
             user = jwt.verify(token, secretKey);
             if (user) user = user.user;
         }
-        let profile = result[0][0];
-        
-        profile.same = user ? user.idUsers === profile.idUsers : false;
-        profile.admin = user ? user.Role === 'admin' : false;
-        profile.loggedin = user ? true : false;
-
-        if (user === null || !(profile.same || profile.admin || user.Role === 'aproved')) {
-            delete profile.Password;
-            delete profile.Email;
-            delete profile.Telephone;
-        }
         else {
-            delete profile.Password ;
+            res.sendStatus(400);
+            return;
         }
 
-        res.send(profile);
+        if (user.Role !== 'admin') {
+            res.sendStatus(403);
+            return;
+        }
+        
+        console.log(`/unaproved`);
+
+        let result = await db.query(
+            `SELECT u.* FROM users u 
+            WHERE u.Role = 'unaproved' 
+            ORDER BY u.Username ASC`);
+        res.send(result[0]);
     } catch (error) {
+        console.error(error);
         res.sendStatus(500);
-        console.error(error)
     }
 })
 
@@ -846,7 +887,7 @@ app.post('/login', async (req, res) => {
     }
 })
 
-app.post('/userupdate', upload.single('picture'), async (req, res) => {
+app.put('/users', upload.single('picture'), async (req, res) => {
     try {
         let token = req.headers.authorization.split(' ')[1];
         let user = null;
@@ -858,7 +899,67 @@ app.post('/userupdate', upload.single('picture'), async (req, res) => {
             res.sendStatus(400);
             return;
         }
-        console.log(`/userupdate ${req.body.username}`);
+        console.log(`put /users ${req.body.username}`);
+
+        let result = await db.query(
+            `SELECT Password FROM users 
+            WHERE idUsers = ?`, [user.idUsers]
+        );
+        if (result[0].length === 0) { //if user does not exist
+            res.sendStatus(400);
+            return;
+        }
+        if (result[0].length > 1) { //if found identical users
+            console.error(`Identical users found: ${user.idUsers}`)
+            res.sendStatus(500);
+            return;
+        }
+
+        let match = bcrypt.compareSync(req.body.password, result[0][0].Password);
+
+        if (!match) { //if given wrong password
+            res.sendStatus(403);
+            return;
+        }
+        
+        result = await db.query(
+            `UPDATE users
+            SET Email = ?, Username = ?, Name = ?, Surname = ?, Telephone = ?, ProfilePicPath = ?
+            WHERE users.idUsers = ?`, 
+            [req.body.email, req.body.username, req.body.name, req.body.surname, req.body.telephone, req.file ? (req.file.filename) : user.ProfilePicPath,
+            user.idUsers]
+        );
+        
+        if (result[0].affectedRows === 0) { //if update did not succeed
+            res.sendStatus(500);
+            return;
+        }
+        if (result[0].affectedRows > 1) { //if updated more rows
+            console.error(`Updated multiple rows with id: ${user.idUsers}`)
+            res.sendStatus(500);
+            return;
+        }
+
+        res.sendStatus(200);
+    } catch (error) {
+        res.sendStatus(403);
+        console.error(error)
+    }
+})
+
+app.put('/users', async (req, res) => {
+    try {
+        let token = req.headers.authorization.split(' ')[1];
+        let user = null;
+        if (token !== 'null' && token !== 'undefined') {
+            user = jwt.verify(token, secretKey);
+            if (user) user = user.user;
+        }
+        else {
+            res.sendStatus(400);
+            return;
+        }
+        console.log(`put /users ${req.body.username}`);
 
         let result = await db.query(
             `SELECT Password FROM users 
@@ -1091,66 +1192,6 @@ app.post('/newmessage', async (req, res) => {
     }
 })
 
-app.get('/users', async (req,res) => {
-    try {
-        let token = req.headers.authorization.split(' ')[1];
-        let user = null;
-        if (token !== 'null' && token !== 'undefined') {
-            user = jwt.verify(token, secretKey);
-            if (user) user = user.user;
-        }
-        else {
-            res.sendStatus(400);
-            return;
-        }
-
-        if (user.Role !== 'admin') {
-            res.sendStatus(403);
-            return;
-        }
-        
-        console.log(`/users`);
-
-        let result = await db.query(
-            `SELECT u.* FROM users u 
-            ORDER BY u.Role DESC, u.Username ASC`);
-        res.send(result[0]);
-    } catch (error) {
-        console.error(error);
-        res.sendStatus(500);
-    }
-})
-
-app.get('/unaproved', async (req,res) => {
-    try {
-        let token = req.headers.authorization.split(' ')[1];
-        let user = null;
-        if (token !== 'null' && token !== 'undefined') {
-            user = jwt.verify(token, secretKey);
-            if (user) user = user.user;
-        }
-        else {
-            res.sendStatus(400);
-            return;
-        }
-
-        if (user.Role !== 'admin') {
-            res.sendStatus(403);
-            return;
-        }
-        
-        console.log(`/unaproved`);
-
-        let result = await db.query(
-            `SELECT u.* FROM users u 
-            WHERE u.Role = 'unaproved' 
-            ORDER BY u.Username ASC`);
-        res.send(result[0]);
-    } catch (error) {
-        console.error(error);
-        res.sendStatus(500);
-    }
-})
 
 app.get('/dbdownload', async (req,res) => {
     try {
