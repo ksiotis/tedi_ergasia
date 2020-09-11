@@ -72,6 +72,10 @@ app.listen(port,() => {
     console.log(`Server started on port ${port}`)
 })
 
+function isEmpty(str) {
+    return (!str || 0 === str.length);
+}
+
 app.get('/checkusername', async(req, res) => {
     try {
         if (req.query.username === "")
@@ -202,101 +206,148 @@ app.get('/profile', async(req, res) => { //get info of target user
 })
 
 //THOMAS TESTING FUNCTIONS
-app.post('/search', async (req, res) => {
-    try {
-        
-        console.log('I ENTERED SEARCH');
-        // console.log(req);
 
-        let results = await db.query(
-            `SELECT a.idAccomodation, a.Name, a.Type, a.Beds, a.PricePerNight, a.Latitude, a.Longtitude, a.Persons  
-             FROM accomodations a`, 
-        );
-        
-        let accepted = [];
-        console.log("RESULTS " + results[0].length);
-        console.log(results[0]);
+//returns accommodation IDs that meet query criteria
+app.get('/accommodations', async (req, res) => {
+    try{
+        console.log('I ENTERED /accommodations.');
 
-        for(i = 0 ; i < results[0].length ; i++) {
-            console.log("EXAMINING " + results[0][i].idAccomodation);
+        if(
+            isEmpty(req.query.north)    || 
+            isEmpty(req.query.west)     || 
+            isEmpty(req.query.south)    || 
+            isEmpty(req.query.east)     || 
+            isEmpty(req.query.date1)    || 
+            isEmpty(req.query.date2)    || 
+            isEmpty(req.query.persons)  ||
+            isEmpty(req.query.north)    ||
+            isEmpty(req.query.wifi)     ||
+            isEmpty(req.query.freezer)  ||
+            isEmpty(req.query.heating)  ||
+            isEmpty(req.query.kitchen)  ||
+            isEmpty(req.query.tv)       ||
+            isEmpty(req.query.parking)  ||
+            isEmpty(req.query.lift)     ||
+            isEmpty(req.query.livingRoom)
+        ){
+            console.log('EMPTY STRING IN QUERY!');
+            req.send(400);
+        }
+        else{
+            let criteria = {
 
-            if( req.body.south <= results[0][i].Latitude && results[0][i].Latitude <= req.body.north &&
-                req.body.west <= results[0][i].Longtitude && results[0][i].Longtitude <= req.body.east &&
-                req.body.persons <= results[0][i].Persons){
-                console.log("WITHIN BOUNDS "  + results[0][i].idAccomodation);
+                north: Number(req.query.north),
+                west: Number(req.query.west),
+                south: Number(req.query.south),
+                east: Number(req.query.east),
+                date1: Date(req.query.date1),
+                date2: Date(req.query.date2),
+                persons: Number(req.query.persons),
+                wifi: Boolean(req.query.wifi === 'true'),
+                freezer: Boolean(req.query.freezer === 'true'),
+                heating: Boolean(req.query.heating === 'true'),
+                kitchen: Boolean(req.query.kitchen === 'true'),
+                tv: Boolean(req.query.tv === 'true'),
+                parking: Boolean(req.query.parking === 'true'),
+                lift: Boolean(req.query.lift === 'true'),
+                livingRoom: Boolean(req.query.livingRoom === 'true'),
+            }
+            console.log("SEARCH CRITERIA:");
+            console.log(criteria);
+
+            // getting all accommodations
+            let results = await db.query(
+                `SELECT a.idAccomodation, a.Name, a.Type, a.Beds, a.PricePerNight, a.Latitude, a.Longtitude, a.Persons  
+                 FROM accomodations a`, 
+            );
+            
+            let accepted = [];
+            
+            // going through all accommodations
+            for(let i = 0 ; i < results[0].length ; i++) {
+                console.log("EXAMINING " + results[0][i].idAccomodation);
                 
-                let date1 = new Date(req.body.date1);
-                let date2 = new Date(req.body.date2);
-                let reservations = await db.query(
-                    `SELECT r.From, r.To  
-                    FROM reservations r
-                    WHERE r.Accomodations_idAccomodation = ?`,
-                    [results[0][i].idAccomodation]
-                );
-
-                let availabilitydates = await db.query(
-                    `SELECT r.From, r.To  
-                    FROM availabilitydates r
-                    WHERE idAccomodation = ?`,
-                    [results[0][i].idAccomodation]
-                );
-                
-                let calendar = reservations[0].concat(availabilitydates[0]);
-
-                // console.log(reservations);
-                let flag = true;
-
-                var j;
-                for(j = 0 ; j < calendar.length ; j ++){
-                    // console.log(reservations[0]);
-                    let from = calendar[j].From;
-                    let to = calendar[j].To;
-                    from = new Date(from);
-                    to = new Date(to);
+                // if accommodation meets geographic and numeric criteria
+                if( 
+                    criteria.south <= results[0][i].Latitude && results[0][i].Latitude <= criteria.north &&
+                    criteria.west <= results[0][i].Longtitude && results[0][i].Longtitude <= criteria.east &&
+                    criteria.persons <= results[0][i].Persons
+                ){
                     
-                    console.log(from);
-                    if((from <= date1 && date1 <= to) || (from <= date2 && date2 <= to)){
-                        flag = false;
-                        break;
-                    }
-                }  
-                if(flag == true){
-                    console.log("AVAILIABLE " + results[0][i].idAccomodation);
-                    let picture = await db.query(
-                        `SELECT p.Path  
-                        FROM accomodationphotos p
-                        WHERE p.idAccomodation = ?`,
-                        [results[0][i].idAccomodation] 
-                    );
-    
-                    // console.log(picture);
-                    let reviews = await db.query(
-                        `SELECT r.Rating  
-                        FROM accomodationreview r
+                    console.log("WITHIN GEOGRAPHIC AND PEOPLE BOUNDS "  + results[0][i].idAccomodation);
+                    
+                    // getting reservations and disabled dates
+                    let reservations = await db.query(
+                        `SELECT r.From, r.To  
+                        FROM reservations r
                         WHERE r.Accomodations_idAccomodation = ?`,
                         [results[0][i].idAccomodation]
                     );
-                    // console.log(reviews);
-
-                    let chars = await db.query(
-                        `SELECT c.Characteristics_idCharacteristics  
-                        FROM accomodations_has_characteristics c
-                        WHERE c.Accomodations_idAccomodation = ?`,
+    
+                    let availabilitydates = await db.query(
+                        `SELECT r.From, r.To  
+                        FROM availabilitydates r
+                        WHERE idAccomodation = ?`,
                         [results[0][i].idAccomodation]
                     );
-                    // console.log(chars[0]);
+                    let calendar = reservations[0].concat(availabilitydates[0]);
+    
+                    // flag for accepting results
+                    let flag = true;
+    
+                    for(let j = 0 ; j < calendar.length ; j ++){
+                
+                        let from = calendar[j].From;
+                        let to = calendar[j].To;
+                        from = new Date(from);
+                        to = new Date(to);
+                        
+                        // check if any of the accommodations is incompatible
+                        if((from <= criteria.date1 && criteria.date1 <= to) || (from <= criteria.date2 && criteria.date2 <= to)){
+                            flag = false;
+                            break;
+                        }
+                    }
                     
-                    results[0][i].Characteristics = chars[0];
-                    results[0][i].Thumbnail = picture[0][0].Path;
-                    results[0][i].Ratings = reviews[0];
-                    
-                    console.log(results[0][i]);
-                    accepted.push(results[0][i]);
+                    // if no incompatible dates were found
+                    if(flag == true){
+                        console.log("COMPATIBLE DATES " + results[0][i].idAccomodation);
+                        
+                        let chars = await db.query(
+                            `SELECT a.Characteristics_idCharacteristics
+                            FROM accomodations_has_characteristics a
+                            WHERE Accomodations_idAccomodation = ?`,
+                            [results[0][i].idAccomodation]
+                        );
+                        
+                        
+                        let currChars = [];
+                        for(let j = 0 ; j < chars[0].length ; j++){
+                            currChars.push(chars[0][j].Characteristics_idCharacteristics);
+                        }
+                        
+                        let wantedChars = [];
+                        if(criteria.wifi == true) wantedChars.push(0);
+                        if(criteria.freezer == true) wantedChars.push(1);
+                        if(criteria.heating == true) wantedChars.push(2);
+                        if(criteria.kitchen == true) wantedChars.push(3);
+                        if(criteria.tv == true) wantedChars.push(4);
+                        if(criteria.parking == true) wantedChars.push(5);
+                        if(criteria.lift == true) wantedChars.push(6);
+                        if(criteria.livingRoom == true) wantedChars.push(7);
+                        
+                        let flag = true;
+                        flag = wantedChars.every(i => currChars.includes(i)); //check if every wanted char is in the curr char
+
+                        if(flag == true){
+                            accepted.push(results[0][i].idAccomodation);
+                        }
+                    }
                 }
             }
+            res.send(accepted);
+            res.sendStatus(200);
         }
-        res.send(accepted);
-        res.sendStatus(200);
     } 
     catch(error) {
         res.sendStatus(500);
@@ -304,89 +355,75 @@ app.post('/search', async (req, res) => {
     }
 })
 
-app.post('/view', async (req, res) => {
+// returns everything regarding this id
+app.get('/accommodations/:id', async (req, res) => {
     try {
-        console.log('I ENTERED VIEW');
-        let result = await db.query(
-            `SELECT a.*  
-             FROM accomodations a
-             WHERE a.idAccomodation = ?`,
-             [req.body.id] 
-        );
-        // console.log(result[0][0]);
+        console.log('I ENTERED /accommodations/:id');
         
-        let photos = await db.query(
-            `SELECT a.*  
-             FROM accomodationphotos a
-             WHERE a.idAccomodation = ?`,
-             [req.body.id] 
-        );
-        // console.log(photos[0][0]);
-
-        let reviews = await db.query(
-            `SELECT a.*  
-             FROM accomodationreview a
-             WHERE a.Accomodations_idAccomodation = ?`,
-             [req.body.id] 
-        );
-        // console.log(reviews[0][0]);
-        
-        let chars = await db.query(
-            `SELECT c.Characteristics_idCharacteristics  
-            FROM accomodations_has_characteristics c
-            WHERE c.Accomodations_idAccomodation = ?`,
-            [req.body.id]
-        );
-
-        let reservations = await db.query(
-            `SELECT r.From, r.To  
-            FROM reservations r
-            WHERE r.Accomodations_idAccomodation = ?`,
-            [req.body.id]
-        );
-
-        let availabilitydates = await db.query(
-            `SELECT r.From, r.To  
-            FROM availabilitydates r
-            WHERE idAccomodation = ?`,
-            [req.body.id]
-        );
-
-        let host = await db.query(
-            `SELECT u.Name, u.Surname, u.ProfilePicPath, u.Username  
-            FROM users u
-            WHERE u.idUsers = ?`,
-            [result[0][0].idHost]
-        );
-        // console.log(host);
-        
-        let reviewers = [];
-        for(let i=0 ; i < reviews[0].length ; i++){
-            let temp = await db.query(
-                `SELECT u.Username, u.ProfilePicPath, u.idUsers  
-                FROM users u
-                WHERE u.idUsers = ?`,
-                [reviews[0][i].Users_idUsers]
-            );
-            reviewers.push(temp[0][0]); 
+        if(isEmpty(req.params.id)){
+            console.log('EMPTY ID!');
+            req.send(400);
         }
-        // console.log(reviewers);
-            
-        let final = {
-            ...result[0][0],
-            Reviews: reviews[0],
-            Reviewers: reviewers,
-            Path: photos[0],
-            Characteristics: chars[0],
-            Reservations: reservations[0].concat(availabilitydates[0]),
-            Host: host[0][0],
-        };
+        else{
+            let id = Number(req.params.id);
+            console.log('FETCHING FOR ' + id);
 
-        // console.log(final);
-        
-        res.send(final);
-        
-        res.sendStatus(200);
+
+            let accomodations = await db.query(
+                `SELECT a.*  
+                 FROM accomodations a
+                 WHERE a.idAccomodation = ?`,
+                 [id] 
+            );
+
+            let accomodationphotos = await db.query(
+                `SELECT a.*  
+                FROM accomodationphotos a
+                WHERE a.idAccomodation = ?`,
+                [id] 
+            );
+
+            let accomodationreview = await db.query(
+                `SELECT a.*  
+                FROM accomodationreview a
+                WHERE a.Accomodations_idAccomodation = ?`,
+                [id] 
+            );
+
+            let accomodations_has_characteristics = await db.query(
+                `SELECT c.*  
+                FROM accomodations_has_characteristics c
+                WHERE c.Accomodations_idAccomodation = ?`,
+                [id]
+            );
+    
+
+            let reservations = await db.query(
+                `SELECT r.* 
+                FROM reservations r
+                WHERE r.Accomodations_idAccomodation = ?`,
+                [id]
+            );
+
+            let availabilitydates = await db.query(
+                `SELECT r.*  
+                FROM availabilitydates r
+                WHERE idAccomodation = ?`,
+                [id]
+            );
+
+            let final = {
+                accomodations: accomodations[0],
+                accomodationphotos: accomodationphotos[0],
+                accomodationreview: accomodationreview[0],
+                accomodations_has_characteristics: accomodations_has_characteristics[0],
+                reservations: reservations[0],
+                availabilitydates: availabilitydates[0],
+            };
+    
+            res.send(final);
+            res.sendStatus(200);
+        }        
     } 
     catch(error) {
         res.sendStatus(500);
