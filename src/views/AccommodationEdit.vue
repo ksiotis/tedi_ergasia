@@ -26,7 +26,7 @@
                             style="height: 335px; width: 690px;" 
                             v-for="(p, index) in content.images"
                             v-bind:key="index"
-                            :img-src="require(`@/assets/accommodation_pics/${p}`)"/>
+                            :img-src="require(`@/assets/accommodation_pics/${p.Path}`)"/>
                     </b-carousel>
                 </div>
                 <div class="d-flex flex-row align-items-center">
@@ -165,7 +165,10 @@
                         @update:center="centerUpdated"
                         @update:bounds="boundsUpdated"
                         >
-                        <l-marker :lat-lng="content.markerLatLng" ></l-marker>
+                        <l-marker 
+                            :draggable="true" 
+                            :lat-lng="content.markerLatLng"
+                             ></l-marker>
                         <l-tile-layer :url="url"></l-tile-layer>
                     </l-map>
                 </div>
@@ -425,40 +428,159 @@ Icon.Default.mergeOptions({
             }
         },
 
+        assign_characteristics(characteristics){
+            let final = [
+                {
+                    name: 'Wifi',
+                    icon: 'ion-wifi',
+                    status: false,
+                },
+                {
+                    name: 'Ψύξη',
+                    icon: 'ion-snow',
+                    status: false,
+                },
+                {
+                    name: 'Θέρμανση',
+                    icon: 'ion-thermometer',
+                    status: false,
+                },
+                {
+                    name: 'Κουζίνα',
+                    icon: 'ion-fast-food',
+                    status: false,
+                },
+                {
+                    name: 'Τηλεόραση',
+                    icon: 'ion-tv',
+                    status: false,
+                },
+                {
+                    name: 'Χώρος στάθμευσης',
+                    icon: 'ion-car',
+                    status: false,
+                },
+                {
+                    name: 'Ανελκυστήρας',
+                    icon: 'ion-arrow-up',
+                    status: false,
+                },
+                {
+                    name: 'Καθιστικό',
+                    icon: 'ion-happy-outline',
+                    status: false,
+                },
+            ];
+            var i;
+            for(i=0 ; i < characteristics.length ; i++){
+                if(characteristics[i].Characteristics_idCharacteristics == 0){
+                    final[0].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 1){
+                    final[1].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 2){
+                    final[2].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 3){
+                    final[3].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 4){
+                    final[4].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 5){
+                    final[5].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 6){
+                    final[6].status = true;
+                }
+                else if(characteristics[i].Characteristics_idCharacteristics == 7){
+                    final[7].status = true;
+                }
+            }
+            return final;
+        },
+
         async fetch(id) {
-            // if (this.user) {
-            //     console.log("FETCHING" + id);
-            //     let response = await this.$axios.post('/fetch', {
-            //         id: id,
-            //     });
-            //     console.log(response);
-            //     this.content = response.data;
-            //     this.reservedDates = this.disable_dates(response.data.disabledDates);
-            // }
+                
+            let response = await this.$axios.get('/accommodations/' + id);
+            let data = response.data;
+            console.log(data);
+
+            var type;
+            if(data.accomodations.Type == 'room') type = "Δωμάτιο";
+            else type = "Οικεία";
+
+            let content = {
+                id: id,
+                title: data.accomodations[0].Name,
+                description: data.accomodations[0].Description,
+                area: data.accomodations[0].Area,
+                price: data.accomodations[0].PricePerNight,
+                extraCost: data.accomodations[0].ExtraCostPerPerson,
+                minDays: data.accomodations[0].MinimumDays,
+                maxPersons: data.accomodations[0].Persons,
+                numBaths: data.accomodations[0].Bathrooms,
+                numBeds: data.accomodations[0].Beds,
+                numBedrooms: data.accomodations[0].Bathrooms,
+                type: type,
+                images: data.accomodationphotos,
+                
+                characteristics: this.assign_characteristics(data.accomodations_has_characteristics),
+                rules: data.accomodations[0].Rules,
+
+                location: data.accomodations[0].Location,
+                address: data.accomodations[0].Address,
+                markerLatLng: [data.accomodations[0].Latitude, data.accomodations[0].Longtitude],
+
+                newReservedDates:[],
+            };
+            this.content = content;
+
+            let dates = data.reservations.concat(data.availabilitydates);
+            for(let i = 0 ; i<dates.length ; i++) dates[i] = { From: dates[i].From, To: dates[i].To };
+            this.reservedDates = this.disable_dates(dates);
+
         },
 
         async submit_edit() {
-            // if (this.user) {
-            //     console.log("SUBMIT EDIT");
-            //     let formData = new FormData();
-            //     formData.append('content', JSON.stringify(this.content));
-            //     formData.append('idHost', this.$store.state.user.idUsers);
-            //     for (var i = 0; i < this.images.length; i++) {
-            //         var file = this.images[i];
-            //         formData.append('images', file);
-            //     }
-
-            //     let response = await this.$axios.post('/submit_edit',
-            //         formData, 
-            //         {
-            //             headers: {
-            //                 crossdomain: true,
-            //                 'Content-Type': 'undefined'
-            //             }
-            //         }
-            //     );
-            // }
-            // location.reload();
+            if(this.content.id == null){
+                let formData = new FormData();
+                formData.append('content', JSON.stringify(this.content));
+                formData.append('idHost', this.$store.state.user.idUsers);
+                for (var i = 0; i < this.images.length; i++) {
+                    var file = this.images[i];
+                    formData.append('images', file);
+                }
+                let response = await this.$axios.post('accommodations',
+                    formData, 
+                    {
+                        headers: {
+                            crossdomain: true,
+                            'Content-Type': 'undefined'
+                        }
+                    }
+                );
+            }
+            else{
+                 let formData = new FormData();
+                formData.append('content', JSON.stringify(this.content));
+                formData.append('idHost', this.$store.state.user.idUsers);
+                for (var i = 0; i < this.images.length; i++) {
+                    var file = this.images[i];
+                    formData.append('images', file);
+                }
+                let response = await this.$axios.put('accommodations/' + this.content.id,
+                    formData, 
+                    {
+                        headers: {
+                            crossdomain: true,
+                            'Content-Type': 'undefined'
+                        }
+                    }
+                );
+            }
+            location.reload();
         },
     },
     computed: {

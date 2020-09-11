@@ -493,7 +493,7 @@ app.post('/accommodations/:id/reservations', async (req, res) => {
 })
 
 
-app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
+app.post('/accommodations', upload2.array('images', 10), async (req, res) => {
     try {
         // console.log('I ENTERED REVIEW');
         let body = {
@@ -521,139 +521,58 @@ app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
         // console.log(req.files[0].filename);
         
         //create new entry
-        if (body.content.id == null) {
+   
 
-            let results = await db.query(
-                `INSERT INTO accomodations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-                [
-                    null,
-                    req.body.idHost, 
-                    body.content.title, 
-                    type,
-                    body.content.location,
-                    body.content.price,
-                    body.content.maxPersons,
-                    body.content.area,
-                    body.content.numBedrooms,
-                    body.content.numBeds,
-                    body.content.numBaths,
-                    body.content.minDays,
-                    body.content.description,
-                    body.content.extraCost,
-                    body.content.markerLatLng[1],
-                    body.content.markerLatLng[0],
-                    body.content.location,
-                    body.content.address,
-                    body.content.rules
-                ]
+        let results = await db.query(
+            `INSERT INTO accomodations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+            [
+                null,
+                req.body.idHost, 
+                body.content.title, 
+                type,
+                body.content.location,
+                body.content.price,
+                body.content.maxPersons,
+                body.content.area,
+                body.content.numBedrooms,
+                body.content.numBeds,
+                body.content.numBaths,
+                body.content.minDays,
+                body.content.description,
+                body.content.extraCost,
+                body.content.markerLatLng[1],
+                body.content.markerLatLng[0],
+                body.content.location,
+                body.content.address,
+                body.content.rules
+            ]
+        );
+        // console.log(results);
+        
+        //adding characteristics
+        for(let i = 0 ; i < charEntries.length ; i++){
+            let newChar = await db.query(
+                `INSERT INTO accomodations_has_characteristics VALUES (?, ?)`, 
+                [results[0].insertId, charEntries[i]]
             );
-            // console.log(results);
-            
-            //adding characteristics
-            for(let i = 0 ; i < charEntries.length ; i++){
-                let newChar = await db.query(
-                    `INSERT INTO accomodations_has_characteristics VALUES (?, ?)`, 
-                    [results[0].insertId, charEntries[i]]
-                );
-            }
-            
-            //adding images
-            for(let i = 0 ; i < req.files.length ; i++){
-                let newPics = await db.query(
-                    `INSERT INTO accomodationphotos VALUES (?, ?, ?)`, 
-                    [null, results[0].insertId, req.files[i].filename]
-                );
-            }
+        }
+        
+        //adding images
+        for(let i = 0 ; i < req.files.length ; i++){
+            let newPics = await db.query(
+                `INSERT INTO accomodationphotos VALUES (?, ?, ?)`, 
+                [null, results[0].insertId, req.files[i].filename]
+            );
+        }
 
-            //adding disables dates
-            for(let i = 0 ; i < body.content.newReservedDates.length ; i++){
-                let newDates = await db.query(
-                    `INSERT INTO availabilitydates VALUES (?, ?, ?, ?)`, 
-                    [null, results[0].insertId, body.content.newReservedDates[i].From, body.content.newReservedDates[i].To]
-                );
-            }
-
-
+        //adding disables dates
+        for(let i = 0 ; i < body.content.newReservedDates.length ; i++){
+            let newDates = await db.query(
+                `INSERT INTO availabilitydates VALUES (?, ?, ?, ?)`, 
+                [null, results[0].insertId, body.content.newReservedDates[i].From, body.content.newReservedDates[i].To]
+            );
         }
         //updating existing entry
-        else {
-
-            let results = await db.query(
-                `UPDATE accomodations 
-                SET 
-                    idHost = ?,
-                    Name = ?,
-                    Type = ?,
-                    Directions = ?,
-                    PricePerNight = ?,
-                    Persons = ?,
-                    Area = ?,
-                    Bedrooms = ?,
-                    Beds = ?,
-                    Bathrooms = ?,
-                    MinimumDays = ?,
-                    Description = ?,
-                    ExtraCostPerPerson = ?,
-                    Longtitude = ?,
-                    Latitude = ?,
-                    Location = ?,
-                    Address = ?,
-                    Rules = ?
-                WHERE idAccomodation = ?;`, 
-                [
-                    req.body.idHost, 
-                    body.content.title, 
-                    type,
-                    body.content.location,
-                    body.content.price,
-                    body.content.maxPersons,
-                    body.content.area,
-                    body.content.numBedrooms,
-                    body.content.numBeds,
-                    body.content.numBaths,
-                    body.content.minDays,
-                    body.content.description,
-                    body.content.extraCost,
-                    body.content.markerLatLng[1],
-                    body.content.markerLatLng[0],
-                    body.content.location,
-                    body.content.address,
-                    body.content.rules,
-                    body.content.id, 
-                ]
-            );
-            
-            //deleting old characteristics
-            let deleted = await db.query(
-                `DELETE FROM accomodations_has_characteristics WHERE Accomodations_idAccomodation = ?;`,
-                [body.content.id]
-            );
-            
-            // adding new characteristics
-            for(let i = 0 ; i < charEntries.length ; i++){
-                let newChar = await db.query(
-                    `INSERT INTO accomodations_has_characteristics VALUES (?, ?)`, 
-                    [body.content.id, charEntries[i]]
-                );
-            }
-
-            //adding images
-            for(let i = 0 ; i < req.files.length ; i++){
-                let newPics = await db.query(
-                    `INSERT INTO accomodationphotos VALUES (?, ?, ?)`, 
-                    [null, body.content.id, req.files[i].filename]
-                );
-            }
-
-            //adding disables dates
-            for(let i = 0 ; i < body.content.newReservedDates.length ; i++){
-                let newDates = await db.query(
-                    `INSERT INTO availabilitydates VALUES (?, ?, ?, ?)`, 
-                    [null, body.content.id, body.content.newReservedDates[i].From, body.content.newReservedDates[i].To]
-                );
-            }
-
-        }
         res.sendStatus(200);
     } 
     catch(error) {
@@ -661,6 +580,120 @@ app.post('/submit_edit', upload2.array('images', 10), async (req, res) => {
         console.error(error);
     }
 })
+
+app.put('/accommodations/:id', upload2.array('images', 10), async (req, res) => {
+    try {
+        let id = Number(req.params.id);
+
+        // console.log('I ENTERED REVIEW');
+        let body = {
+            content: JSON.parse(req.body.content)
+        };
+        
+        //room type
+        var type;
+        if(body.content.type == 'Δωμάτιο') {
+            type = 'room';
+        }
+        else{
+            type = 'house';
+        }
+
+        //assign characteristics
+        let charEntries = [];
+        for(let i=0 ; i < body.content.characteristics.length ; i++){
+            if(body.content.characteristics[i].status == true){
+                charEntries.push(i);
+            } 
+        }
+        // console.log(charEntries);
+
+        // console.log(req.files[0].filename);
+        let results = await db.query(
+            `UPDATE accomodations 
+            SET 
+                idHost = ?,
+                Name = ?,
+                Type = ?,
+                Directions = ?,
+                PricePerNight = ?,
+                Persons = ?,
+                Area = ?,
+                Bedrooms = ?,
+                Beds = ?,
+                Bathrooms = ?,
+                MinimumDays = ?,
+                Description = ?,
+                ExtraCostPerPerson = ?,
+                Longtitude = ?,
+                Latitude = ?,
+                Location = ?,
+                Address = ?,
+                Rules = ?
+            WHERE idAccomodation = ?;`, 
+            [
+                req.body.idHost, 
+                body.content.title, 
+                type,
+                body.content.location,
+                body.content.price,
+                body.content.maxPersons,
+                body.content.area,
+                body.content.numBedrooms,
+                body.content.numBeds,
+                body.content.numBaths,
+                body.content.minDays,
+                body.content.description,
+                body.content.extraCost,
+                body.content.markerLatLng[1],
+                body.content.markerLatLng[0],
+                body.content.location,
+                body.content.address,
+                body.content.rules,
+                id, 
+            ]
+        );
+        
+        //deleting old characteristics
+        let deleted = await db.query(
+            `DELETE FROM accomodations_has_characteristics WHERE Accomodations_idAccomodation = ?;`,
+            [id]
+        );
+        
+        // adding new characteristics
+        for(let i = 0 ; i < charEntries.length ; i++){
+            let newChar = await db.query(
+                `INSERT INTO accomodations_has_characteristics VALUES (?, ?)`, 
+                [id, charEntries[i]]
+            );
+        }
+    
+        //adding images
+        for(let i = 0 ; i < req.files.length ; i++){
+            let newPics = await db.query(
+                `INSERT INTO accomodationphotos VALUES (?, ?, ?)`, 
+                [null, id, req.files[i].filename]
+            );
+        }
+    
+        //adding disables dates
+        for(let i = 0 ; i < body.content.newReservedDates.length ; i++){
+            let newDates = await db.query(
+                `INSERT INTO availabilitydates VALUES (?, ?, ?, ?)`, 
+                [null, id, body.content.newReservedDates[i].From, body.content.newReservedDates[i].To]
+            );
+        }
+    
+        //updating existing entry
+        res.sendStatus(200);
+    } 
+    catch(error) {
+        res.sendStatus(500);
+        console.error(error);
+    }
+})
+
+
 
 
 
