@@ -103,7 +103,7 @@ export default {
 
         this.users = response.data;
 
-        response = await this.$axios.get(`/unaproved`, {
+        response = await this.$axios.get(`/users?role=unaproved`, {
             headers: { "authorization": 'Bearer ' + this.$store.state.token }
         });
 

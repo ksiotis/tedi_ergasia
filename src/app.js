@@ -91,7 +91,7 @@ app.get('/users', async(req, res) => {
         }
         if (!isEmpty(req.query.role)) {
             myquery += " Role = ? AND";
-            params.pussh(req.query.role);
+            params.push(req.query.role);
         }
         if (!isEmpty(req.query.id)) {
             myquery += " idUsers = ? AND";
@@ -162,8 +162,6 @@ app.get('/users/:username', async(req, res) => { //get info of target user
     }
 })
 
-
-
 app.post('/users', upload.single('picture'), async (req, res) => {
     try {
         console.log(`post /users ${req.body.username}`);
@@ -208,37 +206,6 @@ app.post('/users', upload.single('picture'), async (req, res) => {
     } catch(error) {
         res.sendStatus(500);
         console.error(error)
-    }
-})
-
-app.get('/unaproved', async (req,res) => {
-    try {
-        let token = req.headers.authorization.split(' ')[1];
-        let user = null;
-        if (token !== 'null' && token !== 'undefined') {
-            user = jwt.verify(token, secretKey);
-            if (user) user = user.user;
-        }
-        else {
-            res.sendStatus(400);
-            return;
-        }
-
-        if (user.Role !== 'admin') {
-            res.sendStatus(403);
-            return;
-        }
-        
-        console.log(`/unaproved`);
-
-        let result = await db.query(
-            `SELECT u.* FROM users u 
-            WHERE u.Role = 'unaproved' 
-            ORDER BY u.Username ASC`);
-        res.send(result[0]);
-    } catch (error) {
-        console.error(error);
-        res.sendStatus(500);
     }
 })
 
