@@ -50,32 +50,36 @@
             <p style="color: white;">Φίλτρα:</p>
             <!-- checkboxes -->
             <div class="form-check" >
-                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
+                <input type="checkbox" v-model="searchForm.wifi" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Wifi</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
+                <input type="checkbox" v-model="searchForm.freezer" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Ψύξη</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
+                <input type="checkbox" v-model="searchForm.heating" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Θέρμανση</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
+                <input type="checkbox" v-model="searchForm.kitchen" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Κουζίνα</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
+                <input type="checkbox" v-model="searchForm.tv" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Τηλεόραση</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
+                <input type="checkbox" v-model="searchForm.parking" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Parking</label>
             </div>
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" @input="resultFlag = false;">
+                <input type="checkbox" v-model="searchForm.lift" class="form-check-input" @input="resultFlag = false;">
                 <label class="form-check-label" for="exampleCheck1">Ανελκυστήρας</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" v-model="searchForm.livingRoom" class="form-check-input" @input="resultFlag = false;">
+                <label class="form-check-label" for="exampleCheck1">Καθιστικό</label>
             </div>
             <!-- search button -->
             <div class="d-flex justify-content-center">
@@ -133,6 +137,15 @@ export default {
             date1: '',
             date2: '',
             persons: '',
+
+            wifi: false,
+            freezer: false,
+            heating: false,
+            kitchen: false,
+            tv: false,
+            parking: false,
+            lift: false,
+            livingRoom: false,
         },
 
         selected2: 'A',
@@ -222,64 +235,36 @@ export default {
         },
 
         async search() {
-            // evt.preventDefault();
             this.resultFlag = true;
-            try {
-                
-                this.results = [];
+            
+            this.results = [];
+            let query = "?north=" + this.searchForm.geo_package.bounds[1][0].toString() +
+                        "&west=" + this.searchForm.geo_package.bounds[0][1].toString() +
+                        "&south=" + this.searchForm.geo_package.bounds[0][0].toString() +
+                        "&east=" + this.searchForm.geo_package.bounds[1][1].toString() +
+                        "&date1=" + this.searchForm.date1.toISOString() +
+                        "&date2=" + this.searchForm.date2.toISOString() +
+                        "&persons=" + this.searchForm.persons.toString() +
+                        "&wifi=" + this.searchForm.wifi.toString() +
+                        "&freezer=" + this.searchForm.freezer.toString() +
+                        "&heating=" + this.searchForm.heating.toString() +
+                        "&kitchen=" + this.searchForm.kitchen.toString() +
+                        "&tv=" + this.searchForm.tv.toString() +
+                        "&parking=" + this.searchForm.parking.toString() +
+                        "&lift=" + this.searchForm.lift.toString() +
+                        "&livingRoom=" + this.searchForm.livingRoom.toString();
 
-                let response = await this.$axios.post('/search', {
-                    north: this.searchForm.geo_package.bounds[1][0],
-                    south: this.searchForm.geo_package.bounds[0][0],
-                    west: this.searchForm.geo_package.bounds[0][1],
-                    east: this.searchForm.geo_package.bounds[1][1],
-                    persons: this.searchForm.persons,
-                    date1: this.searchForm.date1.toISOString(),
-                    date2: this.searchForm.date2.toISOString(),
-                });
-                console.log(response);
-                
-                var i;
-                for(i=0 ; i < response.data.length ; i++){
-                    
-                    let avg = this.review_average(response.data[i].Ratings);
-                    var type;
-                    if(response.data[i].Type == 'room'){
-                        type = "Δωμάτιο";
-                    }
-                    else{
-                        type = "Οικεία";
-                    }
-                    let c = this.assign_characteristics(response.data[i].Characteristics)
-                    // console.log(response.data[i].Characteristics);
-                    
 
-                    let preview_package = {
-                        id: response.data[i].idAccomodation,
-                        img: response.data[i].Thumbnail,
-                        title: response.data[i].Name,
-                        reviewScore: avg,
-                        reviewCount: response.data[i].Ratings.length,
-                        roomType: type,
-                        price: response.data[i].PricePerNight,
-                        beds: response.data[i].Beds,
-                        characteristics: c,
-                    };
-                    this.results.push(preview_package);
-                }
-                this.results.sort(function(a, b) {
-                    var keyA = a.price,
-                        keyB = b.price;
-                    // Compare the 2 dates
-                    if (keyA < keyB) return -1;
-                    if (keyA > keyB) return 1;
-                    return 0;
-                });
-                                        
-            } catch(error) {
-                alert(this.errormessage)
-                console.log(error);
+            let response = await this.$axios.get('/accommodations' + query);
+            console.log("Valid IDs");
+            console.log(response.data);
+            let ids = response.data;    
+
+            for(let i = 0; i<ids.length ; i++){
+                let response = await this.$axios.get('/accommodations/' + ids[i]);
+                console.log(response.data);
             }
+           
         },
     },
     created() {
@@ -315,7 +300,7 @@ export default {
     background-color: #194A50;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     width: 350px;
-    height: 525px;
+    height: 565px;
     padding: 0 20px;
 
     position: sticky;

@@ -1,221 +1,223 @@
 <template>
-    <div class="d-flex justify-content-between container">
-        
-        <div class="contentLeft d-flex flex-column justify-content-start">
-            <!-- τίτλος  -->
-            <div class="d-flex flex-row align-items-center">
-                <input required class="form-control form-control-lg title" type="text" placeholder="Εισάγεται τίτλο..." v-model="content.title" style="width: 690px; height: 60px; color: #194A50">
-            </div>
-            <!-- εικόνες -->
-            <div class="element">
-                <b-carousel
-                    id="carousel-1"
-                    v-model="slide"
-                    :interval="3000"
-                    controls
-                    indicators
-                    background="#ccc"
-                    img-width="500"
-                    img-height="250"
-                    style="text-shadow: 1px 1px 2px #000;"
-                    @sliding-start="onSlideStart"
-                    @sliding-end="onSlideEnd"
-                >
-                    <b-carousel-slide
-                        style="height: 335px; width: 690px;" 
-                        v-for="(p, index) in content.images"
-                        v-bind:key="index"
-                        :img-src="require(`@/assets/accommodation_pics/${p}`)"/>
+    <form>
+        <div class="d-flex justify-content-between container">
             
-                </b-carousel>
-            </div>
-            <div class="d-flex flex-row align-items-center">
-                <div class="form-group">
-                    <b-form-file id="file-input" multiple @input="loadFile" v-model="images" accept="image/jpeg, image/png" placeholder="Επιλογή Εικόνας..."></b-form-file>
+            <div class="contentLeft d-flex flex-column justify-content-start">
+                <!-- τίτλος  -->
+                <div class="d-flex flex-row align-items-center">
+                    <input required class="form-control form-control-lg title" type="text" placeholder="Εισάγεται τίτλο..." v-model="content.title" style="width: 690px; height: 60px; color: #194A50">
                 </div>
-            </div>
-
-            <!-- περιγραφή -->
-            <h3 class="subtitle element">Περιγραφή</h3>
-            <div class="form-group">
-                <textarea required class="form-control" id="exampleFormControlTextarea1" rows="20" v-model="content.description" placeholder="Εισάγεται περιγραφή..." style="width: 690px; height: 180px; color: #194A50"></textarea>
-            </div>
-            
-            <!-- χαρακτηρηστικά -->
-            <div class="d-flex flex-row justify-content-between">
-                <!-- στήλη 1 -->
-                <div>
-                    
-                    <h3 class="subtitle element">Χαρακτηρηστικά</h3>
-                    <div class="d-flex flex-row align-items-baseline">
-                        <input type="number" v-model="content.area" min="0" class="area form-control" style="width: 80px;"/>
-                        <p>/τ.μ.</p>
-                    </div>
-
-                    <div class="characteristicsContainer">
-                        <h3 class="subtitle">Παροχές</h3>
-                        <form 
-                            class="d-flex flex-column"
-                            v-for="(characteristic, index) in content.characteristics"
-                            v-bind:key="index">
-                                <div class="d-flex flex-row align-items-center justify-content-start characterisitc">
-                                    <input type="checkbox" v-model="characteristic.status" class="form-check-input"/>
-                                    <span class="checktext">{{ characteristic.name }}</span>
-                                    <i aria-hidden="true" class="iconify mr-2 ml-auto" v-bind:data-icon="characteristic.icon" />
-                                </div>
-                        </form>
-                    </div>
-                </div>
-                <!-- στήλη 2 -->
-                <div>
-
-                    <h3 class="subtitle element">Ελάχιστη τιμή</h3>
-                    <div class="d-flex flex-row align-items-baseline">
-                        <input type="number" v-model="content.price" min="0" class="area form-control" style="width: 80px;"/>
-                        <p class="area">€</p>
-                        <p>/διανυκτέρευση</p>
-                    </div>
-
-                    <h3 class="subtitle">Επιπλέον κόστος</h3>
-                    <div class="d-flex flex-row align-items-baseline">
-                        <input type="number" v-model="content.extraCost" min="0" class="area form-control" style="width: 80px;"/>
-                        <p class="area">€</p>
-                        <p>/ανά άτομο</p>
-                    </div>
-
-                    <!-- αριθμητικά -->
-                    
-                    <div class="d-flex flex-row justify-content-between arithmetic">
-                        <p>Ελάχιστες μέρες:</p>
-                        <input type="number" v-model="content.minDays" min="0" class="form-control"/>             
-                    </div>
-                    <div class="d-flex flex-row justify-content-between arithmetic">
-                        <p>Αριθμός ατόμων:</p>
-                        <input type="number" v-model="content.maxPersons" min="0" class="form-control"/>             
-                    </div>
-                    <div class="d-flex flex-row justify-content-between arithmetic">
-                        <p>Αριθμός μπάνιων:</p>
-                        <input type="number" v-model="content.numBaths" min="0" class="form-control"/>             
-                    </div>
-                    <div class="d-flex flex-row justify-content-between arithmetic">
-                        <p>Αριθμός κρεβατιών:</p>
-                        <input type="number" v-model="content.numBeds" min="0" class="form-control"/>             
-                    </div>
-                    <div class="d-flex flex-row justify-content-between arithmetic">
-                        <p>Αριθμός υπνοδωματίων:</p>
-                        <input type="number" v-model="content.numBedrooms" min="0" class="form-control"/>             
-                    </div>
-                    <div class="d-flex flex-row justify-content-between arithmetic">
-                        <p>Τύπος χώρου:</p>
-                        <select class="form-control" id="exampleFormControlSelect1" style="height: 35px; width: 100px;"  v-model="content.type">
-                            <option>Οικεία</option>
-                            <option>Δωμάτιο</option>
-                        </select>             
-                    </div>
-                </div>
-            </div>
-            
-            <!-- κανόνες -->
-            <h3 class="subtitle element">Κανόνες</h3>
-             <div class="form-group">
-                <textarea required class="form-control" id="exampleFormControlTextarea1" rows="20" v-model="content.rules" placeholder="Εισάγεται κανόνες..." style="width: 690px; height: 180px; color: #194A50"></textarea>
-            </div>
-            <!-- Διαθεσιμότητα -->
-            <h3 class="subtitle element">Διαθεσιμότητα</h3>
-            <p>Όλες οι κρατήσεις σας.</p>
-            <div class="calendarContainer">
-                <HotelDatePicker 
-                    class="dateinputbox" 
-                    ref="datePicker" 
-                    :alwaysVisible="true" 
-                    :closeDatepickerOnClickOutside="false"
-                    :disabledDates="reservedDates"
-                    format="DD/MM/YYYY"
-                    v-on:check-in-changed="date1 = $event;"
-                    v-on:check-out-changed="date2 = $event;"/>
-            </div>
-            <b-link class = "messagebutton d-flex align-items-center ml-auto" style="margin-bottom: 40px; margin-top: 40px;" @click="add_disabled_dates()"> 
-                    Αποκλείστε επιλεγμένες ημέρες
-                    <span class="iconify startspace" data-icon="ion-calendar"></span>
-            </b-link>
-
-            <!-- τοποθεσία -->
-            <h3 class="subtitle element">Τοποθεσία</h3>
-            <div class="form-group">
-                <textarea required class="form-control" id="exampleFormControlTextarea1" rows="20" v-model="content.location" placeholder="Εισάγεται οδηγίες πρόσβασης..." style="width: 690px; height: 180px; color: #194A50"></textarea>
-            </div>
-
-            <div class="d-flex flex-row align-items-baseline">
-                <span class="iconify addressIcon startspace" data-icon="ion-location"></span>
-                <input required type="text" v-model="content.address" class="form-control area" style="width: 400px; height: 30px;" placeholder="Εισάγεται διεύθυνση..."/>             
-                <p>/διεύθυνση</p>
-            </div>
-            
-            <div style="height: 400px;">
-                <!-- <div class="info" style="height: 15%">
-                    <span>Center: {{ center }}</span>
-                    <span>Zoom: {{ zoom }}</span>
-                    <span>Bounds: {{ bounds }}</span>
-                </div> -->
-                <l-map
-                    style="height: 100%; width: 100%"
-                    :zoom="zoom"
-                    :center="center"
-                    @update:zoom="zoomUpdated"
-                    @update:center="centerUpdated"
-                    @update:bounds="boundsUpdated"
+                <!-- εικόνες -->
+                <div class="element">
+                    <b-carousel
+                        id="carousel-1"
+                        v-model="slide"
+                        :interval="3000"
+                        controls
+                        indicators
+                        background="#ccc"
+                        img-width="500"
+                        img-height="250"
+                        style="text-shadow: 1px 1px 2px #000;"
+                        @sliding-start="onSlideStart"
+                        @sliding-end="onSlideEnd"
                     >
-                    <l-marker :lat-lng="content.markerLatLng" ></l-marker>
-                    <l-tile-layer :url="url"></l-tile-layer>
-                </l-map>
-            </div>
-            <div class="d-flex flex-row justify-content-around">
-                <div class="d-flex flex-row">
-                    <p style="
-                    font-style: normal;
-                    font-size: 18px;
-                    line-height: 21px;
-                    color: #4E7378;">
-                        Γεωγραφικό πλάτος:</p>
-                    <input required type="number" v-model="content.markerLatLng[0]" class="form-control" style="width: 80px;"/>
+                        <b-carousel-slide
+                            style="height: 335px; width: 690px;" 
+                            v-for="(p, index) in content.images"
+                            v-bind:key="index"
+                            :img-src="require(`@/assets/accommodation_pics/${p}`)"/>
+                
+                    </b-carousel>
                 </div>
-                <div class="d-flex flex-row">
-                    <p style="
-                    font-style: normal;
-                    font-size: 18px;
-                    line-height: 21px;
-                    color: #4E7378;">
-                        Γεωγραφικό μήκος:</p>
-                    <input required type="number" v-model="content.markerLatLng[1]" class="form-control" style="width: 80px;"/>
-                </div>             
-            </div>
-            <b-link class = "messagebutton d-flex align-items-center ml-auto" style="margin-bottom: 40px; margin-top: 40px;" @click="submit_edit()"> 
-                    <div v-if="content.id==null">
-                        Δημιουργία χώρου
+                <div class="d-flex flex-row align-items-center">
+                    <div class="form-group">
+                        <b-form-file id="file-input" multiple @input="loadFile" v-model="images" accept="image/jpeg, image/png" placeholder="Επιλογή Εικόνας..."></b-form-file>
                     </div>
-                    <div v-if="content.id!=null">
-                        Αποθήκευση αλλαγών
-                    </div>
-                    <span class="iconify startspace" data-icon="ion-home"></span>
-            </b-link>    
-        </div>
+                </div>
 
-        
-        <!-- scrolling form -->
-        <form class="d-flex flex-column justify-content-start  reservationForm">
-            <span class="reservationHeader">
-                <h3 class="subtitle" style="color: white;" > Οι χώροι μου </h3>
-            </span>
-            <div 
-            class="d-flex flex-row allign-content-baseline justify-content-between space"
-            v-for="(s, index) in spaces"
-            v-bind:key="index"
-            @click="fetch(s.id)">
-                <p style="margin-bottom: 0px;">{{s.name}}</p>
-    	        <p class="iconify" data-icon="ion-home" style="height: 24px; width: 24px;"></p>
+                <!-- περιγραφή -->
+                <h3 class="subtitle element">Περιγραφή</h3>
+                <div class="form-group">
+                    <textarea required class="form-control" id="exampleFormControlTextarea1" rows="20" v-model="content.description" placeholder="Εισάγεται περιγραφή..." style="width: 690px; height: 180px; color: #194A50"></textarea>
+                </div>
+                
+                <!-- χαρακτηρηστικά -->
+                <div class="d-flex flex-row justify-content-between">
+                    <!-- στήλη 1 -->
+                    <div>
+                        
+                        <h3 class="subtitle element">Χαρακτηρηστικά</h3>
+                        <div class="d-flex flex-row align-items-baseline">
+                            <input type="number" v-model="content.area" min="0" class="area form-control" style="width: 80px;"/>
+                            <p>/τ.μ.</p>
+                        </div>
+
+                        <div class="characteristicsContainer">
+                            <h3 class="subtitle">Παροχές</h3>
+                            <form 
+                                class="d-flex flex-column"
+                                v-for="(characteristic, index) in content.characteristics"
+                                v-bind:key="index">
+                                    <div class="d-flex flex-row align-items-center justify-content-start characterisitc">
+                                        <input type="checkbox" v-model="characteristic.status" class="form-check-input"/>
+                                        <span class="checktext">{{ characteristic.name }}</span>
+                                        <i aria-hidden="true" class="iconify mr-2 ml-auto" v-bind:data-icon="characteristic.icon" />
+                                    </div>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- στήλη 2 -->
+                    <div>
+
+                        <h3 class="subtitle element">Ελάχιστη τιμή</h3>
+                        <div class="d-flex flex-row align-items-baseline">
+                            <input type="number" v-model="content.price" min="0" class="area form-control" style="width: 80px;"/>
+                            <p class="area">€</p>
+                            <p>/διανυκτέρευση</p>
+                        </div>
+
+                        <h3 class="subtitle">Επιπλέον κόστος</h3>
+                        <div class="d-flex flex-row align-items-baseline">
+                            <input type="number" v-model="content.extraCost" min="0" class="area form-control" style="width: 80px;"/>
+                            <p class="area">€</p>
+                            <p>/ανά άτομο</p>
+                        </div>
+
+                        <!-- αριθμητικά -->
+                        
+                        <div class="d-flex flex-row justify-content-between arithmetic">
+                            <p>Ελάχιστες μέρες:</p>
+                            <input type="number" v-model="content.minDays" min="0" class="form-control"/>             
+                        </div>
+                        <div class="d-flex flex-row justify-content-between arithmetic">
+                            <p>Αριθμός ατόμων:</p>
+                            <input type="number" v-model="content.maxPersons" min="0" class="form-control"/>             
+                        </div>
+                        <div class="d-flex flex-row justify-content-between arithmetic">
+                            <p>Αριθμός μπάνιων:</p>
+                            <input type="number" v-model="content.numBaths" min="0" class="form-control"/>             
+                        </div>
+                        <div class="d-flex flex-row justify-content-between arithmetic">
+                            <p>Αριθμός κρεβατιών:</p>
+                            <input type="number" v-model="content.numBeds" min="0" class="form-control"/>             
+                        </div>
+                        <div class="d-flex flex-row justify-content-between arithmetic">
+                            <p>Αριθμός υπνοδωματίων:</p>
+                            <input type="number" v-model="content.numBedrooms" min="0" class="form-control"/>             
+                        </div>
+                        <div class="d-flex flex-row justify-content-between arithmetic">
+                            <p>Τύπος χώρου:</p>
+                            <select class="form-control" id="exampleFormControlSelect1" style="height: 35px; width: 100px;"  v-model="content.type">
+                                <option>Οικεία</option>
+                                <option>Δωμάτιο</option>
+                            </select>             
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- κανόνες -->
+                <h3 class="subtitle element">Κανόνες</h3>
+                <div class="form-group">
+                    <textarea required class="form-control" id="exampleFormControlTextarea1" rows="20" v-model="content.rules" placeholder="Εισάγεται κανόνες..." style="width: 690px; height: 180px; color: #194A50"></textarea>
+                </div>
+                <!-- Διαθεσιμότητα -->
+                <h3 class="subtitle element">Διαθεσιμότητα</h3>
+                <p>Όλες οι κρατήσεις σας.</p>
+                <div class="calendarContainer">
+                    <HotelDatePicker 
+                        class="dateinputbox" 
+                        ref="datePicker" 
+                        :alwaysVisible="true" 
+                        :closeDatepickerOnClickOutside="false"
+                        :disabledDates="reservedDates"
+                        format="DD/MM/YYYY"
+                        v-on:check-in-changed="date1 = $event;"
+                        v-on:check-out-changed="date2 = $event;"/>
+                </div>
+                <b-link class = "messagebutton d-flex align-items-center ml-auto" style="margin-bottom: 40px; margin-top: 40px;" @click="add_disabled_dates()"> 
+                        Αποκλείστε επιλεγμένες ημέρες
+                        <span class="iconify startspace" data-icon="ion-calendar"></span>
+                </b-link>
+
+                <!-- τοποθεσία -->
+                <h3 class="subtitle element">Τοποθεσία</h3>
+                <div class="form-group">
+                    <textarea required class="form-control" id="exampleFormControlTextarea1" rows="20" v-model="content.location" placeholder="Εισάγεται οδηγίες πρόσβασης..." style="width: 690px; height: 180px; color: #194A50"></textarea>
+                </div>
+
+                <div class="d-flex flex-row align-items-baseline">
+                    <span class="iconify addressIcon startspace" data-icon="ion-location"></span>
+                    <input required type="text" v-model="content.address" class="form-control area" style="width: 400px; height: 30px;" placeholder="Εισάγεται διεύθυνση..."/>             
+                    <p>/διεύθυνση</p>
+                </div>
+                
+                <div style="height: 400px;">
+                    <!-- <div class="info" style="height: 15%">
+                        <span>Center: {{ center }}</span>
+                        <span>Zoom: {{ zoom }}</span>
+                        <span>Bounds: {{ bounds }}</span>
+                    </div> -->
+                    <l-map
+                        style="height: 100%; width: 100%"
+                        :zoom="zoom"
+                        :center="center"
+                        @update:zoom="zoomUpdated"
+                        @update:center="centerUpdated"
+                        @update:bounds="boundsUpdated"
+                        >
+                        <l-marker :lat-lng="content.markerLatLng" ></l-marker>
+                        <l-tile-layer :url="url"></l-tile-layer>
+                    </l-map>
+                </div>
+                <div class="d-flex flex-row justify-content-around">
+                    <div class="d-flex flex-row">
+                        <p style="
+                        font-style: normal;
+                        font-size: 18px;
+                        line-height: 21px;
+                        color: #4E7378;">
+                            Γεωγραφικό πλάτος:</p>
+                        <input required type="number" v-model="content.markerLatLng[0]" class="form-control" style="width: 80px;"/>
+                    </div>
+                    <div class="d-flex flex-row">
+                        <p style="
+                        font-style: normal;
+                        font-size: 18px;
+                        line-height: 21px;
+                        color: #4E7378;">
+                            Γεωγραφικό μήκος:</p>
+                        <input required type="number" v-model="content.markerLatLng[1]" class="form-control" style="width: 80px;"/>
+                    </div>             
+                </div>
+                <button type="submit" class = "messagebutton d-flex align-items-center ml-auto" style="margin-bottom: 40px; margin-top: 40px;" @click.prevent="submit_edit()"> 
+                        <div v-if="content.id==null">
+                            Δημιουργία χώρου
+                        </div>
+                        <div v-if="content.id!=null">
+                            Αποθήκευση αλλαγών
+                        </div>
+                        <span class="iconify startspace" data-icon="ion-home"></span>
+                </button>    
             </div>
-        </form>
-    </div>
+
+            
+            <!-- scrolling form -->
+            <form class="d-flex flex-column justify-content-start  reservationForm">
+                <span class="reservationHeader">
+                    <h3 class="subtitle" style="color: white;" > Οι χώροι μου </h3>
+                </span>
+                <div 
+                class="d-flex flex-row allign-content-baseline justify-content-between space"
+                v-for="(s, index) in spaces"
+                v-bind:key="index"
+                @click="fetch(s.id)">
+                    <p style="margin-bottom: 0px;">{{s.name}}</p>
+                    <p class="iconify" data-icon="ion-home" style="height: 24px; width: 24px;"></p>
+                </div>
+            </form>
+        </div>
+    </form>
 </template>
 
 
