@@ -536,58 +536,70 @@ Icon.Default.mergeOptions({
         },
 
          async submit_review(){
-            // console.log("CALLED");
-            if(this.newReview != ""){
-                console.log(this.$store.state.user);
-                let response = await this.$axios.post('/review', {
-                    AccId: this.id,
+            if(this.newReview != "" && this.newReview != null){
+                let response = await this.$axios.post('/accommodations/'+ this.id +'/reviews', {
                     UserId: this.$store.state.user.idUsers,
                     Rating: this.newRating,
                     Text: this.newReview
                 });
                 this.canReview = false;
+                location.reload();
             }
         },
 
         async view() {
             // evt.preventDefault();
             try {
-                let response = await this.$axios.post('/view', {
-                    id: this.id,
-                });
-                console.log(response);
 
-                this.title = response.data.Name;
-                this.path = response.data.Path;
-                this.desc = response.data.Description;
-                this.area = response.data.Area;
-                this.price = response.data.PricePerNight;
-                this.extraCost = response.data.ExtraCostPerPerson;
-                this.minDays = response.data.MinimumDays;
-                this.numPersons = response.data.Persons;
-                this.numBeds = response.data.Beds;
-                this.numBaths = response.data.Bathrooms;
-                this.numBedrooms = response.data.Bedrooms;
-                this.markerLatLng = [response.data.Latitude, response.data.Longtitude];
+                //accommodation assignments
+                let response = await this.$axios.get('/accommodations/' + this.id);
+                let data = response.data;
+                console.log(data);
 
-                this.characteristics = this.assign_characteristics(response.data.Characteristics);
-                this.rulesText = response.data.Rules;
+                let dates = data.reservations.concat(data.availabilitydates);
+                for(let i = 0 ; i<dates.length ; i++) dates[i] = { From: dates[i].From, To: dates[i].To };
 
-                this.reservedDates = this.disable_dates(response.data.Reservations);
+                this.title = data.accomodations[0].Name;
+                this.path = data.accomodationphotos;
+                this.desc = data.accomodations[0].Description;
+                this.area = data.accomodations[0].Area;
+                this.price = data.accomodations[0].PricePerNight;
+                this.extraCost = data.accomodations[0].ExtraCostPerPerson;
+                this.minDays = data.accomodations[0].MinimumDays;
+                this.numPersons = data.accomodations[0].Persons;
+                this.numBeds = data.accomodations[0].Beds;
+                this.numBaths = data.accomodations[0].Bathrooms;
+                this.numBedrooms = data.accomodations[0].Bedrooms;
+                this.markerLatLng = [data.accomodations[0].Latitude, data.accomodations[0].Longtitude];
+                this.characteristics = this.assign_characteristics(data.accomodations_has_characteristics);
+                this.rulesText =  data.accomodations[0].Rules;
+                this.reservedDates = this.disable_dates(dates);
+                this.locationText = data.accomodations[0].Location;
+                this.address = data.accomodations[0].Address;
+
+                //host assignments
+                let query1 = "?id=" +  data.accomodations[0].idHost.toString();
+                let hostResponse = await this.$axios.get('/users' + query1);
+                console.log(hostResponse);
+                let hostData = hostResponse.data;
+
+                this.hostUsername = hostData[0].Username;
+                this.hostName = hostData[0].Name + " " + hostData[0].Surname;
                 
-                this.hostUsername = response.data.Host.Username;
-                this.hostName = response.data.Host.Name + " " + response.data.Host.Surname;
-                if(response.data.Host.ProfilePicPath != null){
-                    this.hostImagePath = response.data.Host.ProfilePicPath;
+                if(hostData[0].ProfilePicPath != null){
+                    this.hostImagePath = hostData[0].ProfilePicPath;
                 }
 
-                this.reviewScore = this.review_average(response.data.Reviews);
-                this.userReviews = this.assign_reviews(response.data.Reviews, response.data.Reviewers);
-                console.log(this.userReviews);
+                //reveiw assignments
+                this.reviewScore = this.review_average(data.accomodationreview);
 
-                this.locationText = response.data.Location;
-                this.address = response.data.Address;
-
+                let reviewers = [];
+                for(let i=0 ; i<data.accomodationreview.length ; i++) {
+                    let query2 = "?id=" +  data.accomodationreview[i].Users_idUsers;
+                    let reviewerResponse = await this.$axios.get('/users' + query2);
+                    reviewers.push(reviewerResponse.data);
+                }
+                this.userReviews = this.assign_reviews(data.accomodationreview, reviewers);
 
             } catch(error) {
                 alert(this.errormessage)
@@ -595,22 +607,9 @@ Icon.Default.mergeOptions({
             }
         },
         submit(){
-            // accId: null,
-            // title: "",
-            // address: "",
-            // host: "",
-            // total: 0,
-            // persons: 0,
-            // date1: "",
-            // date2: "",
-            // nights: 0,
-
             let query = {   accId : this.id, title : this.title, address : this.address, host: this.hostName, total: this.total.toFixed(2) , 
                             persons: this.searchPersons, date1 : this.date1.toISOString().split('T')[0] , date2: this.date2.toISOString().split('T')[0], 
                             nights: this.nights };
-            
-            // query.date1 = query.date1.toISOString();
-            // query.date2 = query.date2.toISOString();
 
             this.$router.push({ path: '/payment', query: query}).catch(() => {});
             

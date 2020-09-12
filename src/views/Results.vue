@@ -236,37 +236,75 @@ export default {
 
         async search() {
             this.resultFlag = true;
-            
-            this.results = [];
-            let query = "?north=" + this.searchForm.geo_package.bounds[1][0].toString() +
-                        "&west=" + this.searchForm.geo_package.bounds[0][1].toString() +
-                        "&south=" + this.searchForm.geo_package.bounds[0][0].toString() +
-                        "&east=" + this.searchForm.geo_package.bounds[1][1].toString() +
-                        "&date1=" + this.searchForm.date1.toISOString() +
-                        "&date2=" + this.searchForm.date2.toISOString() +
-                        "&persons=" + this.searchForm.persons.toString() +
-                        "&wifi=" + this.searchForm.wifi.toString() +
-                        "&freezer=" + this.searchForm.freezer.toString() +
-                        "&heating=" + this.searchForm.heating.toString() +
-                        "&kitchen=" + this.searchForm.kitchen.toString() +
-                        "&tv=" + this.searchForm.tv.toString() +
-                        "&parking=" + this.searchForm.parking.toString() +
-                        "&lift=" + this.searchForm.lift.toString() +
-                        "&livingRoom=" + this.searchForm.livingRoom.toString();
+            if(this.searchForm.geo_package.bounds != [] && this.searchForm.date1 != "" && this.searchForm.date2 != "" && this.searchForm.persons != ""){
+                this.results = [];
+                let query = "?north=" + this.searchForm.geo_package.bounds[1][0].toString() +
+                            "&west=" + this.searchForm.geo_package.bounds[0][1].toString() +
+                            "&south=" + this.searchForm.geo_package.bounds[0][0].toString() +
+                            "&east=" + this.searchForm.geo_package.bounds[1][1].toString() +
+                            "&date1=" + this.searchForm.date1.toISOString() +
+                            "&date2=" + this.searchForm.date2.toISOString() +
+                            "&persons=" + this.searchForm.persons.toString() +
+                            "&wifi=" + this.searchForm.wifi.toString() +
+                            "&freezer=" + this.searchForm.freezer.toString() +
+                            "&heating=" + this.searchForm.heating.toString() +
+                            "&kitchen=" + this.searchForm.kitchen.toString() +
+                            "&tv=" + this.searchForm.tv.toString() +
+                            "&parking=" + this.searchForm.parking.toString() +
+                            "&lift=" + this.searchForm.lift.toString() +
+                            "&livingRoom=" + this.searchForm.livingRoom.toString();
 
 
-            let response = await this.$axios.get('/accommodations' + query);
-            console.log("Valid IDs");
-            console.log(response.data);
-            let ids = response.data;    
+                let response = await this.$axios.get('/accommodations' + query);
+                console.log("Valid IDs");
+                let ids = response.data;    
+                console.log(ids);
 
-            for(let i = 0; i<ids.length ; i++){
-                let response = await this.$axios.get('/accommodations/' + ids[i]);
-                console.log(response.data);
+                for(let i = 0; i<ids.length ; i++){
+                    let response = await this.$axios.get('/accommodations/' + ids[i]);
+                    let data = response.data;
+                    console.log(data);
+
+                    // // calculating review average
+                    let avg = this.review_average(data.accomodationreview);
+
+                    //assigning room type
+                    var type;
+                    if(data.accomodations.Type == 'room') type = "Δωμάτιο";
+                    else type = "Οικεία";
+                    
+                    // // assigning characteristics
+                    let c = this.assign_characteristics(data.accomodations_has_characteristics);
+                    console.log(c);
+
+
+                    let preview_package = {
+                        id: data.accomodations[0].idAccomodation,
+                        img: data.accomodationphotos[0].Path,
+                        title: data.accomodations[0].Name,
+                        reviewScore: avg,
+                        reviewCount: data.accomodationreview.length,
+                        roomType: type,
+                        price: data.accomodations[0].PricePerNight,
+                        beds: data.accomodations[0].Beds,
+                        characteristics: c,
+                    };
+
+                    console.log(preview_package);
+                    this.results.push(preview_package);
+                }
+                this.results.sort(function(a, b) {
+                    var keyA = a.price,
+                        keyB = b.price;
+                    // Compare the 2 dates
+                    if (keyA < keyB) return -1;
+                    if (keyA > keyB) return 1;
+                    return 0;
+                });
             }
-           
         },
     },
+
     created() {
         if(this.$route.query.location!=null){
             this.searchForm.geo_package.message = this.$route.query.location;
