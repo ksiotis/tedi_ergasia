@@ -106,7 +106,8 @@ app.get('/users', async(req, res) => { //get all users based on criteria
                 `SELECT u.idUsers, u.Email, u.Username, u.Name,
                  u.Surname, u.Telephone, u.Role, u.ProfilePicPath 
                 FROM users u 
-                WHERE` + myquery, 
+                WHERE` + myquery +
+               ` ORDER BY u.Username`,
                 params
             );
         }
@@ -114,7 +115,8 @@ app.get('/users', async(req, res) => { //get all users based on criteria
             results = await db.query(
                 `SELECT u.idUsers, u.Email, u.Username, u.Name,
                  u.Surname, u.Telephone, u.Role, u.ProfilePicPath 
-                FROM users u`
+                FROM users u 
+                ORDER BY u.Role DESC, u.Username ASC`
             );
         }
 
@@ -190,7 +192,6 @@ app.post('/users', upload.single('picture'), async (req, res) => { //create new 
                     console.error(`failed to delete ${req.file.path}`);
                 }
             }
-            console.log("/signup: Client-side checks failed");
             res.sendStatus(400);
             return;
         }
@@ -282,10 +283,12 @@ app.put('/users/:username', upload.single('picture'), async (req, res) => { //up
             res.sendStatus(500);
             return;
         }
-        let match = bcrypt.compareSync(req.body.password, result[0][0].Password);
-        if (!match) { //if given wrong password
-            res.sendStatus(403);
-            return;
+        if (user.Role !== 'admin') { //if not done by an admin, require password to be givn in body
+            let match = bcrypt.compareSync(req.body.password, result[0][0].Password);
+            if (!match) { //if given wrong password
+                res.sendStatus(403);
+                return;
+            }
         }
 
         //building the query
@@ -321,10 +324,7 @@ app.put('/users/:username', upload.single('picture'), async (req, res) => { //up
         }
         
         params.push(targetuser);
-        console.log(`UPDATE users 
-        SET` + myquery + `
-        WHERE users.Username = ?`, 
-        params);
+
         if (myquery !== "") {
             myquery = myquery.slice(0,-1);
             results = await db.query(

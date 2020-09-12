@@ -103,9 +103,15 @@ export default {
 
         this.users = response.data;
 
-        response = await this.$axios.get(`/users?role=unaproved`, {
-            headers: { "authorization": 'Bearer ' + this.$store.state.token }
-        });
+        try {
+            response = await this.$axios.get(`/users?role=unaproved`, {
+                headers: { "authorization": 'Bearer ' + this.$store.state.token }
+            });
+        } catch (error) {
+            if (error == 'Error: Request failed with status code 404') {
+                return;
+            }
+        }
 
         this.requests = response.data;
     },
@@ -153,9 +159,8 @@ export default {
             try {
                 let role = 3;
                 let username = this.requests[user_index].Username;
-                let response = await this.$axios.post('/changerole', {
+                let response = await this.$axios.put(`/users/${username}`, {
                     role,
-                    username
                 }, {
                     headers: { "authorization": 'Bearer ' + this.$store.state.token}
                 });
@@ -172,9 +177,8 @@ export default {
             try {
                 let role = 1;
                 let username = this.requests[user_index].Username;
-                let response = await this.$axios.post('/changerole', {
+                let response = await this.$axios.put(`/users/${username}`, {
                     role,
-                    username
                 }, {
                     headers: { "authorization": 'Bearer ' + this.$store.state.token}
                 });
@@ -191,7 +195,7 @@ export default {
                 return;
 
             try {
-                let response = await this.$axios.get('/dbdownload', {
+                let response = await this.$axios.get('/', {
                     headers: { "authorization": 'Bearer ' + this.$store.state.token}
                 });
                 let data = '';
