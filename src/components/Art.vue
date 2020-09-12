@@ -16,7 +16,7 @@
 				Σύνδεση / Εγγραφή
 			</button>
 			<div v-else>
-				<b-dropdown id="profile-button" size="lg" variant="white" left toggle-class="text-decoration-none" >
+				<b-dropdown id="profile-button" size="lg" variant="white" right toggle-class="text-decoration-none" >
 					<template v-slot:button-content>
 						<img id="profile-pic" :src="userPic" width="32px" height="32px" class="rounded-circle mr-2">
 						{{user.Username}}

@@ -52,7 +52,7 @@
                     <b-form-group label="Ρόλος" label-for="role" label-size="sm" class="set-width">
                         <span class="mr-2">{{roleName}}</span>
                         <span class="iconify" :data-icon="roleIcon"/>
-                        <button v-if="user.Role === 'tenant'" @click.prevent="changeRole" class="mybutton">Γίνετε Οικοδεσπότης</button>
+                        <button v-if="user.Role === 'tenant'" @click.prevent="changeRole" class="mybutton" :disabled="change_role_disabled">Γίνετε Οικοδεσπότης</button>
                     </b-form-group>
                 </div>
             </div>
@@ -92,11 +92,9 @@ export default {
                 { value: '+44', text: 'EN' },
             ],
             errormessage: "Προέκυψε κάποιο σφάλμα, δοκιμάστε ξανά",
-            roleName: '',
-            roleIcon: ''
         }
     },
-    created() {
+    mounted() {
         this.form.username = this.user.Username;
         this.form.name = this.user.Name;
         this.form.surname = this.user.Surname;
@@ -122,6 +120,9 @@ export default {
                     (this.email_state === false) ||
                     (this.password_state === false));
         },
+        change_role_disabled() {
+            return this.form.password === "";
+        },
         user() {
             if (this.$store.state.user)
                 return this.$store.state.user;
@@ -132,6 +133,19 @@ export default {
             else
                 return '';
         },
+        roleName() {
+            if (this.user.Role) 
+                return this.$store.state.rolenames[this.user.Role][0];
+            else
+                return '';
+            this.roleName = this.$store.state.rolenames[this.user.Role][1];
+        },
+        roleIcon() {
+            if (this.user.Role) 
+                return this.$store.state.rolenames[this.user.Role][1];
+            else
+                return '';
+        }
     },
     methods: {
         async onSubmit(evt) {
@@ -145,29 +159,24 @@ export default {
                 formData.append("telephone", "(".concat(this.form.code).concat(")").concat(this.form.phone));
                 formData.append("picture", this.form.file);
 
-                let response = await this.$axios.put('/users', formData, {
+                let response = await this.$axios.put(`/users/${this.user.Username}`, formData, {
                     headers: { "authorization": 'Bearer ' + this.$store.state.token }
                 });
                 alert("Τα στοιχεία του λογαριασμού άλλαξαν επιτυχώς!");
+                console.log(this.user);
                 this.$store.commit('updateUser', ''); //delete old user
-
+                await this.$nextTick();
+                console.log(this.user);
 
                 response = await this.$axios.post('/login', {
                     username: this.form.username,
                     password: this.form.password,
                 });
                 this.$store.commit('updateToken', response.data.token);
+                console.log(this.user);
                 await this.$nextTick();
                 
-                // if (this.user.Role === 'admin')
-                //     this.$router.push('/admin').catch(() => {});
-                // else if (this.user.Role === 'aproved')
-                //     this.$router.push('/TODO').catch(() => {});
-                // else
-                //     this.$router.push('/').catch(() => {});
-                // this.$router.push('/');
-                let query = { username: this.user.Username };
-                this.$router.push({ path: `/profile`, query: query}).catch(() => {});
+                location.reload();
             } catch(error) {
                 if (error == 'Error: Request failed with status code 403') {
                     alert('Λάθος κωδικός πρόσβασης!');
@@ -234,16 +243,28 @@ export default {
         },
         async changeRole() {
             try {
-                let response = await this.$axios.post('/changerole', {
+                let response = await this.$axios.put(`/users/${this.user.Username}`, {
                     role: 2,
-                    username: null
+                    username: this.user.Username,
+                    password: this.form.password
                 }, {
                     headers: { "authorization": 'Bearer ' + this.$store.state.token}
                 });
                 alert('Το αίτημα αλλαγής ρόλου καταχωρήθηκε. Θα σας ενημερώσουμε όταν το εξετάσει ένας διαχειριστής');
-                console.log(response.data);
-
                 
+                this.$store.commit('updateUser', ''); //delete old user
+                await this.$nextTick();
+                console.log(this.user);
+
+                response = await this.$axios.post('/login', {
+                    username: this.form.username,
+                    password: this.form.password,
+                });
+                this.$store.commit('updateToken', response.data.token);
+                console.log(this.user);
+                await this.$nextTick();
+                
+                location.reload();
             } catch(error) {
                 this.username_state = false;
                 alert(this.errormessage);

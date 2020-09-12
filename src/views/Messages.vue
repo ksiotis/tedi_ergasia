@@ -24,7 +24,7 @@
                 </tr>
                 <tr v-for="(message, message_index) in items" :key="message_index">
                     <td @click="displayMessage(message_index)">{{message.Subject}}</td>
-                    <td @click="displayMessage(message_index)">{{message.Secondary}}</td>
+                    <td @click="displayMessage(message_index)">{{incoming === true ? message.From : message.To}}</td>
                     <td @click="displayMessage(message_index)">{{message.Datetime}}</td>
                 </tr>
                 </table>
@@ -82,7 +82,7 @@ export default {
                 this.incoming = true;
                 this.outgoing = false;
 
-                let url = `/messages?page=${this.currentPage}&perpage=${this.perPage}&inbox=1`;
+                let url = `/messages?page=${this.currentPage}&perpage=${this.perPage}&to=${this.user.Username}`;
                 let response = await this.$axios.get(url, {
                     headers: { "authorization": 'Bearer ' + this.$store.state.token }
                 });
@@ -101,7 +101,8 @@ export default {
                     this.items.push({
                         Datetime: '',
                         Message: '',
-                        Secondary: '',
+                        From: '',
+                        To: '',
                         Subject: ''
                     });
                 }
@@ -116,7 +117,7 @@ export default {
                 this.outgoing = true;
                 this.incoming = false;
     
-                let url = `/messages?page=${this.currentPage}&perpage=${this.perPage}&inbox=0`;
+                let url = `/messages?page=${this.currentPage}&perpage=${this.perPage}&from=${this.user.Username}`;
                 let response = await this.$axios.get(url, {
                     headers: { "authorization": 'Bearer ' + this.$store.state.token }
                 });

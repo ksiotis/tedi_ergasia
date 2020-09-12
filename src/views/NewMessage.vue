@@ -83,7 +83,7 @@ export default {
     methods: {
         async send() {
             try {
-                let response = await this.$axios.post('/newmessage', {
+                let response = await this.$axios.post('/message', {
                     to: this.form.to,
                     subject: this.form.subject,
                     message: this.form.message
