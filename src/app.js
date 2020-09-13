@@ -211,7 +211,7 @@ app.post('/users', upload.single('picture'), async (req, res) => { //create new 
     }
 });
 
-app.post('/login', async (req, res) => {
+app.post('/login', async (req, res) => { //send json web token
     try {
         console.log(`/login ${req.body.username}`);
         if (req.body.username === '' || req.body.password === '') { //empty check
@@ -482,7 +482,7 @@ app.post('/messages', async (req, res) => { //send a new message, from is always
     }
 })
 
-app.get('/', async (req,res) => {
+app.get('/', async (req,res) => { //send everything in database
     try {
         let token = req.headers.authorization.split(' ')[1];
         let user = null;
@@ -510,6 +510,7 @@ app.get('/', async (req,res) => {
             `SELECT * FROM availabilitydates`,
             `SELECT * FROM characteristics`,
             `SELECT * FROM messages`,
+            `SELECT * FROM reservations`,
             `SELECT * FROM searches`,
             `SELECT * FROM users`,
         ]
@@ -522,8 +523,9 @@ app.get('/', async (req,res) => {
             availabilitydates: temp[4][0],
             characteristics: temp[5][0],
             messages: temp[6][0],
-            searches: temp[7][0],
-            users: temp[8][0]
+            reservations: temp[7][0],
+            searches: temp[8][0],
+            users: temp[9][0]
         };
 
         res.send(results);
@@ -816,7 +818,6 @@ app.post('/accommodations/:id/reservations', async (req, res) => {
     }
 })
 
-
 app.post('/accommodations', upload2.array('images', 10), async (req, res) => {
     try {
         // console.log('I ENTERED REVIEW');
@@ -1054,10 +1055,46 @@ app.post('/users/:id/searches', async(req, res) => { //get info of target user
     }
 });
 
-
-
-
-
-
-
 //ENDING THOMAS
+
+async function shutdown() {
+    try {
+        let queries = [
+            `SELECT * FROM accomodationreview`,
+            `SELECT * FROM accomodations`,
+            `SELECT * FROM reservations`,
+            `SELECT * FROM searches`,
+            `SELECT * FROM users`,
+        ]
+        console.log(queries);
+        console.log('Shutting Down...');
+        let temp = await Promise.all(queries.map((q) => db.query(q)));
+        results = {
+            reviews: temp[0][0],
+            accomodations: temp[1][0],
+            reservations: temp[2][0],
+            searches: temp[3][0],
+            users: temp[4][0]
+        };
+        console.log(results);
+
+        // await fs.truncate(".\\data\\data.json", 0, async function() {
+        console.log('Now going to write file');
+            await fs.writeFile(".\\data\\data.json", 'results', function (err) {
+                if (err) {
+                    return console.log("Error writing file: " + err);
+                }
+            });
+        // });
+        console.log('Finished writing file');
+
+        res.sendStatus(200);
+    } 
+    catch(error) {
+        res.sendStatus(500);
+        console.error(error);
+    }
+}
+
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);

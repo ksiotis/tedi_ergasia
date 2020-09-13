@@ -1,5 +1,12 @@
+import re
 import numpy as np
 import pandas as pd
+import nltk
+from nltk import word_tokenize, sent_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import LancasterStemmer, WordNetLemmatizer, PorterStemmer
+from textblob import TextBlob
+nltk.download('stopwords')
 
 class MF():
 
@@ -103,10 +110,42 @@ class MF():
 #     mf = MF(X, K=i, learningRate=0.01)
 #     print(mf.train())
 
-
+#read data and preproccess it
 reviews = pd.read_csv('bonus dataset/reviews.csv')
 reviews = reviews[['listing_id','reviewer_id','comments']]
 reviews.drop_duplicates(subset=['listing_id', 'reviewer_id'], keep='first')
+reviews['comments'] = reviews['comments'].astype(str) #make string
+
+#get rid of punctuation and non english entries
+reviews['comments'] = reviews['comments'].apply(lambda x: re.sub('[^A-Za-z0-9\s]','', x)) 
+reviews['comments'] = reviews['comments'].apply(lambda x: re.sub('[\s]+$','', x)) 
+reviews['comments'] = reviews['comments'].apply(lambda x: " ".join(x.lower() for x in x.split())) #make lowercase
+reviews.replace('', np.nan, inplace=True)
+reviews.dropna(subset=['comments'], inplace=True)
+reviews.reset_index(drop=True, inplace=True)
+
+#get rid of stopwords
+stop = stopwords.words('english')
+reviews['comments'] = reviews['comments'].apply(lambda x: " ".join(x for x in x.split() if x not in stop))
+
+#calculate rating score from sentiment
+def senti(x):
+    return TextBlob(x).sentiment
+reviews['score'] = reviews['comments'].apply(senti)
+def roundme(x): #normalize scores to our rating scale
+    x = x.polarity
+    if x < -0.6:
+        return 1
+    elif x < -0.2:
+        return 2
+    elif x < 0.2:
+        return 3
+    elif x < 0.6:
+        return 4
+    else:
+        return 5
+reviews['score'] = reviews['score'].apply(roundme)
+
 
 
 print(reviews)
