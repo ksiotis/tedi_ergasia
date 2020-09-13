@@ -613,7 +613,17 @@ Icon.Default.mergeOptions({
 
             this.$router.push({ path: '/payment', query: query}).catch(() => {});
             
-        }
+        },
+
+        async catalog(){
+            console.log('I was called');
+            if(this.user){
+                let response = await this.$axios.post('/users/' + this.$store.state.user.idUsers + '/searches', {
+                    accommodation: this.$route.query.id,
+                });
+            }
+        },
+
     },
      computed: {
          
@@ -665,10 +675,10 @@ Icon.Default.mergeOptions({
             this.view();
             if(this.$route.query.searchPersons <= this.numPersons){
                 this.searchPersons = Number(this.$route.query.searchPersons);
-                console.log(this.$route.query.date1);
                 this.date1 =  new Date(this.$route.query.date1);
                 this.date2 =  new Date(this.$route.query.date2);
             }
+            this.catalog();
         }
     }
 }

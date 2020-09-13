@@ -1017,7 +1017,42 @@ app.put('/accommodations/:id', upload2.array('images', 10), async (req, res) => 
     }
 })
 
+app.post('/users/:id/searches', async(req, res) => { //get info of target user
+    try {
+        if(isEmpty(req.params.id) ||  req.body.accommodation == null){
+            console.log('EMPTY CRITERIA!');
+            req.send(400)
+        }
+        else{
+            
+            let user = Number(req.params.id);
+            let accommodation = req.body.accommodation;
 
+            let response = await db.query(
+                `SELECT s.Accomodations_idAccomodation, s.Users_idUsers 
+                FROM searches s
+                WHERE s.Accomodations_idAccomodation = ? AND s.Users_idUsers = ?`,
+                [accommodation, user] 
+            );
+            
+            console.log("REEEEEEEEEEEEEEEEEEEE")
+            console.log(response[0]);
+
+            if(response[0].length == 0){
+                console.log("ATTEMPTING TO CATALOG SEARCH")
+                let response = await db.query(
+                    `INSERT INTO searches VALUES (?, ?)`,
+                    [accommodation, user] 
+                );
+                console.log("SEARCH CATALOGGED SUCCESFULLY")
+            }
+            res.sendStatus(200);
+        }
+    } catch (error) {
+        res.sendStatus(500);
+        console.error(error)
+    }
+});
 
 
 
