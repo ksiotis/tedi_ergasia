@@ -14,12 +14,14 @@
     "bootstrap-vue": "^2.16.0",
     "core-js": "^3.6.5",
     "cors": "^2.8.5",
+    "cron": "^1.8.2",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "leaflet": "^1.6.0",
     "leaflet-geosearch": "^3.0.6",
     "multer": "^1.4.2",
     "mysql2": "^2.1.0",
+    "nodemon": "^2.0.4",
     "vue": "^2.6.11",
     "vue-hotel-datepicker": "^3.0.10",
     "vue-hotel-datepicker2": "^0.9.4",
@@ -38,5 +40,8 @@
     "@vue/cli-plugin-vuex": "~4.4.0",
     "@vue/cli-service": "~4.4.0",
     "vue-template-compiler": "^2.6.11"
+  },
+  "nodemonConfig": {
+    "ignore": ["bonus/*.json", "bonus dataset/*"]
   }
 }

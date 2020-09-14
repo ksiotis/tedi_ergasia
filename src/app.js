@@ -1057,8 +1057,9 @@ app.post('/users/:id/searches', async(req, res) => { //get info of target user
 
 //ENDING THOMAS
 
-async function shutdown() {
+async function exportDataJson() {
     try {
+        console.log('exportDataJson starting...');
         let queries = [
             `SELECT * FROM accomodationreview`,
             `SELECT * FROM accomodations`,
@@ -1066,8 +1067,6 @@ async function shutdown() {
             `SELECT * FROM searches`,
             `SELECT * FROM users`,
         ]
-        console.log(queries);
-        console.log('Shutting Down...');
         let temp = await Promise.all(queries.map((q) => db.query(q)));
         results = {
             reviews: temp[0][0],
@@ -1076,25 +1075,46 @@ async function shutdown() {
             searches: temp[3][0],
             users: temp[4][0]
         };
-        console.log(results);
+        // console.log(results);
 
-        // await fs.truncate(".\\data\\data.json", 0, async function() {
-        console.log('Now going to write file');
-            await fs.writeFile(".\\data\\data.json", 'results', function (err) {
-                if (err) {
-                    return console.log("Error writing file: " + err);
-                }
-            });
-        // });
-        console.log('Finished writing file');
-
-        res.sendStatus(200);
+        console.log('Exporting data');
+        await fs.writeFile(".\\bonus\\reviews.json", JSON.stringify(results.reviews, null, '  '), {}, function (err) {
+            if (err) {
+                return console.log("Error writing file: " + err);
+            }
+        });
+        await fs.writeFile(".\\bonus\\accomodations.json", JSON.stringify(results.accomodations, null, '  '), {}, function (err) {
+            if (err) {
+                return console.log("Error writing file: " + err);
+            }
+        });
+        await fs.writeFile(".\\bonus\\reservations.json", JSON.stringify(results.reservations, null, '  '), {}, function (err) {
+            if (err) {
+                return console.log("Error writing file: " + err);
+            }
+        });
+        await fs.writeFile(".\\bonus\\searches.json", JSON.stringify(results.searches, null, '  '), {}, function (err) {
+            if (err) {
+                return console.log("Error writing file: " + err);
+            }
+        });
+        await fs.writeFile(".\\bonus\\users.json", JSON.stringify(results.users, null, '  '), {}, function (err) {
+            if (err) {
+                return console.log("Error writing file: " + err);
+            }
+        });
     } 
     catch(error) {
-        res.sendStatus(500);
         console.error(error);
     }
 }
 
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
+//export data for recommendation on startup and every 6 hours
+const CronJob = require('cron').CronJob;
+exportDataJson();
+const job = new CronJob('00 00 */6 * * *', function() {
+    exportDataJson();
+    let d = new Date();
+    console.log(d);
+});
+job.start();
