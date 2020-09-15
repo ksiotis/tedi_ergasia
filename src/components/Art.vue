@@ -138,6 +138,7 @@ export default {
 			delete localStorage.Token;
 			this.$store.commit('updateUser', '');
 			this.$router.push('/').catch(() => {});
+			location.reload();
 		}
 	},
 	created() {

@@ -4,6 +4,7 @@ import pandas as pd
 import nltk
 import json
 import sys
+import shutil
 from json import JSONEncoder
 from nltk import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
@@ -51,7 +52,7 @@ class MF():
             mse = self.mse()
             
             # print(mse)
-            if (mse > temp_mse or mse < 10000):
+            if (mse > temp_mse or mse < 1):
                 break
 
             temp_mse = mse
@@ -274,9 +275,9 @@ class NumpyArrayEncoder(JSONEncoder):
         return JSONEncoder.default(self, obj)
 
 numpyData = {"scores": allscores, "users": users, "accommodations": accs}
-with open("bonus/numpyData.json", "w") as write_file:
+with open("./bonus/numpyData2.json", "w") as write_file:
     json.dump(numpyData, write_file, cls=NumpyArrayEncoder)
-
+shutil.move('./bonus/numpyData2.json', './bonus/numpyData.json')
 
 
 print("finished")
