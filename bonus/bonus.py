@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import nltk
 import json
+import sys
 from json import JSONEncoder
 from nltk import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
@@ -24,10 +25,9 @@ class MF():
         - beta (float)  : regularization parameter
         """
 
-        self.Q = Q
         self.X = Q[1:, 1:]
         self.num_users, self.num_items = self.X.shape
-        print(self.X.shape )
+        # print(self.X.shape )
         self.K = K
         self.learningRate = learningRate
 
@@ -50,8 +50,8 @@ class MF():
             self.sgd()
             mse = self.mse()
             
-            print(mse)
-            if (mse > temp_mse or mse < 1.0e-1):
+            # print(mse)
+            if (mse > temp_mse or mse < 10000):
                 break
 
             temp_mse = mse
@@ -83,10 +83,6 @@ class MF():
             prediction = self.get_rating(i, j)
             e = (X - prediction)
 
-            print('X - prediction : ', X , ' - ', prediction)
-            print('V[i, :] += ', self.learningRate, '* 2 * ', e, ' * ', self.F[j, :])
-            print('F[i, :] += ', self.learningRate, '* 2 * ', e, ' * ', self.V[i, :])
-
             # Update user and item latent feature matrices
             self.V[i, :] += self.learningRate * 2 * e * self.F[j, :]
             self.F[j, :] += self.learningRate * 2 * e * self.V[i, :]
@@ -105,7 +101,11 @@ class MF():
         scores = self.V.dot(self.F.T)
         return scores
 
-# #~~~~~~~~~~~~~~~~~preproccessing dataset ~~~~~~~~~~~~~~~~~~~~~~~~~
+#~~~~~~~~~~~~~~~~~preproccessing dataset ~~~~~~~~~~~~~~~~~~~~~~~~~
+print('preproccessing dataset')
+sys.stdout.flush()
+
+
 reviews = pd.read_csv('bonus dataset/reviews.csv')
 reviews = reviews[['listing_id','reviewer_id','comments']]
 reviews.drop_duplicates(subset=['listing_id', 'reviewer_id'], keep='first')
@@ -143,6 +143,10 @@ reviews['score'] = reviews['score'].apply(roundme)
 reviews.drop(['comments'], 1, inplace=True)
 
 #~~~~~~~~~~~~~~~~~~adding our db's data~~~~~~~~~~~~~~~~~~
+print("adding our db's data")
+sys.stdout.flush()
+
+
 #read data from json files and prepair them
 myusers = pd.read_json('bonus/users.json', orient='records')
 myusers = myusers[['idUsers']]
@@ -201,9 +205,13 @@ input_table = input_table[['listing_id', 'reviewer_id', 'score']]
 
 allreviews = pd.concat([input_table, reviews], ignore_index=True)
 allreviews['score'] = allreviews['score'].astype(int)
-print(allreviews)
+# print(allreviews)
 
-#creation of final table
+#~~~~~~~~~~~~~~~~~~~~~~creation of final table~~~~~~~~~~~~~~~~~~~~~~~~~
+print("creation of final table")
+sys.stdout.flush()
+
+
 allusers = allreviews['reviewer_id']
 allusers.drop_duplicates(inplace=True, keep='first')
 allusers.reset_index(drop=True, inplace=True)
@@ -215,7 +223,7 @@ allaccomodations.reset_index(drop=True, inplace=True)
 
 arrayshape = (len(allusers) + 1, len(allaccomodations) + 1)
 test = np.empty(arrayshape, dtype=int)
-print(test.shape)
+# print(test.shape)
 
 test[0][0] = -1
 for user, i in zip(allusers, range(len(allusers))):
@@ -237,14 +245,26 @@ def insert_test(user, acc, value, array):
 for index, row in allreviews.iterrows():
 #    print (row['listing_id'], row['reviewer_id'], row['score'])
     insert_test(row['reviewer_id'],row['listing_id'], row['score'], test)
-print(test)
+# print(test)
 
-final = test[1:, 1:]
-print(final)
+# final = test[1:, 1:]
+# print(final)
 
-mf = MF(final, K=10, learningRate=0.01)
+users = test[1:,0] #1d - array of user ids
+accs = test[0, 1:] #1d - array of acc ids
+
+#~~~~~~~~~~~~~~~~matrix factorization~~~~~~~~~~~~~~~~~~~~~
+print("matrix factorization")
+sys.stdout.flush()
+
+
+mf = MF(test, K=10, learningRate=0.01)
 allscores = mf.train()
-print('\n\n\n\n', allscores)
+allscores = np.round(allscores, decimals=2)
+
+#~~~~~~~~~~~~~~~~file creation~~~~~~~~~~~~~~~~~~~~~
+print("file creation")
+sys.stdout.flush()
 
 
 class NumpyArrayEncoder(JSONEncoder):
@@ -253,6 +273,11 @@ class NumpyArrayEncoder(JSONEncoder):
             return obj.tolist()
         return JSONEncoder.default(self, obj)
 
-numpyData = {"array": allscores}
+numpyData = {"scores": allscores, "users": users, "accommodations": accs}
 with open("bonus/numpyData.json", "w") as write_file:
     json.dump(numpyData, write_file, cls=NumpyArrayEncoder)
+
+
+
+print("finished")
+sys.stdout.flush()

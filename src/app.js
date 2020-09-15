@@ -4,6 +4,8 @@ const mysql = require('mysql2/promise');
 const cors= require ('cors');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+const spawn = require("child_process").spawn;
+const CronJob = require('cron').CronJob;
 
 const port = 3000;
 const secretKey = 'shhhhh'
@@ -1077,44 +1079,47 @@ async function exportDataJson() {
         };
         // console.log(results);
 
+        let files = ['reviews2','accomodations2','reservations2','searches2','users2']
         console.log('Exporting data');
-        await fs.writeFile(".\\bonus\\reviews.json", JSON.stringify(results.reviews, null, '  '), {}, function (err) {
-            if (err) {
-                return console.log("Error writing file: " + err);
-            }
-        });
-        await fs.writeFile(".\\bonus\\accomodations.json", JSON.stringify(results.accomodations, null, '  '), {}, function (err) {
-            if (err) {
-                return console.log("Error writing file: " + err);
-            }
-        });
-        await fs.writeFile(".\\bonus\\reservations.json", JSON.stringify(results.reservations, null, '  '), {}, function (err) {
-            if (err) {
-                return console.log("Error writing file: " + err);
-            }
-        });
-        await fs.writeFile(".\\bonus\\searches.json", JSON.stringify(results.searches, null, '  '), {}, function (err) {
-            if (err) {
-                return console.log("Error writing file: " + err);
-            }
-        });
-        await fs.writeFile(".\\bonus\\users.json", JSON.stringify(results.users, null, '  '), {}, function (err) {
-            if (err) {
-                return console.log("Error writing file: " + err);
-            }
-        });
+        for (file in files) {
+            await fs.writeFile(`.\\bonus\\${files[file]}.json`, JSON.stringify(results[files[file].slice(0,-1)], null, '  '), {}, function (err) {
+                if (err) console.log("Error writing file: " + err);
+            });
+        }
+        for (file in files) {
+            fs.rename(`.\\bonus\\${files[file]}.json`, `.\\bonus\\${files[file].slice(0,-1)}.json`, function(err) {
+                if ( err ) console.log('ERROR: ' + err);
+            });
+        }
     } 
     catch(error) {
         console.error(error);
     }
 }
 
+async function runPython() {
+    console.log('runPython starting...');
+    let process = spawn('py',["./bonus/bonus.py"]);
+    process.stdout.on('data', (data) => {
+        console.log('Python: "' + String(data).trim() + '"');
+    })
+    console.log('runPython finished');
+}
+
 //export data for recommendation on startup and every 6 hours
-const CronJob = require('cron').CronJob;
 exportDataJson();
-const job = new CronJob('00 00 */6 * * *', function() {
+const job = new CronJob('0 0 */6 * * *', function() {
     exportDataJson();
     let d = new Date();
-    console.log(d);
+    console.log('exportDataJson at ', d);
 });
 job.start();
+
+console.log('running runPython...');
+runPython();
+const job2 = new CronJob('0 30 4 * * 0', function() {
+    runPython();
+    let d = new Date();
+    console.log('runPython at ', d);
+});
+job2.start();
