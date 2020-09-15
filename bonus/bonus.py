@@ -27,6 +27,7 @@ class MF():
         self.Q = Q
         self.X = Q[1:, 1:]
         self.num_users, self.num_items = self.X.shape
+        print(self.X.shape )
         self.K = K
         self.learningRate = learningRate
 
@@ -40,16 +41,17 @@ class MF():
             (i, j, self.X[i, j])
             for i in range(self.num_users)
             for j in range(self.num_items)
-            if self.X[i, j] > 0
+            if self.X[i, j] > 0.1
         ]
 
         # Perform stochastic gradient descent for number of iterations
-        temp_mse = 10000000000
+        temp_mse = float('inf')
         while (True):
             self.sgd()
             mse = self.mse()
             
-            if (mse > temp_mse):
+            print(mse)
+            if (mse > temp_mse or mse < 1.0e-1):
                 break
 
             temp_mse = mse
@@ -59,7 +61,7 @@ class MF():
         self.V = tempV 
         self.F = tempF 
 
-        return temp_mse
+        return self.full_matrix()
 
     def mse(self):
         """
@@ -70,7 +72,7 @@ class MF():
         error = 0
         for x, y in zip(xs, ys):
             error += pow(self.X[x, y] - predicted[x, y], 2)
-        return np.sqrt(error)
+        return error
 
     def sgd(self):
         """
@@ -81,6 +83,10 @@ class MF():
             prediction = self.get_rating(i, j)
             e = (X - prediction)
 
+            print('X - prediction : ', X , ' - ', prediction)
+            print('V[i, :] += ', self.learningRate, '* 2 * ', e, ' * ', self.F[j, :])
+            print('F[i, :] += ', self.learningRate, '* 2 * ', e, ' * ', self.V[i, :])
+
             # Update user and item latent feature matrices
             self.V[i, :] += self.learningRate * 2 * e * self.F[j, :]
             self.F[j, :] += self.learningRate * 2 * e * self.V[i, :]
@@ -90,14 +96,14 @@ class MF():
         Get the predicted rating of user i and item j
         """
         prediction = self.V[i, :].dot(self.F[j, :].T)
-        # self.b + self.b_u[i] + self.b_i[j] + 
         return prediction
 
     def full_matrix(self):
         """
         Computer the full matrix using the resultant biases, V and F
         """
-        return self.V.dot(self.F.T)
+        scores = self.V.dot(self.F.T)
+        return scores
 
 # #~~~~~~~~~~~~~~~~~preproccessing dataset ~~~~~~~~~~~~~~~~~~~~~~~~~
 reviews = pd.read_csv('bonus dataset/reviews.csv')
@@ -236,8 +242,9 @@ print(test)
 final = test[1:, 1:]
 print(final)
 
-mf = MF(final, K=5, learningRate=0.01)
-print('\n\n\n\n', mf.train())
+mf = MF(final, K=10, learningRate=0.01)
+allscores = mf.train()
+print('\n\n\n\n', allscores)
 
 
 class NumpyArrayEncoder(JSONEncoder):
@@ -246,6 +253,6 @@ class NumpyArrayEncoder(JSONEncoder):
             return obj.tolist()
         return JSONEncoder.default(self, obj)
 
-numpyData = {"array": mf}
+numpyData = {"array": allscores}
 with open("bonus/numpyData.json", "w") as write_file:
     json.dump(numpyData, write_file, cls=NumpyArrayEncoder)
