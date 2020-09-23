@@ -1,6 +1,7 @@
 <template>
     <div>
         <div class="background d-flex justify-content-center">
+            
             <form class="searchbar d-flex justify-content-center">
                 
                 <!-- <input 
@@ -18,13 +19,14 @@
                     class="dateinputbox"
                     format="DD/MM/YYYY"
                     v-on:check-in-changed="searchForm.date1 = $event"
-                    v-on:check-out-changed="searchForm.date2 = $event"
+                    v-on:check-out-changed="searchForm.date2 = $event ; formDates = true;"
                 >
                 </HotelDatePicker>
-                <!-- <input name="txtName" id="txtName" class="inputbox searchelement" placeholder="Εισάγεται ημερομηνίες...">
+                <!-- <input name="txtName" id="txtName" class="inputbox searchelement" placeholder="Εισsάγεται ημερομηνίες...">
                 <span class="iconify inputicon" data-icon="ion-calendar"></span> -->
              
                 <select 
+                    @input="formPersons = true"
                     class="inputbox searchelement" 
                     v-model="searchForm.persons"
                 >
@@ -42,9 +44,17 @@
                     @click="submit"
                 >
                     Αναζήτηση
-                    <span class="iconify searchicons" data-icon="ion-search"></span>
+                    <span class="iconify searchicons" data-icon="ion-search"/>
                 </b-link>
             </form>
+        </div>
+        <div class="entry_container d-flex flex-column">
+            <div class="entry d-flex flex-row  align-items-baseline" 
+            v-for="(entry, entry_index) in recommendations" :key="entry_index"
+            @click="submit_recommendations(entry.id)">
+                {{entry.title}}
+                <p class="iconify ml-auto" data-icon="ion-home" style="height: 24px; width: 24px;"/>
+            </div>
         </div>
     </div>
 </template>
@@ -62,6 +72,9 @@ export default {
     },
     data() {
 		return {
+            formPersons: false,
+            formDates: false,
+            
             searchForm: {
                 geo_package:{
                     message: '',
@@ -70,11 +83,25 @@ export default {
                 date1: '',
                 date2: '',
 				persons: '',
-			},
+            },
+            
+            recommendations: [],
 		};
-	},
+    },
+    computed:{
+        user() {
+            if (this.$store.state.user)
+                return this.$store.state.user;
+            else if (this.$store.state.token) {
+                this.$store.commit('updateUser', this.$jwt.decode(this.$store.state.token).user);
+                return this.$store.state.user;
+            }
+            else
+                return '';
+        },
+    },
 	methods: {
-        submit(){
+        submit() {
             let coords = JSON.stringify(this.searchForm.geo_package.bounds);
 
             let query = { location: this.searchForm.geo_package.message, bounds: coords ,date1: this.searchForm.date1, date2: this.searchForm.date2, persons: this.searchForm.persons };
@@ -83,10 +110,29 @@ export default {
             query.date2 = query.date2.toISOString();
 
             this.$router.push({ path: '/results', query: query}).catch(() => {});
-        }
-        
-    },
+        },
 
+        submit_recommendations(id) {
+            console.log("HERE");
+            if (this.formPersons === true && this.formDates === true) {
+
+                let query = { id : id, searchPersons : this.searchForm.persons, date1 : this.searchForm.date1 , date2: this.searchForm.date2 };
+                
+                query.date1 = query.date1.toISOString();
+                query.date2 = query.date2.toISOString();
+
+                this.$router.push({ path: '/accommodation', query: query}).catch(() => {});
+            }
+        }
+    },
+    async mounted() {
+        if (this.user !== '') {
+            let response = await this.$axios.get(`/users/${this.user.idUsers}/recommendations`, {
+                headers: { "authorization": 'Bearer ' + this.$store.state.token }
+            });
+            this.recommendations = response.data;
+        }
+    }
 };
 
 </script>
@@ -198,6 +244,35 @@ export default {
 
 .geo{
     width: 250px;
+}
+
+.entry_container {
+    position: absolute;
+    left: 10px;
+    top: 80%;
+    z-index: 100;
+}
+
+.entry {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-bottom: 5px;
+    
+    font-size: 24px;
+    background-color: #194A50;
+    color: white;
+    z-index: 101;
+    width: 200px;
+    
+    border-radius: 10px
+    
+}
+
+.entry:hover {
+    background-color: #0C2431;
+    cursor: pointer;
 }
 
 </style>

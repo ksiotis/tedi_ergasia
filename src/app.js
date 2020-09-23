@@ -1038,7 +1038,6 @@ app.post('/users/:id/searches', async(req, res) => { //get info of target user
                 [accommodation, user] 
             );
             
-            console.log("REEEEEEEEEEEEEEEEEEEE")
             console.log(response[0]);
 
             if(response[0].length == 0){
@@ -1058,6 +1057,9 @@ app.post('/users/:id/searches', async(req, res) => { //get info of target user
 });
 
 //ENDING THOMAS
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~BONUS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 async function exportDataJson() {
     try {
@@ -1103,15 +1105,38 @@ async function runPython() {
     process.stdout.on('data', (data) => {
         console.log('Python: "' + String(data).trim() + '"');
     })
-    console.log('runPython finished');
+    // console.log('runPython finished');
 }
+
+var users;
+var accommodations;
+var scores;
+async function handleRecommendations() {
+    let recommendationTable = require('../bonus/numpyData.json'); //BIG FILE
+    let queries = [
+        `SELECT COUNT(*) AS 'count' FROM users`,
+        `SELECT COUNT(*) AS 'count' FROM accomodations`
+    ]
+    let temp = await Promise.all(queries.map((q) => db.query(q)));
+    let usersCount = Number(temp[0][0][0].count);
+    let accommodationsCount = Number(temp[1][0][0].count);
+
+    users = recommendationTable.users.slice(0, usersCount);
+    accommodations = recommendationTable.accommodations.slice(0, accommodationsCount);
+
+    scores = recommendationTable.scores.slice(0, usersCount).map(i => i.slice(0, accommodationsCount))
+    // console.log(section)
+    // console.log(users, accommodations, scores);
+} 
 
 //export data for recommendation on startup and every 6 hours
 exportDataJson();
+handleRecommendations();
 const job = new CronJob('0 0 */6 * * *', function() {
     exportDataJson();
     let d = new Date();
     console.log('exportDataJson at ', d);
+    handleRecommendations();
 });
 job.start();
 
@@ -1123,3 +1148,69 @@ const job2 = new CronJob('0 30 4 * * 0', function() {
     console.log('runPython at ', d);
 });
 job2.start();
+
+app.get('/users/:id/recommendations', async (req, res) => { //create new user
+    try {
+        console.log(req.originalUrl);
+        // console.log(users);
+        // console.log(accommodations);
+        let token = isEmpty(req.headers.authorization) ? 'null' : req.headers.authorization.split(' ')[1];
+        let user = null;
+        if (token !== 'null' && !isEmpty(token)) {
+            user = jwt.verify(token, secretKey);
+            if (user) user = user.user;
+        }
+        if (user === null || user.idUsers != req.params.id) {
+            res.sendStatus(403);
+            return;
+        }
+
+        if(isEmpty(req.params.id)) {
+            // console.log('EMPTY ID!');
+            req.send(400);
+        }
+        else {
+            let id = Number(req.params.id);
+            // console.log(id);
+
+            //find index of id in users
+            var userPosition;
+            users.some(function (elem, i) {
+                return elem == id ? (userPosition = i, true) : false;
+            });
+            // console.log(userPosition);
+
+            let K = 3; //number of recommendations CHANGE HERE
+            
+            let allScores = [];
+            for (let i in scores[userPosition]) {
+                allScores.push({ id: accommodations[i], score: scores[userPosition][i]});      
+            }
+
+            allScores.sort(function(a, b) {
+                keyA = a.score;
+                keyB = b.score;
+                // Compare the 2 scores
+                if (keyA < keyB) return 1;
+                if (keyA > keyB) return -1;
+                return 0;
+            });
+
+            let queries = []
+            for (let i in allScores) {
+                queries.push(`SELECT Name FROM accomodations WHERE idAccomodation = ${allScores[i].id}`)
+            }
+            let temp = await Promise.all(queries.map((q) => db.query(q)));
+            // console.log(temp[0]);
+
+            for (let i in temp) {
+                allScores[i].title = temp[i][0][0].Name;
+            }
+            res.send(allScores);
+        }
+    } catch(error) {
+        res.sendStatus(403);
+        console.error(error)
+    }
+});
+
