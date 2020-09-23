@@ -42,6 +42,9 @@
     "vue-template-compiler": "^2.6.11"
   },
   "nodemonConfig": {
-    "ignore": ["bonus/*.json", "bonus dataset/*"]
+    "ignore": [
+      "bonus/*.json",
+      "bonus dataset/*"
+    ]
   }
 }

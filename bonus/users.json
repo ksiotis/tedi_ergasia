@@ -6,7 +6,7 @@
     "Password": "$2a$10$Gya0HcV8oSUepXbwQm81/u0mf4aFgw9yfLqL9fXWVlQU54PDz1JP6",
     "Name": "a",
     "Surname": "a",
-    "Telephone": "(+30)1111111",
+    "Telephone": "1",
     "Role": "admin",
     "ProfilePicPath": "a.jpg"
   },
@@ -25,22 +25,11 @@
     "idUsers": 3,
     "Email": "c@c.c",
     "Username": "c",
-    "Password": "$2a$10$8QJsQgnzaGhJSu4SbpYgbe4YGMpMyGutO2Nni9lC3O7dJRN9hZIji",
+    "Password": "c",
     "Name": "c",
     "Surname": "c",
-    "Telephone": "(+30)1111111",
-    "Role": "unaproved",
-    "ProfilePicPath": null
-  },
-  {
-    "idUsers": 7,
-    "Email": "d@d.d",
-    "Username": "d",
-    "Password": "$2a$10$jTN4.PNzsmn5IxmhLacaH.8UzDfTRFbIePHE7ZnAtaOj8sIeDOi8m",
-    "Name": "d",
-    "Surname": "d",
-    "Telephone": "(+30)123123",
-    "Role": "unaproved",
+    "Telephone": "1",
+    "Role": "aproved",
     "ProfilePicPath": null
   }
 ]

@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
         concat(".").concat(file.originalname.slice(-3)));
     }
 });
-
+ζζ
 const fileFilter = (req, file, cb) => {
     if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
         cb(null, true);
