@@ -34,6 +34,7 @@
                         <b-form-file id="file-input" multiple @input="loadFile" v-model="images" accept="image/jpeg, image/png" placeholder="Επιλογή Εικόνας..."></b-form-file>
                     </div>
                 </div>
+                <p>Η εικόνα είναι υποχρεωτική για την εμφάνιση του χώρου στα αποτελέσματα αναζήτησης.</p>
 
                 <!-- περιγραφή -->
                 <h3 class="subtitle element">Περιγραφή</h3>
@@ -209,13 +210,15 @@
                 <span class="reservationHeader">
                     <h3 class="subtitle" style="color: white;" > Οι χώροι μου </h3>
                 </span>
-                <div 
-                class="d-flex flex-row allign-content-baseline justify-content-between space"
-                v-for="(s, index) in spaces"
-                v-bind:key="index"
-                @click="fetch(s.idAccomodation)">
-                    <p style="margin-bottom: 0px;">{{s.Name}}</p>
-                    <p class="iconify" data-icon="ion-home" style="height: 24px; width: 24px;"></p>
+                <div style="overflow: scroll;">
+                    <div 
+                    class="d-flex flex-row allign-content-baseline justify-content-between space"
+                    v-for="(s, index) in spaces"
+                    v-bind:key="index"
+                    @click="fetch(s.idAccomodation)">
+                        <p style="margin-bottom: 0px;">{{s.Name}}</p>
+                        <p class="iconify" data-icon="ion-home" style="height: 24px; width: 24px;"></p>
+                    </div>
                 </div>
             </form>
         </div>

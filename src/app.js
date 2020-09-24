@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
         concat(".").concat(file.originalname.slice(-3)));
     }
 });
-ζζ
+
 const fileFilter = (req, file, cb) => {
     if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
         cb(null, true);
@@ -571,7 +571,9 @@ app.get('/accommodations', async (req, res) => {
                 isEmpty(req.query.tv)       ||
                 isEmpty(req.query.parking)  ||
                 isEmpty(req.query.lift)     ||
-                isEmpty(req.query.livingRoom)
+                isEmpty(req.query.livingRoom) ||
+                isEmpty(req.query.perpage) ||
+                isEmpty(req.query.page)
             ){
                 console.log('EMPTY STRING IN QUERY!');
                 req.send(400);
@@ -594,6 +596,8 @@ app.get('/accommodations', async (req, res) => {
                     parking: Boolean(req.query.parking === 'true'),
                     lift: Boolean(req.query.lift === 'true'),
                     livingRoom: Boolean(req.query.livingRoom === 'true'),
+                    perpage: Number(req.query.perpage),
+                    page: Number(req.query.page)
                 }
                 console.log("SEARCH CRITERIA:");
                 console.log(criteria);
@@ -603,9 +607,9 @@ app.get('/accommodations', async (req, res) => {
                     `SELECT a.idAccomodation, a.Name, a.Type, a.Beds, a.PricePerNight, a.Latitude, a.Longtitude, a.Persons  
                      FROM accomodations a`, 
                 );
-                
                 let accepted = [];
                 
+                // console.log("COOOOOOOOOOOOUUUUUUNT " + count);
                 // going through all accommodations
                 for(let i = 0 ; i < results[0].length ; i++) {
                     console.log("EXAMINING " + results[0][i].idAccomodation);
@@ -688,7 +692,23 @@ app.get('/accommodations', async (req, res) => {
                         }
                     }
                 }
-                res.send(accepted);
+                
+                let final10 = [];
+                for(let i=(criteria.page-1) * criteria.perpage ; i < (criteria.page-1) * criteria.perpage + criteria.perpage ; i++){
+                    // console.log(i);
+                    if(accepted[i] != undefined){
+                        final10.push(accepted[i]);
+                    }
+                    else{
+                        break;
+                    }
+                }
+                let count = accepted.length;
+                let final = {
+                    count: count,
+                    accepted: final10,
+                };
+                res.send(final);
                 res.sendStatus(200);
             }
         }

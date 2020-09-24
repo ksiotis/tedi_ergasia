@@ -83,29 +83,38 @@
             </div>
             <!-- search button -->
             <div class="d-flex justify-content-center">
-                <b-link class = "searchbutton d-flex align-items-center" @click="search">
+                <b-link class = "searchbutton d-flex align-items-center"  @click.prevent="currentPage = 1" @click="search">
                     Αναζήτηση
                     <span class="iconify searchicons" data-icon="ion-search"></span>
                 </b-link>
             </div>
         </form>
-
-        <div class="container">
-            <div class="row ">
-                <div 
-                    v-for="(result, index) in results"
-                    v-bind:key="index"
-                    class="col col-6">
-                        <div class="panel" v-if="resultFlag == true">
-                            <ResultTile
-                                :date1="searchForm.date1"
-                                :date2="searchForm.date2"
-                                :searchPersons="Number(searchForm.persons)" 
-                                :preview_package="result"/>
-                        </div>
-                </div> 
+        <div class="d-flex flex-column">
+            <div class="container">
+                <div class="row ">
+                    <div 
+                        v-for="(result, index) in results"
+                        v-bind:key="index"
+                        class="col col-6">
+                            <div class="panel" v-if="resultFlag == true">
+                                <ResultTile
+                                    :date1="searchForm.date1"
+                                    :date2="searchForm.date2"
+                                    :searchPersons="Number(searchForm.persons)" 
+                                    :preview_package="result"/>
+                            </div>
+                    </div> 
+                </div>
             </div>
-        </div>
+            <div class="d-flex pages" @click="search">
+                <b-pagination
+                    style="margin-left: 160px;" 
+                    v-model="currentPage"
+                    :total-rows="rows"
+                    :per-page="perPage"
+                ></b-pagination>
+            </div>
+	    </div>
 
     </div>
 </template>
@@ -125,6 +134,10 @@ export default {
     data() {
       return {
         resultFlag: true,
+
+        currentPage: 1,
+        perPage: 10,
+        rows: 100,
 
         results: [],
 
@@ -235,6 +248,7 @@ export default {
         },
 
         async search() {
+            console.log("Searching...");
             this.resultFlag = true;
             if(this.searchForm.geo_package.bounds != [] && this.searchForm.date1 != "" && this.searchForm.date2 != "" && this.searchForm.persons != ""){
                 this.results = [];
@@ -252,12 +266,15 @@ export default {
                             "&tv=" + this.searchForm.tv.toString() +
                             "&parking=" + this.searchForm.parking.toString() +
                             "&lift=" + this.searchForm.lift.toString() +
-                            "&livingRoom=" + this.searchForm.livingRoom.toString();
+                            "&livingRoom=" + this.searchForm.livingRoom.toString() +
+                            "&page=" + this.currentPage.toString() +
+                            "&perpage=" + this.perPage.toString();
 
 
                 let response = await this.$axios.get('/accommodations' + query);
                 console.log("Valid IDs");
-                let ids = response.data;    
+                let ids = response.data.accepted;
+                this.rows = response.data.count;    
                 console.log(ids);
 
                 for(let i = 0; i<ids.length ; i++){
@@ -433,7 +450,7 @@ p{
 
 .container{
     margin-left: 150px;
-    width: 50%;
+    width: 75%;
     margin-bottom: 50px;
 }
 

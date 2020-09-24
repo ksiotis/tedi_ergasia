@@ -15,16 +15,11 @@ nltk.download('stopwords')
 class MF():
 
     def __init__(self, Q, K, learningRate):
-        """
-        Perform matrix factorization to predict empty
-        entries in a matrix.
 
-        Arguments
-        - X (ndarray)   : user-item rating matrix
-        - K (int)       : number of latent dimensions
-        - learningRate (float) : learning rate
-        - beta (float)  : regularization parameter
-        """
+ 
+        # X: user-item rating matrix
+        # K: number of latent dimensions
+        # learningRate: learning rate
 
         self.X = Q[1:, 1:]
         self.num_users, self.num_items = self.X.shape
@@ -46,16 +41,16 @@ class MF():
         ]
 
         # Perform stochastic gradient descent for number of iterations
-        temp_mse = float('inf')
+        temp_mean_error = float('inf')
         while (True):
-            self.sgd()
-            mse = self.mse()
+            self.gradient_descent()
+            mean_error = self.mean_error()
             
-            # print(mse)
-            if (mse > temp_mse or mse < 1):
+            # print(mean_error)
+            if (mean_error > temp_mean_error or mean_error < 1):
                 break
 
-            temp_mse = mse
+            temp_mean_error = mean_error
             tempV = self.V
             tempF = self.F
 
@@ -64,10 +59,9 @@ class MF():
 
         return self.full_matrix()
 
-    def mse(self):
-        """
-        A function to compute the total mean square error
-        """
+    def mean_error(self):
+        # total mean square error
+
         xs, ys = self.X.nonzero()
         predicted = self.full_matrix()
         error = 0
@@ -75,10 +69,7 @@ class MF():
             error += pow(self.X[x, y] - predicted[x, y], 2)
         return error
 
-    def sgd(self):
-        """
-        Perform stochastic graident descent
-        """
+    def gradient_descent(self):
         for i, j, X in self.givenReviews:
             # Compute prediction and error
             prediction = self.get_rating(i, j)
@@ -89,16 +80,14 @@ class MF():
             self.F[j, :] += self.learningRate * 2 * e * self.V[i, :]
 
     def get_rating(self, i, j):
-        """
-        Get the predicted rating of user i and item j
-        """
+        
+        # predict rating for user i and accommodation j
+        
         prediction = self.V[i, :].dot(self.F[j, :].T)
         return prediction
 
     def full_matrix(self):
-        """
-        Computer the full matrix using the resultant biases, V and F
-        """
+        # full matrix from V & F
         scores = self.V.dot(self.F.T)
         return scores
 
