@@ -311,8 +311,8 @@ export default {
                     this.results.push(preview_package);
                 }
                 this.results.sort(function(a, b) {
-                    var keyA = a.price,
-                        keyB = b.price;
+                    var keyA = Number(a.price),
+                        keyB = Number(b.price);
                     // Compare the 2 dates
                     if (keyA < keyB) return -1;
                     if (keyA > keyB) return 1;
@@ -450,7 +450,7 @@ p{
 
 .container{
     margin-left: 150px;
-    width: 75%;
+    width: 90%;
     margin-bottom: 50px;
 }
 
