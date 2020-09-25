@@ -56,9 +56,18 @@ const upload2 = multer({
 });
 
 const app = express();
+const https = require('https');
 app.use(express.json());
 app.use(cors());
 app.use('/profile_pics', express.static('./src/assets/profile_pics'));
+https.createServer({
+    key: fs.readFileSync('./certificate/server.key'),
+    cert: fs.readFileSync('./certificate/server.crt'),
+    passphrase: 'shhhhh'
+}, app)
+.listen(port,() => {
+    console.log(`Server started on port ${port}`)
+});
 
 const db = mysql.createPool({
     host: 'localhost',
@@ -69,10 +78,6 @@ const db = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0
 });
-
-app.listen(port,() => {
-    console.log(`Server started on port ${port}`)
-})
 
 function isEmpty(str) {
     return (!str || 0 === str.length);

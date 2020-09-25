@@ -29,8 +29,8 @@ class MF():
 
     def train(self):
         # Initialize user and item latent feature matrice
-        self.V = np.random.rand(self.num_users, self.K)
-        self.F = np.random.rand(self.num_items, self.K)
+        self.V = np.random.uniform(low=-1.0, high=1.0, size=(self.num_users, self.K))
+        self.F = np.random.uniform(low=-1.0, high=1.0, size=(self.num_items, self.K))
 
         # take given reviews and shuffle them for more objective results
         self.givenReviews = [
