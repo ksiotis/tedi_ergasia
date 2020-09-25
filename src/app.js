@@ -1116,6 +1116,8 @@ async function exportDataJson() {
         for (file in files) {
             fs.rename(`.\\bonus\\${files[file]}.json`, `.\\bonus\\${files[file].slice(0,-1)}.json`, function(err) {
                 if ( err ) console.log('ERROR: ' + err);
+                console.log(`exported ${files[file].slice(0,-1)}.json`);
+
             });
         }
     } 
@@ -1136,8 +1138,13 @@ async function runPython() {
 var users;
 var accommodations;
 var scores;
+
 async function handleRecommendations() {
+    console.log("handling recoms...");
+
     let recommendationTable = require('../bonus/numpyData.json'); //BIG FILE
+    console.log(recommendationTable.users);
+    
     let queries = [
         `SELECT COUNT(*) AS 'count' FROM users`,
         `SELECT COUNT(*) AS 'count' FROM accomodations`
@@ -1150,6 +1157,7 @@ async function handleRecommendations() {
     accommodations = recommendationTable.accommodations.slice(0, accommodationsCount);
 
     scores = recommendationTable.scores.slice(0, usersCount).map(i => i.slice(0, accommodationsCount))
+    
     // console.log(section)
     // console.log(users, accommodations, scores);
 } 
@@ -1157,6 +1165,7 @@ async function handleRecommendations() {
 //export data for recommendation on startup and every 6 hours
 exportDataJson();
 handleRecommendations();
+
 const job = new CronJob('0 0 */6 * * *', function() {
     exportDataJson();
     let d = new Date();
@@ -1182,35 +1191,43 @@ app.get('/users/:id/recommendations', async (req, res) => { //create new user
         let token = isEmpty(req.headers.authorization) ? 'null' : req.headers.authorization.split(' ')[1];
         let user = null;
         if (token !== 'null' && !isEmpty(token)) {
+            // console.log("failed token");
             user = jwt.verify(token, secretKey);
             if (user) user = user.user;
         }
         if (user === null || user.idUsers != req.params.id) {
+            console.log("failed bad params");
             res.sendStatus(403);
             return;
         }
 
         if(isEmpty(req.params.id)) {
             // console.log('EMPTY ID!');
+            console.log("failed bad id");
             req.send(400);
         }
         else {
+            console.log("working");
+
             let id = Number(req.params.id);
             // console.log(id);
 
             //find index of id in users
             var userPosition;
+            console.log(users);
             users.some(function (elem, i) {
                 return elem == id ? (userPosition = i, true) : false;
             });
-            // console.log(userPosition);
+            console.log(userPosition);
 
             let K = 3; //number of recommendations CHANGE HERE
-            
+        
             let allScores = [];
             for (let i in scores[userPosition]) {
                 allScores.push({ id: accommodations[i], score: scores[userPosition][i]});      
             }
+
+            console.log(allScores);
 
             allScores.sort(function(a, b) {
                 keyA = a.score;
@@ -1231,7 +1248,12 @@ app.get('/users/:id/recommendations', async (req, res) => { //create new user
             for (let i in temp) {
                 allScores[i].title = temp[i][0][0].Name;
             }
-            res.send(allScores);
+            
+            let final = [];
+            for(let i = 0 ; i < K ; i++){
+                final.push(allScores[i]);
+            }
+            res.send(final);
         }
     } catch(error) {
         res.sendStatus(403);

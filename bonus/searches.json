@@ -1,10 +1,66 @@
 [
   {
-    "Accomodations_idAccomodation": 1,
-    "Users_idUsers": 2
+    "Accomodations_idAccomodation": 35,
+    "Users_idUsers": 7
   },
   {
-    "Accomodations_idAccomodation": 2,
-    "Users_idUsers": 2
+    "Accomodations_idAccomodation": 35,
+    "Users_idUsers": 8
+  },
+  {
+    "Accomodations_idAccomodation": 35,
+    "Users_idUsers": 16
+  },
+  {
+    "Accomodations_idAccomodation": 36,
+    "Users_idUsers": 11
+  },
+  {
+    "Accomodations_idAccomodation": 36,
+    "Users_idUsers": 16
+  },
+  {
+    "Accomodations_idAccomodation": 37,
+    "Users_idUsers": 6
+  },
+  {
+    "Accomodations_idAccomodation": 37,
+    "Users_idUsers": 7
+  },
+  {
+    "Accomodations_idAccomodation": 37,
+    "Users_idUsers": 8
+  },
+  {
+    "Accomodations_idAccomodation": 37,
+    "Users_idUsers": 11
+  },
+  {
+    "Accomodations_idAccomodation": 38,
+    "Users_idUsers": 6
+  },
+  {
+    "Accomodations_idAccomodation": 38,
+    "Users_idUsers": 8
+  },
+  {
+    "Accomodations_idAccomodation": 39,
+    "Users_idUsers": 16
+  },
+  {
+    "Accomodations_idAccomodation": 40,
+    "Users_idUsers": 7
+  },
+  {
+    "Accomodations_idAccomodation": 40,
+    "Users_idUsers": 10
+  },
+  {
+    "Accomodations_idAccomodation": 41,
+    "Users_idUsers": 6
+  },
+  {
+    "Accomodations_idAccomodation": 43,
+    "Users_idUsers": 16
   }
 ]

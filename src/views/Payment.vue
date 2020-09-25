@@ -141,15 +141,16 @@ export default {
         async submit_reservation(){
             if(this.user){
                 console.log("RESERVING");
-                if(this.newReview != ""){
-                    let response = await this.$axios.post('/accommodations/' + this.accId + '/reservations', {
-                        UserId: this.$store.state.user.idUsers,
-                        Date1: this.date1,
-                        Date2: this.date2,
-                        Persons: this.persons,
-                        Price: this.total,
-                    });
-                }
+                let response = await this.$axios.post('/accommodations/' + this.accId + '/reservations', {
+                    UserId: this.$store.state.user.idUsers,
+                    Date1: this.date1,
+                    Date2: this.date2,
+                    Persons: this.persons,
+                    Price: this.total,
+                });
+
+                alert("Ολοκληρώθηκε η κράτηση με επιτυχία!");
+                this.$router.push("/");
             }
         },
     },

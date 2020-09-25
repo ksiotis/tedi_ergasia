@@ -52,7 +52,7 @@
             <div class="entry d-flex flex-row  align-items-baseline" 
             v-for="(entry, entry_index) in recommendations" :key="entry_index"
             @click="submit_recommendations(entry.id)">
-                {{entry.title}}
+                <span>{{entry.title}}</span>
                 <p class="iconify ml-auto" data-icon="ion-home" style="height: 24px; width: 24px;"/>
             </div>
         </div>
@@ -127,6 +127,7 @@ export default {
     },
     async mounted() {
         if (this.user !== '') {
+            console.log('getting recommendations')
             let response = await this.$axios.get(`/users/${this.user.idUsers}/recommendations`, {
                 headers: { "authorization": 'Bearer ' + this.$store.state.token }
             });
@@ -269,6 +270,14 @@ export default {
     border-radius: 10px
     
 }
+
+.entry span{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
 
 .entry:hover {
     background-color: #0C2431;

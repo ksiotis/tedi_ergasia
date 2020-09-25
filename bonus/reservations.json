@@ -1,26 +1,10 @@
 [
   {
-    "Users_idUsers": 2,
-    "Accomodations_idAccomodation": 1,
-    "From": "2020-10-23T21:00:00.000Z",
-    "To": "2020-10-25T22:00:00.000Z",
-    "Persons": 1,
-    "Price": "135"
-  },
-  {
-    "Users_idUsers": 2,
-    "Accomodations_idAccomodation": 1,
+    "Users_idUsers": 7,
+    "Accomodations_idAccomodation": 40,
     "From": "2020-10-26T22:00:00.000Z",
     "To": "2020-10-28T22:00:00.000Z",
-    "Persons": 3,
-    "Price": "142"
-  },
-  {
-    "Users_idUsers": 3,
-    "Accomodations_idAccomodation": 1,
-    "From": "2020-10-17T21:00:00.000Z",
-    "To": "2020-10-21T21:00:00.000Z",
     "Persons": 1,
-    "Price": "10"
+    "Price": "198"
   }
 ]
