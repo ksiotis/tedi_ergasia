@@ -61,7 +61,7 @@ north, west, south, east, date1, date2, persons, wifi, freezer, heating, kitchen
 tv, parking, lift, livingRoom όταν καλείται από τις φόρμες αναζήτησης. Το
 query πρέπει να περιέχει το κριτήριο host όταν καλείται από την φόρμα
 χώρων ενός οικοδεσπότη.
-* GET /accommodations/:id: επιστρέφει όλες τις πληροφορίες της βάσης για
+* GET /accommodations/<span>:id</span>: επιστρέφει όλες τις πληροφορίες της βάσης για
 το συγκεκριμένο accommodation id.
 * POST /accommodations/:id/reviews: εισάγει στη βάση κριτική για το
 συγκεκριμένο accommodation id. Στο body περιέχει τις παραμέτρους UserId,
@@ -73,7 +73,7 @@ UserId, Date1, Date2, Price.
 * POST /accommodations: εισάγει στην βάση ένα νέο accommodation. Οι
 παράμετροι περνάνε σε μορφή string μέσω της παραμέτρου content του body
 (χρησιμοποιεί [multer](https://www.npmjs.com/package/multer)).
-* PUT /accommodations/:id: ανανεώνει στην βάση τα πεδία για το
+* PUT /accommodations/<span>:id</span>: ανανεώνει στην βάση τα πεδία για το
 accommodation με το συγκεκριμένο id. Οι παράμετροι περνάνε σε μορφή
 string μέσω της παραμέτρου content του body. (χρησιμοποιεί [multer](https://www.npmjs.com/package/multer))
 * POST users/:id/searches: εισάγει στην βάση τις αναζητήσεις του χρήστη με
